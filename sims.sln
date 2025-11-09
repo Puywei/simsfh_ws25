@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sims-api", "sims-api\sims-api.csproj", "{4D30FA33-FA09-46AA-9B01-3CEB55619E02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sims-web_app", "sims-web_app\sims-web_app.csproj", "{102C10E9-1137-4296-9926-EBA6E3893459}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sims-web_app", "sims-web_app\sims-web_app.csproj", "{9BC86544-BAA2-44C5-AE10-C7E4F798FDDD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,18 +29,18 @@ Global
 		{4D30FA33-FA09-46AA-9B01-3CEB55619E02}.Release|x64.Build.0 = Release|Any CPU
 		{4D30FA33-FA09-46AA-9B01-3CEB55619E02}.Release|x86.ActiveCfg = Release|Any CPU
 		{4D30FA33-FA09-46AA-9B01-3CEB55619E02}.Release|x86.Build.0 = Release|Any CPU
-		{102C10E9-1137-4296-9926-EBA6E3893459}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{102C10E9-1137-4296-9926-EBA6E3893459}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{102C10E9-1137-4296-9926-EBA6E3893459}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{102C10E9-1137-4296-9926-EBA6E3893459}.Debug|x64.Build.0 = Debug|Any CPU
-		{102C10E9-1137-4296-9926-EBA6E3893459}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{102C10E9-1137-4296-9926-EBA6E3893459}.Debug|x86.Build.0 = Debug|Any CPU
-		{102C10E9-1137-4296-9926-EBA6E3893459}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{102C10E9-1137-4296-9926-EBA6E3893459}.Release|Any CPU.Build.0 = Release|Any CPU
-		{102C10E9-1137-4296-9926-EBA6E3893459}.Release|x64.ActiveCfg = Release|Any CPU
-		{102C10E9-1137-4296-9926-EBA6E3893459}.Release|x64.Build.0 = Release|Any CPU
-		{102C10E9-1137-4296-9926-EBA6E3893459}.Release|x86.ActiveCfg = Release|Any CPU
-		{102C10E9-1137-4296-9926-EBA6E3893459}.Release|x86.Build.0 = Release|Any CPU
+		{9BC86544-BAA2-44C5-AE10-C7E4F798FDDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BC86544-BAA2-44C5-AE10-C7E4F798FDDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BC86544-BAA2-44C5-AE10-C7E4F798FDDD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9BC86544-BAA2-44C5-AE10-C7E4F798FDDD}.Debug|x64.Build.0 = Debug|Any CPU
+		{9BC86544-BAA2-44C5-AE10-C7E4F798FDDD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9BC86544-BAA2-44C5-AE10-C7E4F798FDDD}.Debug|x86.Build.0 = Debug|Any CPU
+		{9BC86544-BAA2-44C5-AE10-C7E4F798FDDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BC86544-BAA2-44C5-AE10-C7E4F798FDDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BC86544-BAA2-44C5-AE10-C7E4F798FDDD}.Release|x64.ActiveCfg = Release|Any CPU
+		{9BC86544-BAA2-44C5-AE10-C7E4F798FDDD}.Release|x64.Build.0 = Release|Any CPU
+		{9BC86544-BAA2-44C5-AE10-C7E4F798FDDD}.Release|x86.ActiveCfg = Release|Any CPU
+		{9BC86544-BAA2-44C5-AE10-C7E4F798FDDD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
