@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
+using sims_web_app;
 using sims_web_app.Components;
 using sims_web_app.Components.Account;
 using sims_web_app.Data;
@@ -10,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add MudBlazor services
 builder.Services.AddMudServices();
+
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -55,6 +57,8 @@ else
 }
 
 app.UseHttpsRedirection();
+
+SampleData.SeedData();
 
 
 app.UseAntiforgery();
