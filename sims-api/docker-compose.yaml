@@ -45,6 +45,7 @@ services:
     networks:
       - keycloak-net
 
+
 volumes:
   keycloak-db:
 

@@ -1,0 +1,16 @@
+﻿services:
+
+  sims-nosql-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sims-nosql-api
+    ports:
+      - "8081:8080"
+    networks:
+      - sims-net
+
+networks:
+  sims-net:
+    external: true
+    name: sims-network

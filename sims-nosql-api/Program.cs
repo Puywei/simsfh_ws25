@@ -19,18 +19,15 @@ namespace sims_nosql_api
 
             var app = builder.Build();
 
-            // Swagger im Entwicklungsmodus aktivieren
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
-
+            // Swagger aktivieren
+           
+            app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "sims-nosql-api v1");
-                c.RoutePrefix = string.Empty; // Startet Swagger direkt unter "/"
+                c.RoutePrefix = string.Empty; // Swagger direkt unter "/"
             });
+
 
 
             // Standard-Middleware

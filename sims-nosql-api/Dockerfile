@@ -1,29 +1,28 @@
-# Unter https://aka.ms/customizecontainer erfahren Sie, wie Sie Ihren Debugcontainer anpassen und wie Visual Studio dieses Dockerfile verwendet, um Ihre Images für ein schnelleres Debuggen zu erstellen.
-
-# Diese Stufe wird verwendet, wenn sie von VS im Schnellmodus ausgeführt wird (Standardeinstellung für Debugkonfiguration).
+# Basis-Image für Laufzeit
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
-
-# Diese Stufe wird zum Erstellen des Dienstprojekts verwendet.
+# Build-Image
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["sims-nosql-api/sims-nosql-api.csproj", "sims-nosql-api/"]
-RUN dotnet restore "./sims-nosql-api/sims-nosql-api.csproj"
+
+# 🔹 KORRIGIERTER COPY-BEFEHL
+COPY ["sims-nosql-api.csproj", "./"]
+RUN dotnet restore "./sims-nosql-api.csproj"
+
+# 🔹 Quellcode kopieren und Build durchführen
 COPY . .
-WORKDIR "/src/sims-nosql-api"
 RUN dotnet build "./sims-nosql-api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-# Diese Stufe wird verwendet, um das Dienstprojekt zu veröffentlichen, das in die letzte Phase kopiert werden soll.
+# 🔹 Veröffentlichen (Publish)
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "./sims-nosql-api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-# Diese Stufe wird in der Produktion oder bei Ausführung von VS im regulären Modus verwendet (Standard, wenn die Debugkonfiguration nicht verwendet wird).
+# 🔹 Finale Laufzeitstufe
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
