@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace sims;
 
@@ -7,16 +8,28 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container.
-
+        // Configure services
         builder.Services.AddControllers();
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
+        string serverHost = "localhost";
+        int  serverPort = 8080;
+        
+
+        builder.Services.AddAuthentication("Bearer")
+            .AddJwtBearer("Bearer", options =>
+            {
+                options.Authority = $"http://{serverHost}:{serverPort}/realms/IncidentSystem";
+                options.Audience = "user-api";
+                options.RequireHttpsMetadata = false;
+            });
+
+        builder.Services.AddAuthorization();
+
         var app = builder.Build();
 
-        // Configure the HTTP request pipeline. TEST
+        // Configure middleware
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
@@ -25,8 +38,8 @@ public class Program
 
         app.UseHttpsRedirection();
 
+        app.UseAuthentication();   // <-- important: add before Authorization
         app.UseAuthorization();
-
 
         app.MapControllers();
 
