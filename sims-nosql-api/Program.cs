@@ -1,3 +1,7 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+
 namespace sims_nosql_api
 {
     public class Program
@@ -6,28 +10,37 @@ namespace sims_nosql_api
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-            builder.Services.AddRazorPages();
+            // Controller aktivieren
+            builder.Services.AddControllers();
+
+            // Swagger aktivieren (einfach, ohne OpenApiInfo)
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
-            if (!app.Environment.IsDevelopment())
+            // Swagger im Entwicklungsmodus aktivieren
+            if (app.Environment.IsDevelopment())
             {
-                app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
+                app.UseSwagger();
+                app.UseSwaggerUI();
             }
 
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "sims-nosql-api v1");
+                c.RoutePrefix = string.Empty; // Startet Swagger direkt unter "/"
+            });
+
+
+            // Standard-Middleware
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
-
-            app.UseRouting();
-
             app.UseAuthorization();
 
-            app.MapRazorPages();
+            // Controller aktivieren
+            app.MapControllers();
 
+            // Anwendung starten
             app.Run();
         }
     }
