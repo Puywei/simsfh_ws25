@@ -1,0 +1,26 @@
+﻿version: '3.8'
+
+services:
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - sims-net
+
+  sims-nosql-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sims-nosql-api
+    ports:
+      - "8081:8080"
+    depends_on:
+      - redis
+    networks:
+      - sims-net
+
+networks:
+  sims-net:
+    name: sims-network
