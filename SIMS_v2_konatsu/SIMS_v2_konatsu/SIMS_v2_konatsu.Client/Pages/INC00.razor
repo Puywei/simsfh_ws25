@@ -1,0 +1,66 @@
+﻿@page "/INC01"
+
+<PageTitle>INC01</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">INC01</MudText>
+
+<MudText Typo="Typo.body1" Class="mb-8">You can modify the Ticket here.</MudText>
+
+
+<MudTextField @bind-Value="TextValue" Label="Summary" Variant="Variant.Outlined"></MudTextField>
+
+@code {
+    public string TextValue { get; set; }
+}
+
+
+
+
+<MudSelect @bind-Value="_selectedAuthor" Label="Author" FullWidth="_fullWidth" FitContent="_fitContent" Variant="Variant.Outlined" Clearable>
+    @foreach (var author in _user)
+    {
+        <MudSelectItem Value="@author">@author</MudSelectItem>
+    }
+</MudSelect>
+
+<MudSelect @bind-Value="_selectedAssignedPerson" Label="Assigned Person" FullWidth="_fullWidth" FitContent="_fitContent" Variant="Variant.Outlined" Clearable>
+    @foreach (var author in _user)
+    {
+        <MudSelectItem Value="@author">@author</MudSelectItem>
+    }
+</MudSelect>
+
+@code {
+    private bool _fullWidth;
+    private bool _fitContent;
+    private string _selectedAuthor;
+    private string _selectedAssignedPerson;
+    private readonly string[] _user =
+    [
+        "Konatsu", "Max", "Philip", "Margarethe", "Gabriel",
+
+    ];
+}
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudField Label="priority" Variant="Variant.Outlined" InnerPadding="false">
+            <MudRadioGroup T="string">
+                <MudRadio T="string">low</MudRadio>
+                <MudRadio T="string">middle</MudRadio>
+                <MudRadio T="string">high</MudRadio>
+            </MudRadioGroup>
+        </MudField>
+    </MudItem>
+</MudGrid>
+
+<MudTextField T="string" Label="Description" Variant="Variant.Outlined" Text="@description" Lines="10" />
+
+@code
+{
+    string description = "";
+}
+
+<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Medium">Save</MudButton>
+
+<MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium" />
