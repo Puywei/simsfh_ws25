@@ -2,34 +2,17 @@ services:
     postgres:
         image: postgres:16
         restart: unless-stopped
+        ports:
+        - "5432:5432"
         environment:
-            POSTGRES_DB: keycloak
-            POSTGRES_USER: keycloak
-            POSTGRES_PASSWORD: keycloak
+            POSTGRES_DB: userapi
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
         volumes:
         - ./container-data/postgres:/var/lib/postgresql/data
         networks:
-        - keycloak-net
+        - userapi-net
 
-    keycloak:
-        image: quay.io/keycloak/keycloak:26.4.0
-        restart: unless-stopped
-        command: start-dev
-        environment:
-            KEYCLOAK_ADMIN: admin
-            KEYCLOAK_ADMIN_PASSWORD: admin
-            KC_DB: postgres
-            KC_DB_URL_HOST: postgres
-            KC_DB_URL_DATABASE: keycloak
-            KC_DB_USERNAME: keycloak
-            KC_DB_PASSWORD: keycloak
-        ports:
-        - "8080:8080"
-        depends_on:
-        - postgres
-        networks:
-        - keycloak-net
-      
     user-api:
         build: .
         restart: unless-stopped
@@ -37,14 +20,16 @@ services:
         - "5000:80"
         environment:
         - ASPNETCORE_ENVIRONMENT=Development
-        - Keycloak__Authority=http://localhost:8080/realms/IncidentSystem
-        - Keycloak__Audience=user-api
+        - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=userapi;Username=postgres;Password=postgres
+        - Jwt__Key=noneofyourgoddamnbusinessthishastobesogoddamnverylongjesuschristandmariaandjoseph
+        - Jwt__Issuer=sims-api
+    depends_on:
         depends_on:
-        - keycloak
+        - postgres
         networks:
-        - keycloak-net
+        - userapi-net
 
 
 networks:
-  keycloak-net:
+  userapi-net:
     driver: bridge
