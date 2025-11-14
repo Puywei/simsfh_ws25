@@ -12,16 +12,13 @@ public class Program
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
-
-        string serverHost = "localhost";
-        int  serverPort = 8080;
         
 
         builder.Services.AddAuthentication("Bearer")
             .AddJwtBearer("Bearer", options =>
             {
-                options.Authority = $"http://{serverHost}:{serverPort}/realms/IncidentSystem";
-                options.Audience = "user-api";
+                options.Authority = builder.Configuration["Keycloak:Authority"];
+                options.Audience = builder.Configuration["Keycloak:Audience"];
                 options.RequireHttpsMetadata = false;
             });
 

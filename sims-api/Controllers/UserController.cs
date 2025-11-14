@@ -7,7 +7,7 @@ namespace UserApi.Controllers;
 [Route("api/[controller]")]
 public class UserController : ControllerBase
 {
-    // Public endpoint
+    // Public endpoint -> Does NOT need Token from Keycloak... Perhaps for testing? Read-only access? ...
     [HttpGet("public")]
     public IActionResult PublicEndpoint()
     {
