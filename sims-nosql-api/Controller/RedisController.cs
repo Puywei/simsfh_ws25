@@ -3,12 +3,12 @@ using sims_nosql_api.Services;
 
 namespace sims_nosql_api.Controller
 {
-    // Diese Klasse stellt eine Web-API bereit, um Daten in Redis zu speichern und zu lesen
+    // Web-APi-Controller; Basis-URL
     [ApiController]
     [Route("api/[controller]")]
     public class RedisController : ControllerBase
     {
-        private readonly RedisService _redisService;
+        private readonly RedisService _redisService; // Zugriff
 
         // Konstruktor: Erstellt eine Instanz der RedisService-Klasse
         public RedisController()
@@ -16,7 +16,7 @@ namespace sims_nosql_api.Controller
             _redisService = new RedisService();
         }
 
-        // POST: /api/redis/set?key=beispiel&value=123
+        // POST
         // Speichert einen Wert in Redis unter dem angegebenen Schlüssel
         [HttpPost("set")]
         public async Task<IActionResult> SetValue(string key, string value)
@@ -25,7 +25,7 @@ namespace sims_nosql_api.Controller
             return Ok($"Gespeichert: {key} = {value}");
         }
 
-        // GET: /api/redis/get?key=beispiel
+        // GET
         // Liest den Wert aus Redis, der zum angegebenen Schlüssel gehört
         [HttpGet("get")]
         public async Task<IActionResult> GetValue(string key)
@@ -37,5 +37,15 @@ namespace sims_nosql_api.Controller
 
             return Ok($"{key} = {value}");
         }
+
+        // GET
+        // Gibt alle gespeicherten Schlüssel und Werte zurück
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAll()
+        {
+            var allValues = await _redisService.GetAllValuesAsync();
+            return Ok(allValues);
+        }
+
     }
 }

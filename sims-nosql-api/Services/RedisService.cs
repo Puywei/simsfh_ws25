@@ -5,6 +5,7 @@ namespace sims_nosql_api.Services
 {
     public class RedisService
     {
+        // Interface zur Datenbank 
         private readonly IDatabase _db;
 
         public RedisService()
@@ -13,17 +14,37 @@ namespace sims_nosql_api.Services
             _db = RedisConnection.Connection.GetDatabase();
         }
 
-        // Einen Wert speichern
+        // speichert einen Wert // PRÜFUNG AUF NULL und LÄNGE OFFEN
         public async Task SetValueAsync(string key, string value)
         {
             await _db.StringSetAsync(key, value);
         }
 
-        // Einen Wert lesen
+        // Wert aus Redis lesen
         public async Task<string?> GetValueAsync(string key)
         {
             var value = await _db.StringGetAsync(key);
             return value.HasValue ? value.ToString() : null;
         }
-    }
+    
+
+    // alle Daten gesamt abrufen
+public async Task<Dictionary<string, string>> GetAllValuesAsync()
+        {
+            var server = RedisConnection.Connection.GetServer("redis", 6379);
+            var keys = server.Keys();
+
+            var result = new Dictionary<string, string>();
+
+            foreach (var key in keys)
+            {
+                string value = await _db.StringGetAsync(key);
+                result.Add(key, value);
+            }
+
+            return result;
+        }
+    } 
 }
+    
+

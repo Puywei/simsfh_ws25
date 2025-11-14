@@ -6,31 +6,32 @@ namespace sims_nosql_api
 {
     public class Program
     {
+        // Startskript Web-API
         public static void Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
+            var builder = WebApplication.CreateBuilder(args); // Start WebApp
 
-            // Controller aktivieren
+            // 
             builder.Services.AddControllers();
 
-            // Swagger aktivieren (einfach, ohne OpenApiInfo)
+            // Swagger Testseite einschalten
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
 
-            // Swagger aktivieren
+            // Swagger im Browser anzeigen
            
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "sims-nosql-api v1");
-                c.RoutePrefix = string.Empty; // Swagger direkt unter "/"
+                c.RoutePrefix = string.Empty; // Swagger direkt unter http.. aufrufen
             });
 
 
 
-            // Standard-Middleware
+            // https vorbereitung
             app.UseHttpsRedirection();
             app.UseAuthorization();
 
