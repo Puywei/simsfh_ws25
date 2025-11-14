@@ -1,0 +1,31 @@
+﻿
+@page "/Add_User"
+
+<PageTitle>Add User</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">Add New User</MudText>
+
+<MudText Typo="Typo.body1" Class="mb-8">You can add a new user here.</MudText>
+
+
+
+
+
+
+
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudField Label="Select a Role" Variant="Variant.Outlined" InnerPadding="false">
+            <MudRadioGroup T="string">
+                <MudRadio T="string">Admin</MudRadio>
+                <MudRadio T="string">User</MudRadio>
+                
+            </MudRadioGroup>
+        </MudField>
+    </MudItem>
+</MudGrid>
+
+
+
+<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Medium">Save</MudButton>
