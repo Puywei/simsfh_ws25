@@ -1,16 +1,4 @@
 services:
-    nginx:
-        image: nginx:latest
-        restart: unless-stopped
-        ports:
-        - "8443:443"   
-        volumes:
-        - ./container-data/nginx:/etc/nginx:ro
-        depends_on:
-        - keycloak
-        networks:
-        - keycloak-net
-
     postgres:
         image: postgres:16
         restart: unless-stopped
@@ -49,11 +37,10 @@ services:
         - "5000:80"
         environment:
         - ASPNETCORE_ENVIRONMENT=Development
-        - Keycloak__Authority=https://nginx:443/realms/IncidentSystem
+        - Keycloak__Authority=http://localhost:8080/realms/IncidentSystem
         - Keycloak__Audience=user-api
         depends_on:
         - keycloak
-        - nginx
         networks:
         - keycloak-net
 
