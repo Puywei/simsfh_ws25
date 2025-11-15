@@ -95,6 +95,25 @@ namespace sims.Controllers
          
                      return Ok(new { userId, email, role });
                  }
+        //  Get all users endpoint
+        [HttpGet("getAll")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAll()
+        {
+            var users = await _db.Users
+                .Include(u => u.Role)
+                .Select(u => new
+                {
+                    uid = u.Uid,
+                    firstname = u.Firstname,
+                    lastname = u.Lastname,
+                    email = u.Email,
+                    role = u.Role.RoleName
+                })
+                .ToListAsync();
+
+            return Ok(users);
+        }
     }
 
     // DTOs
