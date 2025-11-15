@@ -1,50 +1,62 @@
 ﻿using StackExchange.Redis;
 using sims_nosql_api.Database;
+using System.Text.Json;
 
 namespace sims_nosql_api.Services
 {
     public class RedisService
     {
-        // Interface zur Datenbank 
         private readonly IDatabase _db;
+        private readonly IConnectionMultiplexer _connection;
 
-        public RedisService()
+        public RedisService(RedisConnection redisConnection)
         {
-            // Verwendet die bestehende Redis-Verbindung aus deiner RedisConnection-Klasse
-            _db = RedisConnection.Connection.GetDatabase();
+            _connection = redisConnection.Connection;
+            _db = _connection.GetDatabase();
         }
 
-        // speichert einen Wert // PRÜFUNG AUF NULL und LÄNGE OFFEN
-        public async Task SetValueAsync(string key, string value)
+        // Log speichern
+        public async Task SaveLogAsync(LogEntry log)
         {
-            await _db.StringSetAsync(key, value);
+            string key = $"log:{log.LogId}";
+            string json = JsonSerializer.Serialize(log);
+
+            await _db.StringSetAsync(key, json);
         }
 
-        // Wert aus Redis lesen
-        public async Task<string?> GetValueAsync(string key)
+        // Einzelnes Log abrufen
+        public async Task<LogEntry?> GetLogAsync(int logId)
         {
+            string key = $"log:{logId}";
             var value = await _db.StringGetAsync(key);
-            return value.HasValue ? value.ToString() : null;
+
+            if (!value.HasValue)
+                return null;
+
+            return JsonSerializer.Deserialize<LogEntry>(value!);
         }
-    
 
-    // alle Daten gesamt abrufen
-public async Task<Dictionary<string, string>> GetAllValuesAsync()
+        // Alle Logs abrufen
+        public async Task<List<LogEntry>> GetAllLogsAsync()
         {
-            var server = RedisConnection.Connection.GetServer("redis", 6379);
-            var keys = server.Keys();
+            var server = _connection.GetServer("redis", 6379);
+            var keys = server.Keys(pattern: "log:*");
 
-            var result = new Dictionary<string, string>();
+            var list = new List<LogEntry>();
 
             foreach (var key in keys)
             {
-                string value = await _db.StringGetAsync(key);
-                result.Add(key, value);
+                var value = await _db.StringGetAsync(key);
+
+                if (value.HasValue)
+                {
+                    var log = JsonSerializer.Deserialize<LogEntry>(value!);
+                    if (log != null)
+                        list.Add(log);
+                }
             }
 
-            return result;
+            return list;
         }
-    } 
+    }
 }
-    
-
