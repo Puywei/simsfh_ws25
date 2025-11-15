@@ -27,15 +27,15 @@ public class CustomerEndpointsTest
                 builder.ConfigureServices(services =>
                 {
                     var descriptor =
-                        services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<ApiDbContext>));
+                        services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<MsSqlDbContext>));
                     if (descriptor != null)
                         services.Remove(descriptor);
 
-                    services.AddDbContext<ApiDbContext>(options => { options.UseInMemoryDatabase("TestDb"); });
+                    services.AddDbContext<MsSqlDbContext>(options => { options.UseInMemoryDatabase("TestDb"); });
 
                     var sp = services.BuildServiceProvider();
                     using var scope = sp.CreateScope();
-                    var db = scope.ServiceProvider.GetRequiredService<ApiDbContext>();
+                    var db = scope.ServiceProvider.GetRequiredService<MsSqlDbContext>();
                     db.Database.EnsureDeleted();
                     db.Database.EnsureCreated();
 
@@ -93,11 +93,74 @@ public class CustomerEndpointsTest
         public async Task CreateCustomer_ReturnsOk()
         {
             HttpClient client = _factory.CreateClient();
-            
-            string id = "C-1009";
-            HttpResponseMessage response = await client.PostAsync($"/api/v1/customers/{id}");
 
-            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            Customer customer = new()
+            {
+                CompanyName = "Customer KG12",
+                Email = "customer@cus.at"
+            };
+            HttpResponseMessage response = await client.PostAsJsonAsync($"/api/v1/customers/", customer);
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            
+            Customer? newCustomer = await response.Content.ReadFromJsonAsync<Customer>();
+            
+            newCustomer.Should().NotBeNull();
+            newCustomer.CompanyName.Should().Be("Customer KG12");
+            newCustomer.Email.Should().Be("customer@cus.at");
+        }
+        
+        [Fact]
+        public async Task CreateCustomerWithId_ReturnsWithOtherIdOk()
+        {
+            HttpClient client = _factory.CreateClient();
+
+            Customer customer = new()
+            {
+                Id = "C-1000",
+                CompanyName = "Customer KG12",
+                Email = "customer@cus.at"
+            };
+            HttpResponseMessage response = await client.PostAsJsonAsync($"/api/v1/customers/", customer);
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            
+            Customer? newCustomer = await response.Content.ReadFromJsonAsync<Customer>();
+            
+            newCustomer.Should().NotBeNull();
+            newCustomer.Id.Should().NotBe("C-1000");
+            newCustomer.CompanyName.Should().Be("Customer KG12");
+            newCustomer.Email.Should().Be("customer@cus.at");
+        }
+        
+        [Fact]
+        public async Task UpdateCustomer_ReturnsOk()
+        {
+            HttpClient client = _factory.CreateClient();
+            
+            string customerToUpdate = "C-1000";
+
+            Customer customer = new Customer() { CompanyName = "Updated Customer KG12", Email = "update mailaddress" };
+            HttpResponseMessage response = await client.PutAsJsonAsync($"/api/v1/customers/{customerToUpdate}", customer);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            
+            Customer? newCustomer = await response.Content.ReadFromJsonAsync<Customer>();
+            
+            newCustomer.Should().NotBeNull();
+            newCustomer.Id.Should().Be("C-1000");
+            newCustomer.CompanyName.Should().Be("Updated Customer KG12");
+            newCustomer.Email.Should().Be("update mailaddress");
+        }
+        
+        [Fact]
+        public async Task UpdateCustomerWrongId_ReturnsBadRequest()
+        {
+            HttpClient client = _factory.CreateClient();
+            
+            string customerToUpdate = "C-1000";
+
+            Customer customer = new Customer(); // { CompanyName = "Updated Customer KG12", Email = "update mailaddress" };
+            
+            HttpResponseMessage response = await client.PutAsJsonAsync($"/api/v1/customers/{customerToUpdate}", customer);
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
     }
 }

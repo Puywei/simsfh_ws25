@@ -10,7 +10,7 @@ public static class IncidentEndpoints
     public static void MapIncidentEndpoints(this IEndpointRouteBuilder routes )
     {
         RouteGroupBuilder incidents = routes.MapGroup("/api/v1/incidents");
-        incidents.MapGet("", async (ApiDbContext dbContext) =>
+        incidents.MapGet("", async (MsSqlDbContext dbContext) =>
             {
                 List<Incident> incidentList = await dbContext.Incidents.ToListAsync();
                 return Results.Ok(incidentList);
@@ -18,7 +18,7 @@ public static class IncidentEndpoints
             .WithName("GetAllIncidents")
             .WithDescription("Returns all incidents");
 
-        incidents.MapGet("/{id}", async (ApiDbContext dbContext, string id) =>
+        incidents.MapGet("/{id}", async (MsSqlDbContext dbContext, string id) =>
             {
                 Incident? incident = await dbContext.Incidents.FirstOrDefaultAsync(inc => inc.Id == id);
                 return Results.Ok(incident);
@@ -26,7 +26,7 @@ public static class IncidentEndpoints
             .WithName("GetIncidentById")
             .WithDescription("Returns a incident by id");
 
-        incidents.MapDelete("/{id}", async (ApiDbContext dbContext, string id) =>
+        incidents.MapDelete("/{id}", async (MsSqlDbContext dbContext, string id) =>
             {
                 Incident? incident = await dbContext.Incidents.FirstOrDefaultAsync(inc => inc.Id == id);
                 if (incident is null)
@@ -39,7 +39,7 @@ public static class IncidentEndpoints
             .WithName("DeleteIncident")
             .WithDescription("Deletes a Incident");
 
-        incidents.MapPost("", async (ApiDbContext dbContext, Incident newIncident) =>
+        incidents.MapPost("", async (MsSqlDbContext dbContext, Incident newIncident, RedisLogService logService) =>
             {
                 if(newIncident is null ||  newIncident.CustomerId == null)
                     return Results.BadRequest("Invalid request body");
@@ -52,13 +52,15 @@ public static class IncidentEndpoints
                 
                 dbContext.Incidents.Add(newIncident);
                 await dbContext.SaveChangesAsync();
+                await logService.LogAsync($"[{DateTime.Now}]Create incident {newIncident.Id}, incidentId: {newIncident.UUId}");
+
                 
                 return Results.Created($"/{newIncident.Id}", newIncident);
             })
             .WithName("CreateIncident")
             .WithDescription("Create a new Incident");
         
-        incidents.MapPut("/{existingIncidentIncidentId}", async (ApiDbContext dbContext, string existingIncidentIncidentId, Incident updatedIncident) =>
+        incidents.MapPut("/{existingIncidentIncidentId}", async (MsSqlDbContext dbContext, string existingIncidentIncidentId, Incident updatedIncident) =>
             {
                 if (updatedIncident == null)
                     return Results.BadRequest("Invalid request body");

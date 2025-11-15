@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BackendApi.Migrations
 {
-    [DbContext(typeof(ApiDbContext))]
+    [DbContext(typeof(MsSqlDbContext))]
     partial class ApiDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

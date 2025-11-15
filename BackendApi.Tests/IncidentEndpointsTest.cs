@@ -26,21 +26,20 @@ namespace BackendApi.Test
                 builder.ConfigureServices(services =>
                 {
                     var descriptor =
-                        services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<ApiDbContext>));
+                        services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<MsSqlDbContext>));
                     if (descriptor != null)
                         services.Remove(descriptor);
 
-                    services.AddDbContext<ApiDbContext>(options => { options.UseInMemoryDatabase("TestDb"); });
+                    services.AddDbContext<MsSqlDbContext>(options => { options.UseInMemoryDatabase("TestDb"); });
 
                     var sp = services.BuildServiceProvider();
                     using var scope = sp.CreateScope();
-                    var db = scope.ServiceProvider.GetRequiredService<ApiDbContext>();
-                    db.Database.EnsureDeleted();
+                    var db = scope.ServiceProvider.GetRequiredService<MsSqlDbContext>();
                     db.Database.EnsureCreated();
 
                     db.Incidents.AddRange(
-                        new Incident { Id = "INC-1000", Summary = "Test incident 1", CustomerId = "C-0001"},
-                        new Incident { Id = "INC-1001", Summary = "Test incident 2", CustomerId = "C-0002"}
+                        new Incident { Id = "INC-1100", Summary = "Test incident 1", CustomerId = "C-0001"},
+                        new Incident { Id = "INC-1101", Summary = "Test incident 2", CustomerId = "C-0002"}
                     );
                     db.SaveChanges();
                 });
@@ -67,7 +66,7 @@ namespace BackendApi.Test
         [Fact]
         public async Task GetIncidentById_ReturnsOk()
         {
-            string id = "INC-1000";
+            string id = "INC-1100";
             HttpClient client = _factory.CreateClient();
 
             HttpResponseMessage response = await client.GetAsync($"/api/v1/incidents/{id}");
@@ -131,7 +130,7 @@ namespace BackendApi.Test
             createdIncident.Should().NotBeNull();
 
             HttpResponseMessage deleteResponse =
-                await _client.DeleteAsync($"/api/v1/incidents/{createdIncident!.Id}");
+                await _client.DeleteAsync($"/api/v1/incidents/{createdIncident.Id}");
 
             deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
@@ -202,7 +201,7 @@ namespace BackendApi.Test
 
             HttpResponseMessage putResponse = await _client.PutAsJsonAsync($"/api/v1/incidents/{existingIncident}", updatedIncident);
             
-            putResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            putResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
     }
 }

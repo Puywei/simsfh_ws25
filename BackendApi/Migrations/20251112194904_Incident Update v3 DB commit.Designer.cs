@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BackendApi.Migrations
 {
-    [DbContext(typeof(ApiDbContext))]
+    [DbContext(typeof(MsSqlDbContext))]
     [Migration("20251112194904_Incident Update v3 DB commit")]
     partial class IncidentUpdatev3DBcommit
     {

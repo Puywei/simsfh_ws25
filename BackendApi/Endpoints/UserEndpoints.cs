@@ -10,7 +10,7 @@ public static class UserEndpoints
 {
     public static void MapUserEndpoints(this WebApplication app)
     {
-        app.MapGet("/api/incidents", async (ApiDbContext dbContext) =>
+        app.MapGet("/api/incidents", async (MsSqlDbContext dbContext) =>
             {
                 List<Incident> incidents = await dbContext.Incidents.ToListAsync();
                 return Results.Ok(incidents);
@@ -18,7 +18,7 @@ public static class UserEndpoints
             .WithName("GetAllIncidents")
             .WithDescription("Returns all incidents");
 
-        app.MapGet("/api/incidents/{id}", async (ApiDbContext dbContext, string id) =>
+        app.MapGet("/api/incidents/{id}", async (MsSqlDbContext dbContext, string id) =>
             {
                 Incident incident = await dbContext.Incidents.FirstOrDefaultAsync(inc => inc.Id == id);
                 return Results.Ok(incident);
@@ -26,7 +26,7 @@ public static class UserEndpoints
             .WithName("GetIncidentById")
             .WithDescription("Returns a incident by id");
 
-        app.MapDelete("/api/incidents/{id}", async (ApiDbContext dbContext, string id) =>
+        app.MapDelete("/api/incidents/{id}", async (MsSqlDbContext dbContext, string id) =>
             {
                 Incident incident = await dbContext.Incidents.FirstOrDefaultAsync(inc => inc.Id == id);
                 if (incident is null)
@@ -39,7 +39,7 @@ public static class UserEndpoints
             .WithName("DeleteIncident")
             .WithDescription("Deletes a Incident");
 
-        app.MapPost("/api/incidents", async (ApiDbContext dbContext, Incident newIncident) =>
+        app.MapPost("/api/incidents", async (MsSqlDbContext dbContext, Incident newIncident) =>
             {
                 // Überschreibt die Settings egal was man geschickt bekommt
                 newIncident.Id = GenerateIdService.IncidentId(dbContext);
@@ -55,7 +55,7 @@ public static class UserEndpoints
             .WithName("CreateIncident")
             .WithDescription("Create a new Incident");
         
-        app.MapPut("/api/incidents/{existingIncidentId}", async (ApiDbContext dbContext, string existingIncidentId, Incident updatedIncident) =>
+        app.MapPut("/api/incidents/{existingIncidentId}", async (MsSqlDbContext dbContext, string existingIncidentId, Incident updatedIncident) =>
             {
                 if (updatedIncident == null)
                     return Results.BadRequest("Invalid request body");

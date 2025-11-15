@@ -11,7 +11,7 @@ public static class CustomerEndpoints
      public static void MapCustomerEndpoints(this IEndpointRouteBuilder routes)
     {
         RouteGroupBuilder customers = routes.MapGroup("/api/v1/customers");
-        customers.MapGet("", async (ApiDbContext dbContext) =>
+        customers.MapGet("", async (MsSqlDbContext dbContext) =>
             {
                 List<Customer> customers = await dbContext.Customers.ToListAsync();
                 return Results.Ok(customers);
@@ -19,7 +19,7 @@ public static class CustomerEndpoints
             .WithName("GetCustomers")
             .WithDescription("Returns all customers");
 
-        customers.MapGet("/{id}", async (ApiDbContext dbContext, string id) =>
+        customers.MapGet("/{id}", async (MsSqlDbContext dbContext, string id) =>
             {
                 Customer? customer = await dbContext.Customers.FirstOrDefaultAsync(c => c.Id == id);
                 if (customer is null)
@@ -30,7 +30,7 @@ public static class CustomerEndpoints
             .WithName("GetCustomerById")
             .WithDescription("Returns a customer by id");
 
-        customers.MapDelete("/{id}", async (ApiDbContext dbContext, string id) =>
+        customers.MapDelete("/{id}", async (MsSqlDbContext dbContext, string id, RedisLogService logService) =>
             {
                 Customer? customer = await dbContext.Customers.FirstOrDefaultAsync(c => c.Id == id);
                 if (customer is null)
@@ -38,12 +38,14 @@ public static class CustomerEndpoints
 
                 dbContext.Customers.Remove(customer);
                 await dbContext.SaveChangesAsync();
+                await logService.LogAsync($"[{DateTime.Now}]Customer deleted: {customer.Id}, CustomerId: {customer.UUId}, CustomerId: {customer.CompanyName}");
+
                 return Results.NoContent();
             })
             .WithName("DeleteCustomer")
             .WithDescription("Deletes a Customer");
 
-        customers.MapPost("", async (ApiDbContext dbContext, Customer newCustomer) =>
+        customers.MapPost("", async (MsSqlDbContext dbContext, Customer newCustomer, RedisLogService logService) =>
             {
                 if (newCustomer == null || 
                     newCustomer.CompanyName == null ||
@@ -57,23 +59,22 @@ public static class CustomerEndpoints
                 newCustomer.UUId = Guid.NewGuid();
                 newCustomer.CreateDate = DateTime.Now;
                 newCustomer.ChangeDate = DateTime.Now;
-                
                 dbContext.Customers.Add(newCustomer);
+                
                 await dbContext.SaveChangesAsync();
+                await logService.LogAsync($"[{DateTime.Now}]Create customer {newCustomer.Id}, CustomerId: {newCustomer.UUId},  Company: {newCustomer.CompanyName}");
                 
                 return Results.Created($"/api/incidents/{newCustomer.Id}", newCustomer);
             })
             .WithName("CreateCustomer")
             .WithDescription("Create a new Customer");
         
-        customers.MapPut("/{existingIncidentId}", async (ApiDbContext dbContext, string existingCustomerId, Customer updatedCustomer) =>
+        customers.MapPut("/{existingCustomerId}", async (MsSqlDbContext dbContext, string existingCustomerId, Customer updatedCustomer, RedisLogService logService) =>
             {
-                if (existingCustomerId == null || updatedCustomer == null)
+                if (!dbContext.Customers.Any(c => c.Id == existingCustomerId) || updatedCustomer.CompanyName is null || updatedCustomer.Email is null || updatedCustomer.CompanyName == "" || updatedCustomer.Email == "")
                     return Results.BadRequest("Invalid request body");
-
-                Customer existingCustomer = await dbContext.Customers.FirstOrDefaultAsync(c => c.Id == existingCustomerId);
-                if (existingCustomerId == null)
-                    return Results.NotFound($"Incident with id {existingCustomerId} does not exist");
+                
+                Customer? existingCustomer = await dbContext.Customers.FirstOrDefaultAsync(c => c.Id == existingCustomerId);
                 
                 existingCustomer.CompanyName = updatedCustomer.CompanyName;
                 existingCustomer.Email = updatedCustomer.Email;
@@ -87,6 +88,8 @@ public static class CustomerEndpoints
                 existingCustomer.ChangeDate = DateTime.Now;
                 
                 await dbContext.SaveChangesAsync();
+                await logService.LogAsync($"[{DateTime.Now}]Updated customer {existingCustomer.Id}, CustomerId: {existingCustomer.UUId},  Company: {existingCustomer.CompanyName}");
+
                 
                 return Results.Ok(existingCustomer);
             })
