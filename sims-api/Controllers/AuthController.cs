@@ -6,6 +6,8 @@ using System.Security.Claims;
 using System.Text;
 using sims.Data;
 using sims.Models;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace sims.Controllers
 {
@@ -22,9 +24,10 @@ namespace sims.Controllers
             _config = config;
         }
 
-        // Register a new user
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
+        // Create a new user
+        [HttpPost("create")]
+        [Authorize]
+        public async Task<IActionResult> Register([FromBody] CreateUserRequest request)
         {
             if (await _db.Users.AnyAsync(u => u.Email == request.Email))
                 return BadRequest("Email already exists.");
@@ -41,7 +44,7 @@ namespace sims.Controllers
             _db.Users.Add(user);
             await _db.SaveChangesAsync();
 
-            return Ok(new { message = "User registered successfully.", uid = user.Uid });
+            return Ok(new { message = "User successfully created.", uid = user.Uid });
         }
 
         // Login and here is also JWT Token created
@@ -86,10 +89,64 @@ namespace sims.Controllers
                 role = user.Role.RoleName
             });
         }
+        
+        // Modify User API
+        [HttpPut("modify")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ModifyUser(int uid, [FromBody] ModifyUserRequest request)
+        {
+            var user = await _db.Users.FirstOrDefaultAsync(u => u.Uid == uid);
+            if (user == null)
+                return NotFound("User not found.");
+
+            
+            if (!string.IsNullOrEmpty(request.Firstname))
+                user.Firstname = request.Firstname;
+
+            if (!string.IsNullOrEmpty(request.Lastname))
+                user.Lastname = request.Lastname;
+
+            if (!string.IsNullOrEmpty(request.Email))
+            {
+             
+                if (await _db.Users.AnyAsync(u => u.Email == request.Email && u.Uid != uid))
+                    return BadRequest("Email already exists.");
+                user.Email = request.Email;
+            }
+
+            if (request.RoleId.HasValue)
+                user.RoleId = request.RoleId.Value;
+
+            if (!string.IsNullOrEmpty(request.Password))
+                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+
+            await _db.SaveChangesAsync();
+
+            return Ok(new { message = "User successfully updated.", uid = user.Uid });
+        }
+        
+        //Delete User Endpoint
+        [HttpDelete("delete")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteUser(int uid)
+        {
+            var user = await _db.Users.FirstOrDefaultAsync(u => u.Uid == uid);
+            if (user == null)
+                return NotFound(new { message = "User not found."});
+            
+            _db.Users.Remove(user);
+
+            await _db.SaveChangesAsync();
+
+            return Ok(new { message = "User successfully updated.", uid = user.Uid });
+        }
+        
+        
+        
     }
 
     // DTOs
-    public class RegisterRequest
+    public class CreateUserRequest
     {
         public string Firstname { get; set; }
         public string Lastname { get; set; }
@@ -103,4 +160,16 @@ namespace sims.Controllers
         public string Email { get; set; }
         public string Password { get; set; }
     }
+
+    public class ModifyUserRequest
+    {
+        public string? Firstname { get; set; }
+        public string? Lastname { get; set; }
+        public string? Email { get; set; }
+        public int? RoleId { get; set; }
+        public string? Password { get; set; }
+    }
+    
+    
+    
 }
