@@ -3,13 +3,10 @@
 @using System.Text.Json; 
 @using sims_web_app.Data.Model
 
-
-
 <PageTitle>Incidents Overview</PageTitle>
 
 <MudText Typo="Typo.h3" GutterBottom="true">Incidents Overview</MudText>
 <MudText Typo="Typo.body1" Class="mb-8">Security Incidents</MudText>
-
 
 <NavLink href="/New_Ticket"><MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary">Create new Ticket</MudButton></NavLink>
 
@@ -49,8 +46,6 @@ else
 
 }
 
-
-
 @code {
 
     public bool Basic_CheckBox1 { get; set; } = true;
@@ -58,7 +53,6 @@ else
 
     private const string ApiBaseUrl = "hier URL";
     private const string IncidentsEndpoint = "/api/incidents  Path?????";
-
 
     protected override async Task OnInitializedAsync()
     {
@@ -84,27 +78,13 @@ else
                 incidents = new List<IncidentsOverview>();
                 return;
             }
-
-
-
-
         }
         */
-
-        
-
-        
-
-
     }
-
     private async Task UpdateRecord(IncidentsOverview record, bool ischecked)
     {
         record.selected = ischecked;
-
     }
-
-    
 }
 
 

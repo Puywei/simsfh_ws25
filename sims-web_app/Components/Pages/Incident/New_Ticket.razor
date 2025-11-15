@@ -25,7 +25,7 @@
             </MudField>
         </MudItem>
     </MudGrid>
-    <MudTextField T="string" Label="Description" Variant="Variant.Outlined" bind-Value="newIncident.Description" Lines="10" />
+    <MudTextField T="string" Label="Description" Variant="Variant.Outlined" @bind-Value="newIncident.Description" Lines="10" />
     <MudButton Variant="Variant.Filled" ButtonType="ButtonType.Submit" OnClick="(() => SubmitIncident())" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Medium">Save</MudButton>
 </MudForm>
 

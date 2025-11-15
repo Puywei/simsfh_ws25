@@ -8,33 +8,31 @@
 
 <PageTitle>Add User</PageTitle>
 
-<MudText Typo="Typo.h3" GutterBottom="true">Add New User</MudText>
+<MudForm @ref="form" OnValidSubmit="SubmitUser">
+    <MudText Typo="Typo.h3" GutterBottom="true">Add New User</MudText>
+    <MudText Typo="Typo.body1" Class="mb-8">You can add a new user here.</MudText>
+    <MudTextField @bind-Value="newUser.FirstName" Label="First Name" Variant="Variant.Outlined"></MudTextField>
+    <MudTextField @bind-Value="newUser.LastName" Label="Last Name" Variant="Variant.Outlined"></MudTextField>
+    <MudTextField @bind-Value="newUser.Email" Label="Email Address" Variant="Variant.Outlined"></MudTextField>
 
-<MudText Typo="Typo.body1" Class="mb-8">You can add a new user here.</MudText>
+    <div class="d-flex">
+        <MudTextField @bind-Value="newUser.Password" Label="Password" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ButtonTestclick" AdornmentAriaLabel="Show Password" />
+    </div>
 
-<MudTextField @bind-Value="FirstName" Label="First Name" Variant="Variant.Outlined"></MudTextField>
-
-<MudTextField @bind-Value="LastName" Label="Last Name" Variant="Variant.Outlined"></MudTextField>
-
-<MudTextField @bind-Value="Email" Label="Email Address" Variant="Variant.Outlined"></MudTextField>
-
-<div class="d-flex">
-    <MudTextField @bind-Value="Password" Label="Password" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ButtonTestclick" AdornmentAriaLabel="Show Password" />
-</div>
-
-<MudGrid>
-    <MudItem xs="12">
-        <MudField Label="Select a Role" Variant="Variant.Outlined" InnerPadding="false">
-            <MudRadioGroup T="string">
-                <MudRadio T="string">Admin</MudRadio>
-                <MudRadio T="string">User</MudRadio>
+    <MudGrid>
+        <MudItem xs="12">
+            <MudField Label="Select a Role" Variant="Variant.Outlined" InnerPadding="false">
+                <MudRadioGroup T="string" @bind-Value="newUser.Role" Label="Role">
+                    <MudRadio T="string">Admin</MudRadio>
+                    <MudRadio T="string">User</MudRadio>
                 
-            </MudRadioGroup>
-        </MudField>
-    </MudItem>
-</MudGrid>
+                </MudRadioGroup>
+            </MudField>
+        </MudItem>
+    </MudGrid>
 
-<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Medium">Save</MudButton>
+    <MudButton Variant="Variant.Filled" ButtonType="ButtonType.Submit" OnClick="(() => SubmitUser())" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Medium">Save</MudButton>
+</MudForm>
 
 @code {
 
@@ -43,15 +41,12 @@
 
     private async Task SubmitUser()
     {
+        //TODO
         await BackendApiHandler.CreateUser(newUser);
     }
 
-
-
     public string FirstName { get; set; }
-
     public string LastName { get; set; }
-
     public string Email { get; set; }
 
     //Password
