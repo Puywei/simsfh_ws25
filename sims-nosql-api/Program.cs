@@ -16,48 +16,38 @@ namespace sims_nosql_api
             builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
             // Controller aktivieren
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+                .ConfigureApiBehaviorOptions(options =>
+                {
+                    options.SuppressModelStateInvalidFilter = false;
+                });
 
             // Swagger aktivieren
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SupportNonNullableReferenceTypes();
+            });
 
-            // Dependency Injection registrieren
+            // Dependency Injection für Redis
             builder.Services.AddSingleton<RedisConnection>();
             builder.Services.AddSingleton<RedisService>();
 
             var app = builder.Build();
 
-            // Swagger im Browser anzeigen
-            if (app.Environment.IsDevelopment())
+            // Swagger UI
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
             {
-                app.UseSwagger();
-                app.UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "sims-nosql-api v1");
-                    c.RoutePrefix = string.Empty;
-                });
-            }
-            else
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "sims-nosql-api v1");
-                    c.RoutePrefix = string.Empty;
-                });
-            }
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "sims-nosql-api v1");
+                c.RoutePrefix = string.Empty;
+            });
 
-            // HTTPS-Weiterleitung
+            // HTTPS
             app.UseHttpsRedirection();
-
-            // Authorization Middleware (optional)
             app.UseAuthorization();
 
-            // Controller registrieren
             app.MapControllers();
-
-            // Anwendung starten
             app.Run();
         }
     }

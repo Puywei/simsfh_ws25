@@ -20,12 +20,14 @@ namespace sims_nosql_api.Controller
         [HttpPost("log")]
         public async Task<IActionResult> SaveLog([FromBody] LogEntry log)
         {
-            if (log == null)
-                return BadRequest("Ungültige Log-Daten.");
+            // automatische Validierung prüfen
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
             await _redisService.SaveLogAsync(log);
             return Ok($"Log-Eintrag {log.LogId} gespeichert.");
         }
+
 
         // GET: /api/Redis/log/{id} -- Einzelnes Log abrufen
         [HttpGet("log/{id}")]
