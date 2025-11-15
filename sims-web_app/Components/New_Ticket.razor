@@ -1,0 +1,41 @@
+﻿@page "/New_Ticket"
+@using sims_web_app.Data.Model
+@using sims_web_app.Data.Model.Enum
+@using sims_web_app.Services
+
+<PageTitle>New Ticket</PageTitle>
+
+<MudForm @ref="form" OnValidSubmit="SubmitIncident">
+    <MudText Typo="Typo.h3" GutterBottom="true">Create New Ticket</MudText>
+    <MudText Typo="Typo.body1" Class="mb-8">You can create a new incident Ticket here.</MudText>
+    <MudTextField @bind-Value="newIncident.Summary" Label="Subject" Variant="Variant.Outlined"></MudTextField>
+    <MudTextField @bind-Value="newIncident.CustomerId" Label="Customer ID" Variant="Variant.Outlined"></MudTextField>
+
+    <MudSelect @bind-Value="newIncident.AssignedPerson" Label="Assigned Person" FullWidth="true" Variant="Variant.Outlined" Clearable>
+    </MudSelect>
+    <MudGrid>
+        <MudItem xs="12">
+            <MudField Label="Severity" Variant="Variant.Outlined" InnerPadding="false">
+                <MudRadioGroup T="IncidentSeverity?" @bind-Value="newIncident.Severity" Label="Severity">
+                    <MudRadio T="IncidentSeverity?" Value="IncidentSeverity.Low">Low</MudRadio>
+                    <MudRadio T="IncidentSeverity?" Value="IncidentSeverity.Medium">Medium</MudRadio>
+                    <MudRadio T="IncidentSeverity?" Value="IncidentSeverity.High">High</MudRadio>
+                    <MudRadio T="IncidentSeverity?" Value="IncidentSeverity.Critical">Critical</MudRadio>
+                </MudRadioGroup>
+            </MudField>
+        </MudItem>
+    </MudGrid>
+    <MudTextField T="string" Label="Description" Variant="Variant.Outlined" bind-Value="newIncident.Description" Lines="10" />
+    <MudButton Variant="Variant.Filled" ButtonType="ButtonType.Submit" OnClick="(() => SubmitIncident())" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Medium">Save</MudButton>
+</MudForm>
+
+
+@code {
+    private MudForm form;
+    private Incident newIncident = new Incident();
+
+    private async Task SubmitIncident()
+    {
+        await IncidentService.CreateIncident(newIncident);
+    }
+}
