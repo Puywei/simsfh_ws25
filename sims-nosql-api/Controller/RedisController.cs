@@ -3,49 +3,48 @@ using sims_nosql_api.Services;
 
 namespace sims_nosql_api.Controller
 {
-    // Web-APi-Controller; Basis-URL
+    // API-Endpunkte für das Loggen in Redis
     [ApiController]
     [Route("api/[controller]")]
     public class RedisController : ControllerBase
     {
-        private readonly RedisService _redisService; // Zugriff
+        private readonly RedisService _redisService;
 
-        // Konstruktor: Erstellt eine Instanz der RedisService-Klasse
-        public RedisController()
+        // Dependency Injection: RedisService wird von außen bereitgestellt
+        public RedisController(RedisService redisService)
         {
-            _redisService = new RedisService();
+            _redisService = redisService;
         }
 
-        // POST
-        // Speichert einen Wert in Redis unter dem angegebenen Schlüssel
-        [HttpPost("set")]
-        public async Task<IActionResult> SetValue(string key, string value)
+        // POST: /api/Redis/log -- Log speichern
+        [HttpPost("log")]
+        public async Task<IActionResult> SaveLog([FromBody] LogEntry log)
         {
-            await _redisService.SetValueAsync(key, value);
-            return Ok($"Gespeichert: {key} = {value}");
+            if (log == null)
+                return BadRequest("Ungültige Log-Daten.");
+
+            await _redisService.SaveLogAsync(log);
+            return Ok($"Log-Eintrag {log.LogId} gespeichert.");
         }
 
-        // GET
-        // Liest den Wert aus Redis, der zum angegebenen Schlüssel gehört
-        [HttpGet("get")]
-        public async Task<IActionResult> GetValue(string key)
+        // GET: /api/Redis/log/{id} -- Einzelnes Log abrufen
+        [HttpGet("log/{id}")]
+        public async Task<IActionResult> GetLog(int id)
         {
-            var value = await _redisService.GetValueAsync(key);
+            var log = await _redisService.GetLogAsync(id);
 
-            if (value == null)
-                return NotFound($"Kein Wert für den Schlüssel '{key}' gefunden.");
+            if (log == null)
+                return NotFound($"Kein Log mit der ID {id} gefunden.");
 
-            return Ok($"{key} = {value}");
+            return Ok(log);
         }
 
-        // GET
-        // Gibt alle gespeicherten Schlüssel und Werte zurück
-        [HttpGet("all")]
-        public async Task<IActionResult> GetAll()
+        // GET: /api/Redis/logs -- Alle Logs abrufen
+        [HttpGet("logs")]
+        public async Task<IActionResult> GetAllLogs()
         {
-            var allValues = await _redisService.GetAllValuesAsync();
-            return Ok(allValues);
+            var logs = await _redisService.GetAllLogsAsync();
+            return Ok(logs);
         }
-
     }
 }

@@ -1,41 +1,56 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using sims_nosql_api.Services;
 
 namespace sims_nosql_api
 {
     public class Program
     {
-        // Startskript Web-API
         public static void Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args); // Start WebApp
+            var builder = WebApplication.CreateBuilder(args);
 
-            // 
+            // Controller aktivieren
             builder.Services.AddControllers();
 
-            // Swagger Testseite einschalten
+            // Swagger aktivieren
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            // Dependency Injection für RedisService
+            builder.Services.AddSingleton<RedisService>();
 
             var app = builder.Build();
 
             // Swagger im Browser anzeigen
-           
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
+            if (app.Environment.IsDevelopment())
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "sims-nosql-api v1");
-                c.RoutePrefix = string.Empty; // Swagger direkt unter http.. aufrufen
-            });
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "sims-nosql-api v1");
+                    c.RoutePrefix = string.Empty; // Swagger direkt erreichbar
+                });
+            }
+            else
+            {
+                // Auch im Produktivmodus aktivierbar, falls gewünscht
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "sims-nosql-api v1");
+                    c.RoutePrefix = string.Empty;
+                });
+            }
 
-
-
-            // https vorbereitung
+            // HTTPS-Weiterleitung
             app.UseHttpsRedirection();
+
+            // Authorization Middleware (optional)
             app.UseAuthorization();
 
-            // Controller aktivieren
+            // API-Controller registrieren
             app.MapControllers();
 
             // Anwendung starten
