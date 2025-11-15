@@ -1,26 +1,27 @@
 ﻿using StackExchange.Redis;
 using sims_nosql_api.Database;
 using System.Text.Json;
-using sims_nosql_api.Services;
 
 namespace sims_nosql_api.Services
 {
     public class RedisService
     {
         private readonly IDatabase _db;
+        private readonly IConnectionMultiplexer _connection;
 
-        public RedisService()
+        public RedisService(RedisConnection redisConnection)
         {
-            _db = RedisConnection.Connection.GetDatabase();
+            _connection = redisConnection.Connection;
+            _db = _connection.GetDatabase();
         }
 
-        // Log-Eintrag speichern
+        // Log speichern
         public async Task SaveLogAsync(LogEntry log)
         {
             string key = $"log:{log.LogId}";
-            string jsonData = JsonSerializer.Serialize(log);
+            string json = JsonSerializer.Serialize(log);
 
-            await _db.StringSetAsync(key, jsonData);
+            await _db.StringSetAsync(key, json);
         }
 
         // Einzelnes Log abrufen
@@ -38,10 +39,10 @@ namespace sims_nosql_api.Services
         // Alle Logs abrufen
         public async Task<List<LogEntry>> GetAllLogsAsync()
         {
-            var server = RedisConnection.Connection.GetServer("redis", 6379);
+            var server = _connection.GetServer("redis", 6379);
             var keys = server.Keys(pattern: "log:*");
 
-            var result = new List<LogEntry>();
+            var list = new List<LogEntry>();
 
             foreach (var key in keys)
             {
@@ -51,11 +52,11 @@ namespace sims_nosql_api.Services
                 {
                     var log = JsonSerializer.Deserialize<LogEntry>(value!);
                     if (log != null)
-                        result.Add(log);
+                        list.Add(log);
                 }
             }
 
-            return result;
+            return list;
         }
     }
 }
