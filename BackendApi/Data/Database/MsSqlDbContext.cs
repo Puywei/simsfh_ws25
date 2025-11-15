@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BackendApi.Data.Database;
 
-public class ApiDbContext : DbContext
+public class MsSqlDbContext : DbContext
 {
     private IConfiguration Configuration { get; }
     
-    public ApiDbContext(IConfiguration configuration)
+    public MsSqlDbContext(IConfiguration configuration)
     {
         Configuration = configuration;
     }

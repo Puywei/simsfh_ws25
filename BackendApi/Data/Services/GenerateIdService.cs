@@ -6,7 +6,7 @@ namespace BackendApi.Data.Services;
 
 public static class GenerateIdService
 {
-    public static string IncidentId(ApiDbContext dbContext)
+    public static string IncidentId(MsSqlDbContext dbContext)
     {
         Incident? lastIncident = dbContext.Incidents.OrderByDescending(inc => inc.Id).FirstOrDefault();
 
@@ -24,7 +24,7 @@ public static class GenerateIdService
         return $"INC-{newIncidentNr:D4}";
     }
     
-    public static string CustomerId(ApiDbContext dbContext)
+    public static string CustomerId(MsSqlDbContext dbContext)
     {
         Customer? lastCustomer = dbContext.Customers.OrderByDescending(c => c.Id).FirstOrDefault();
 

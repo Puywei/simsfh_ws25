@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BackendApi.Migrations
 {
-    [DbContext(typeof(ApiDbContext))]
+    [DbContext(typeof(MsSqlDbContext))]
     [Migration("20251115120732_add Customers")]
     partial class addCustomers
     {
