@@ -10,6 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SIMS_v2_konatsu.Client\SIMS_v2_konatsu.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.*" />
+    <PackageReference Include="RestSharp" Version="112.1.0" />
   </ItemGroup>
 
 </Project>

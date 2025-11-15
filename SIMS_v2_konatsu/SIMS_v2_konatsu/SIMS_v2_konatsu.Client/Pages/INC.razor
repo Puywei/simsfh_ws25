@@ -1,0 +1,83 @@
+﻿@page "/INC"
+
+<PageTitle>INC</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">INC</MudText>
+
+<MudText Typo="Typo.body1" Class="mb-8">You can modify the Ticket here.</MudText>
+
+<MudText Typo="Typo.h3" GutterBottom="true">Hier kommt incId!</MudText>
+
+<MudTextField @bind-Value="subject" Label="Subject" Variant="Variant.Outlined"></MudTextField>
+
+@code {
+    public string subject { get; set; }
+}
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudField Label="Severity" Variant="Variant.Outlined" InnerPadding="false">
+            <MudRadioGroup T="string">
+                <MudRadio T="string">low</MudRadio>
+                <MudRadio T="string">medium</MudRadio>
+                <MudRadio T="string">high</MudRadio>
+                <MudRadio T="string">critical</MudRadio>
+            </MudRadioGroup>
+        </MudField>
+    </MudItem>
+</MudGrid>
+
+
+<MudSelect @bind-Value="_selectedAssignedPerson" Label="Assigned Person" FullWidth="_fullWidth" FitContent="_fitContent" Variant="Variant.Outlined" Clearable>
+    @foreach (var author in _user)
+    {
+        <MudSelectItem Value="@author">@author</MudSelectItem>
+    }
+</MudSelect>
+
+@code {
+    private bool _fullWidth;
+    private bool _fitContent;
+    private string _selectedAssignedPerson;
+    private readonly string[] _user =
+    [
+        "Konatsu", "Max", "Philip", "Margarethe", "Gabriel",
+
+    ];
+}
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudField Label="Status" Variant="Variant.Outlined" InnerPadding="false">
+            <MudRadioGroup T="string">
+                <MudRadio T="string">open</MudRadio>
+                <MudRadio T="string">assigned</MudRadio>
+                <MudRadio T="string">on hold</MudRadio>
+                <MudRadio T="string">solved</MudRadio>
+            </MudRadioGroup>
+        </MudField>
+    </MudItem>
+</MudGrid>
+
+<MudTextField T="string" Label="Description" Variant="Variant.Outlined" Text="@description" Lines="10" />
+
+@code
+{
+    string description = "";
+}
+
+<MudDatePicker Label="Ticket created" @bind-Date="_createdDate" ReadOnly="true" />
+@code {
+    //TODO From Database!!!
+    private DateTime? _createdDate = DateTime.Today;
+}
+
+<MudDatePicker Label="Date to Resolve" Editable="true" @bind-Date="_solveDate" Placeholder="Date to resolve" />
+@code {
+    private DateTime? _solveDate = DateTime.Today;
+}
+
+
+<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Medium">Save</MudButton>
+
+<MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium" />

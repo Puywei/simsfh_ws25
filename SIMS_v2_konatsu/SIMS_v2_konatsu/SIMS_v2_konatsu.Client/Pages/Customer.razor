@@ -1,0 +1,45 @@
+﻿
+@page "/Customer"
+
+<PageTitle>Customer</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">// CustomerName!!!</MudText>
+
+<MudText Typo="Typo.body1" Class="mb-8">You can manage a customer here.</MudText>
+
+
+<MudTextField @bind-Value="CompanyName" Label="Company Name" Variant="Variant.Outlined"></MudTextField>
+@code {
+    public string CompanyName { get; set; }
+}
+<MudTextField @bind-Value="Email" Label="Email Address" Variant="Variant.Outlined"></MudTextField>
+@code {
+    public string Email { get; set; }
+}
+<MudTextField @bind-Value="PhoneNumber" Label="Phone Number" Variant="Variant.Outlined"></MudTextField>
+@code {
+    public string PhoneNumber { get; set; }
+}
+<MudTextField @bind-Value="Address" Label="Address" Variant="Variant.Outlined"></MudTextField>
+@code {
+    public string Address { get; set; }
+}
+<MudTextField @bind-Value="City" Label="City" Variant="Variant.Outlined"></MudTextField>
+@code {
+    public string City { get; set; }
+}
+<MudTextField @bind-Value="State" Label="State" Variant="Variant.Outlined"></MudTextField>
+@code {
+    public string State { get; set; }
+}
+<MudTextField @bind-Value="ZipCode" Label="Zip Code" Variant="Variant.Outlined"></MudTextField>
+@code {
+    public string ZipCode { get; set; }
+}
+<MudTextField @bind-Value="Country" Label="Country" Variant="Variant.Outlined"></MudTextField>
+@code {
+    public string Country { get; set; }
+}
+
+
+<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Medium">Save</MudButton>
