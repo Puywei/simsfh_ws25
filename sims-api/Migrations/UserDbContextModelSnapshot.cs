@@ -98,6 +98,35 @@ namespace sims.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Uid = 1,
+                            Email = "admin@admin.com",
+                            Firstname = "Default",
+                            Lastname = "Administrator",
+                            PasswordHash = "$2b$10$4Xt2A0AFTwspkNlpVPZNmuZJsydGp3pfLi2.YBoGxL3T7ShwCgZLS",
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Uid = 2,
+                            Email = "max@mustermann.com",
+                            Firstname = "Max",
+                            Lastname = "Mustermann",
+                            PasswordHash = "$2b$10$DHsquTrVit/1zvSpEr89Sepkj0KTKRtbxU7PJ0LejsRNUkAQPwYQy",
+                            RoleId = 2
+                        },
+                        new
+                        {
+                            Uid = 3,
+                            Email = "max@musterfrau.com",
+                            Firstname = "Maria",
+                            Lastname = "Musterfrau",
+                            PasswordHash = "$2b$10$qwiR8mn2wbeUxAH3SoMlo.oTtpObxaqPHhQsdp10kyF8TE7QdO9WS",
+                            RoleId = 2
+                        });
                 });
 
             modelBuilder.Entity("sims.Models.User", b =>
