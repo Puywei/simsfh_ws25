@@ -31,7 +31,7 @@ namespace sims.Controllers
                 Firstname = request.Firstname,
                 Lastname = request.Lastname,
                 Email = request.Email,
-                RoleId = request.RoleId,
+                RoleId = request.RoleId ?? 2,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password)
             };
 
@@ -122,7 +122,7 @@ namespace sims.Controllers
         public string Firstname { get; set; }
         public string Lastname { get; set; }
         public string Email { get; set; }
-        public int RoleId { get; set; }
+        public int? RoleId { get; set; }
         public string Password { get; set; }
     }
 
