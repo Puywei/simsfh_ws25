@@ -1,5 +1,10 @@
 ﻿
 @page "/Add_User"
+@using RestSharp;
+@using System.Text.Json;
+@using sims_web_app.Data.Model
+@using sims_web_app.Data.Model.Enum
+@using sims_web_app.Services
 
 <PageTitle>Add User</PageTitle>
 
@@ -7,23 +12,49 @@
 
 <MudText Typo="Typo.body1" Class="mb-8">You can add a new user here.</MudText>
 
-
 <MudTextField @bind-Value="FirstName" Label="First Name" Variant="Variant.Outlined"></MudTextField>
-@code {
-    public string FirstName { get; set; }
-}
+
 <MudTextField @bind-Value="LastName" Label="Last Name" Variant="Variant.Outlined"></MudTextField>
-@code {
-    public string LastName { get; set; }
-}
+
 <MudTextField @bind-Value="Email" Label="Email Address" Variant="Variant.Outlined"></MudTextField>
-@code {
-    public string Email { get; set; }
-}
+
 <div class="d-flex">
     <MudTextField @bind-Value="Password" Label="Password" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ButtonTestclick" AdornmentAriaLabel="Show Password" />
 </div>
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudField Label="Select a Role" Variant="Variant.Outlined" InnerPadding="false">
+            <MudRadioGroup T="string">
+                <MudRadio T="string">Admin</MudRadio>
+                <MudRadio T="string">User</MudRadio>
+                
+            </MudRadioGroup>
+        </MudField>
+    </MudItem>
+</MudGrid>
+
+<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Medium">Save</MudButton>
+
 @code {
+
+    private MudForm form;
+    private Data.Model.User newUser = new Data.Model.User();
+
+    private async Task SubmitUser()
+    {
+        await BackendApiHandler.CreateUser(newUser);
+    }
+
+
+
+    public string FirstName { get; set; }
+
+    public string LastName { get; set; }
+
+    public string Email { get; set; }
+
+    //Password
     public string Password { get; set; } = "";
 
     bool isShow;
@@ -46,20 +77,3 @@
         }
     }
 }
-
-
-<MudGrid>
-    <MudItem xs="12">
-        <MudField Label="Select a Role" Variant="Variant.Outlined" InnerPadding="false">
-            <MudRadioGroup T="string">
-                <MudRadio T="string">Admin</MudRadio>
-                <MudRadio T="string">User</MudRadio>
-                
-            </MudRadioGroup>
-        </MudField>
-    </MudItem>
-</MudGrid>
-
-
-
-<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Medium">Save</MudButton>

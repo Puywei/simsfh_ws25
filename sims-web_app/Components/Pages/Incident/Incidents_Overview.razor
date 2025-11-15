@@ -1,6 +1,7 @@
 ﻿@page "/incidents_overview"
 @using RestSharp; 
 @using System.Text.Json; 
+@using sims_web_app.Data.Model
 
 
 
@@ -23,23 +24,23 @@ else
     <MudTable Items="incidents" Hover="true" SortLabel="Sort By" Elevation="0" AllowUnsorted="false">
         <HeaderContent>
             <MudTh></MudTh>
-            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<IncidentsOverview, object>(x => x.incId)">Incident ID</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<IncidentsOverview, object>(x => x.subject)">Subject</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<IncidentsOverview, object>(x => x.severity)">Severity</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<IncidentsOverview, object>(x => x.Id)">Incident ID</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<IncidentsOverview, object>(x => x.Summary)">Subject</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<IncidentsOverview, object>(x => x.Severity)">Severity</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<IncidentsOverview, object>(x => x.AssignedPerson!)">Assigned Person</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<IncidentsOverview, object>(x => x.Status)">Status</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<IncidentsOverview, object>(x => x.createDate)">created Date</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<IncidentsOverview, object>(x => x.TimeToResolution)">Time to Resolution</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<IncidentsOverview, object>(x => x.CreateDate)">created Date</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<IncidentsOverview, object>(x => x.Id)">Time to Resolution</MudTableSortLabel></MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Enabled"><MudCheckBox T="bool" Checked="@context.selected" ValueChanged="@(e => UpdateRecord(context, e))"></MudCheckBox></MudTd>
-            <MudTd DataLabel="Key"><MudLink Href="/INC">@context.incId</MudLink></MudTd>
-            <MudTd DataLabel="summary">@context.subject</MudTd>
-            <MudTd DataLabel="author">@context.severity</MudTd>
+            <MudTd DataLabel="Key"><MudLink Href="/INC">@context.Id</MudLink></MudTd>
+            <MudTd DataLabel="summary">@context.Summary</MudTd>
+            <MudTd DataLabel="author">@context.Severity</MudTd>
             <MudTd DataLabel="assigned_person">@context.AssignedPerson</MudTd>
             <MudTd DataLabel="assigned_person">@context.Status</MudTd>
-            <MudTd DataLabel="assigned_person">@context.createDate</MudTd>
-            <MudTd DataLabel="assigned_person">@context.TimeToResolution</MudTd>
+            <MudTd DataLabel="assigned_person">@context.CreateDate</MudTd>
+            <MudTd DataLabel="assigned_person">@context.Id</MudTd>
         </RowTemplate>
         <PagerContent>
             <MudTablePager PageSizeOptions="new int[] { 50, 100 }" />
@@ -90,25 +91,7 @@ else
         }
         */
 
-        //values from database
-        incidents = new IncidentsOverview[2];
-        incidents[0] = new IncidentsOverview();
-        incidents[0].incId = "INC01";
-        incidents[0].subject = "Our first incident";
-        incidents[0].severity = "high";
-        incidents[0].AssignedPerson = "Konatsu Macala";
-        incidents[0].Status = "Open";
-        incidents[0].createDate = DateOnly.FromDateTime(DateTime.Now);
-        incidents[0].TimeToResolution = DateOnly.FromDateTime(DateTime.Now).AddDays(5);
-
-        incidents[1] = new IncidentsOverview();
-        incidents[1].incId = "INC02";
-        incidents[1].subject = "Our second incident";
-        incidents[1].severity = "low";
-        incidents[1].AssignedPerson = "Gabriel Grabner";
-        incidents[1].Status = "closed";
-        incidents[1].createDate = DateOnly.FromDateTime(DateTime.Now).AddDays(-5);
-        incidents[1].TimeToResolution = DateOnly.FromDateTime(DateTime.Now).AddDays(-3);
+        
 
         
 
@@ -121,17 +104,7 @@ else
 
     }
 
-    public class IncidentsOverview
-    {
-        public string incId { get; set; }
-        public string subject { get; set; }
-        public string severity { get; set; }
-        public string? AssignedPerson { get; set; }
-        public string? Status { get; set; }
-        public DateOnly createDate { get; set; }
-        public DateOnly TimeToResolution { get; set; }
-        public bool selected { get; set; }
-    }
+    
 }
 
 
