@@ -15,7 +15,7 @@
     }
 </style>
 
-<MudTable T="Components.Incident" Items="@_incidents.Take(2)" Hover="true" Breakpoint="Breakpoint.Sm" @ref="mudTable"
+<MudTable T="Incident" Items="@mudTable" Hover="true" Breakpoint="Breakpoint.Sm" @ref="mudTable"
           RowClass="cursor-pointer" RowClassFunc="@SelectedRowClassFunc" OnRowClick="RowClickEvent">
     <HeaderContent>
         <MudTh>Nr</MudTh>
@@ -49,7 +49,7 @@
 
 @code {
     private int selectedRowNumber = -1;
-    private MudTable<Components.Incident> mudTable;
+    private MudTable<Incident> mudTable;
     private List<string> clickedEvents = new();
 
    // private IEnumerable<Incident> _incidents = BackendApiHandler.();
@@ -59,7 +59,7 @@
         clickedEvents.Add("Row has been clicked");
     }
 
-    private string SelectedRowClassFunc(Components.Incident incident, int rowNumber)
+    private string SelectedRowClassFunc(Incident incident, int rowNumber)
     {
         if (selectedRowNumber == rowNumber)
         {

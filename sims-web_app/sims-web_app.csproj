@@ -59,5 +59,11 @@
       <_ContentIncludedByDefault Remove="Components\Account\Shared\RedirectToLogin.razor" />
       <_ContentIncludedByDefault Remove="Components\Account\Shared\ShowRecoveryCodes.razor" />
       <_ContentIncludedByDefault Remove="Components\Account\Shared\StatusMessage.razor" />
+      <_ContentIncludedByDefault Remove="Components\Incident\IncidentOverview.razor" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+      <AdditionalFiles Include="Components\Pages\Incident\IncidentOverview.razor" />
     </ItemGroup>
 </Project>
