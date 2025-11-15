@@ -1,9 +1,9 @@
 ﻿services:
-  incidentapi:
+  backendapi:
     build:
       context: .
       dockerfile: ./Dockerfile
-    image: incidentapi
+    image: backendapi
     ports:
       - "5001:8080"
     environment:

@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using BackendApi.Data.Database;
+using BackendApi.Data.Model.Customer;
 using BackendApi.Data.Model.Enum;
 using BackendApi.Data.Model.Incident;
 using FluentAssertions;
@@ -13,10 +14,13 @@ namespace BackendApi.Test
 {
     public class IncidentEndpointsTests : IClassFixture<WebApplicationFactory<Program>>
     {
+        
         private readonly WebApplicationFactory<Program> _factory;
 
         public IncidentEndpointsTests(WebApplicationFactory<Program> factory)
         {
+            Environment.SetEnvironmentVariable("TESTING", "true");
+            
             _factory = factory.WithWebHostBuilder(builder =>
             {
                 builder.ConfigureServices(services =>
@@ -33,21 +37,16 @@ namespace BackendApi.Test
                     var db = scope.ServiceProvider.GetRequiredService<ApiDbContext>();
                     db.Database.EnsureDeleted();
                     db.Database.EnsureCreated();
-                    
-                    db.Customers.AddRange(
-                        new Customer { Id = "C-0001", CompanyName = "Customer 1", Email = "test1@test.at" },
-                        new Customer { Id = "C-0002", CompanyName = "Customer 2", Email = "test2@test.at" }
-                    );
 
                     db.Incidents.AddRange(
-                        new Incident
-                        { Id = "INC-1000", Summary = "Test incident 1", CustomerId = "C-0001"},
+                        new Incident { Id = "INC-1000", Summary = "Test incident 1", CustomerId = "C-0001"},
                         new Incident { Id = "INC-1001", Summary = "Test incident 2", CustomerId = "C-0002"}
                     );
                     db.SaveChanges();
                 });
             });
         }
+
 
         [Fact]
         public async Task GetAllIncidents_ReturnsOkAndList()
@@ -188,9 +187,7 @@ namespace BackendApi.Test
         {
             HttpClient _client = _factory.CreateClient();
             
-
-            
-            string existingIncident = "INC-1101";
+            string existingIncident = "INC-1001";
             
             Incident updatedIncident = new Incident
             {
@@ -205,7 +202,7 @@ namespace BackendApi.Test
 
             HttpResponseMessage putResponse = await _client.PutAsJsonAsync($"/api/v1/incidents/{existingIncident}", updatedIncident);
             
-            putResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            putResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         }
     }
 }

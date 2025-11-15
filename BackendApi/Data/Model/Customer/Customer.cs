@@ -1,6 +1,6 @@
 ﻿using BackendApi.Data.Model.Enum;
 
-namespace BackendApi.Data.Model.Incident;
+namespace BackendApi.Data.Model.Customer;
 
 public class Customer
 {

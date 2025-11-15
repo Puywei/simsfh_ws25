@@ -1,4 +1,5 @@
 ﻿using BackendApi.Data.Database;
+using BackendApi.Data.Model.Customer;
 using BackendApi.Data.Model.Incident;
 
 namespace BackendApi.Data.Services;

@@ -5,11 +5,13 @@ using BackendApi.Endpoints;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
-if (builder.Environment.EnvironmentName != "IntegrationTesting")
+if (builder.Environment.EnvironmentName == "IntegrationTesting")
 {
     builder.Services.AddDbContext<ApiDbContext>(options =>
-        options.UseSqlServer("Data Source=mssql;User ID=sa;Password=eZW6FZ7zswB8Dzy@L9L9cAQBUt*@*jda;Database=SIMSData;TrustServerCertificate=true"));
+        options.UseSqlServer("Data Source=localhost;User ID=sa;Password=eZW6FZ7zswB8Dzy@L9L9cAQBUt*@*jda;Database=SIMSDataTEST;TrustServerCertificate=true"));
 }
+builder.Services.AddDbContext<ApiDbContext>(options =>
+    options.UseSqlServer("Data Source=localhost;User ID=sa;Password=eZW6FZ7zswB8Dzy@L9L9cAQBUt*@*jda;Database=SIMSData;TrustServerCertificate=true"));
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

@@ -1,4 +1,5 @@
 ﻿using BackendApi.Data.Database;
+using BackendApi.Data.Model.Customer;
 using BackendApi.Data.Model.Incident;
 using BackendApi.Data.Services;
 using Microsoft.EntityFrameworkCore;
@@ -7,9 +8,10 @@ namespace BackendApi.Endpoints;
 
 public static class CustomerEndpoints
 {
-     public static void MapCustomerEndpoints(this WebApplication app)
+     public static void MapCustomerEndpoints(this IEndpointRouteBuilder routes)
     {
-        app.MapGet("/api/customers", async (ApiDbContext dbContext) =>
+        RouteGroupBuilder customers = routes.MapGroup("/api/v1/customers");
+        customers.MapGet("", async (ApiDbContext dbContext) =>
             {
                 List<Customer> customers = await dbContext.Customers.ToListAsync();
                 return Results.Ok(customers);
@@ -17,7 +19,7 @@ public static class CustomerEndpoints
             .WithName("GetCustomers")
             .WithDescription("Returns all customers");
 
-        app.MapGet("/api/customers/{id}", async (ApiDbContext dbContext, string id) =>
+        customers.MapGet("/{id}", async (ApiDbContext dbContext, string id) =>
             {
                 Customer? customer = await dbContext.Customers.FirstOrDefaultAsync(c => c.Id == id);
                 if (customer is null)
@@ -28,7 +30,7 @@ public static class CustomerEndpoints
             .WithName("GetCustomerById")
             .WithDescription("Returns a customer by id");
 
-        app.MapDelete("/api/customers/{id}", async (ApiDbContext dbContext, string id) =>
+        customers.MapDelete("/{id}", async (ApiDbContext dbContext, string id) =>
             {
                 Customer? customer = await dbContext.Customers.FirstOrDefaultAsync(c => c.Id == id);
                 if (customer is null)
@@ -41,7 +43,7 @@ public static class CustomerEndpoints
             .WithName("DeleteCustomer")
             .WithDescription("Deletes a Customer");
 
-        app.MapPost("/api/customers", async (ApiDbContext dbContext, Customer newCustomer) =>
+        customers.MapPost("", async (ApiDbContext dbContext, Customer newCustomer) =>
             {
                 if (newCustomer == null || 
                     newCustomer.CompanyName == null ||
@@ -64,7 +66,7 @@ public static class CustomerEndpoints
             .WithName("CreateCustomer")
             .WithDescription("Create a new Customer");
         
-        app.MapPut("/api/customers/{existingIncidentId}", async (ApiDbContext dbContext, string existingCustomerId, Customer updatedCustomer) =>
+        customers.MapPut("/{existingIncidentId}", async (ApiDbContext dbContext, string existingCustomerId, Customer updatedCustomer) =>
             {
                 if (existingCustomerId == null || updatedCustomer == null)
                     return Results.BadRequest("Invalid request body");

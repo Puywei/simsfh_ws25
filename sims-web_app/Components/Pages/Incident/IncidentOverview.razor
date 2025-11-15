@@ -15,7 +15,7 @@
     }
 </style>
 
-<MudTable T="Incident" Items="@mudTable" Hover="true" Breakpoint="Breakpoint.Sm" @ref="mudTable"
+<MudTable T="Incident" Items="" Hover="true" Breakpoint="Breakpoint.Sm" @ref="mudTable"
           RowClass="cursor-pointer" RowClassFunc="@SelectedRowClassFunc" OnRowClick="RowClickEvent">
     <HeaderContent>
         <MudTh>Nr</MudTh>
@@ -25,11 +25,11 @@
         <MudTh>State</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Nr">@context.IncidentId</MudTd>
-        <MudTd DataLabel="Title">@context.Title</MudTd>
-        <MudTd DataLabel="Responder">@context.Responder</MudTd>
-        <MudTd DataLabel="Customer">@context.Customer</MudTd>
-        <MudTd DataLabel="State">@context.State</MudTd>
+        <MudTd DataLabel="Nr">@context.Id</MudTd>
+        <MudTd DataLabel="Title">@context.Summary</MudTd>
+        <MudTd DataLabel="Responder">@context.AssignedPerson</MudTd>
+        <MudTd DataLabel="Customer">@context.CustomerId</MudTd>
+        <MudTd DataLabel="State">@context.Status</MudTd>
     </RowTemplate>
 </MudTable>
 <MudExpansionPanels Style="flex: 1;">

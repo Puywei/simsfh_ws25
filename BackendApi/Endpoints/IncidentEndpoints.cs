@@ -9,7 +9,7 @@ public static class IncidentEndpoints
 {
     public static void MapIncidentEndpoints(this IEndpointRouteBuilder routes )
     {
-        var incidents = routes.MapGroup("/api/v1/incidents");
+        RouteGroupBuilder incidents = routes.MapGroup("/api/v1/incidents");
         incidents.MapGet("", async (ApiDbContext dbContext) =>
             {
                 List<Incident> incidentList = await dbContext.Incidents.ToListAsync();

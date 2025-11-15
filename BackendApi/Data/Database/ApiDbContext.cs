@@ -1,4 +1,5 @@
-﻿using BackendApi.Data.Model.Incident;
+﻿using BackendApi.Data.Model.Customer;
+using BackendApi.Data.Model.Incident;
 using Microsoft.EntityFrameworkCore;
 
 namespace BackendApi.Data.Database;
@@ -19,11 +20,20 @@ public class ApiDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        Console.WriteLine(Configuration.GetConnectionString("DefaultConnection"));
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseSqlServer("Data Source=mssql;User ID=sa;Password=eZW6FZ7zswB8Dzy@L9L9cAQBUt*@*jda;Database=SIMSData;TrustServerCertificate=true");
-            
+            // Prüfen ob Test-Umgebung
+            var isTest = Environment.GetEnvironmentVariable("TESTING") == "true";
+
+            if (isTest)
+            {
+                optionsBuilder.UseInMemoryDatabase("TestDb");
+            }
+            else
+            {
+                optionsBuilder.UseSqlServer(
+                    Configuration.GetConnectionString("DefaultConnection"));
+            }
         }
         
     }

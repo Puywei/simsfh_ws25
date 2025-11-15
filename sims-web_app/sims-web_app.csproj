@@ -17,6 +17,7 @@
 
     <ItemGroup>
       <Folder Include="Components\Pages\Incidents\" />
+      <Folder Include="Components\Pages\Logs\" />
       <Folder Include="Data\Model\Enum\" />
     </ItemGroup>
 

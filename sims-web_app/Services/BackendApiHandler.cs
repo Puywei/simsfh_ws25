@@ -5,11 +5,11 @@ using RestSharp;
 
 public static class BackendApiHandler
 {
-    private static readonly string baseUrl = "http://localhost:5001/api/v1/incidents"; // Dein Endpoint
+    private static readonly string baseUrl = "http://localhost:5001/api/v1/"; // Dein Endpoint
 
     public static async Task<Incident?> CreateIncident(Incident incident)
     {
-        var client = new RestClient(baseUrl);
+        var client = new RestClient(baseUrl + "incidents");
         var request = new RestRequest("", Method.Post);
         request.AddJsonBody(incident);
 
