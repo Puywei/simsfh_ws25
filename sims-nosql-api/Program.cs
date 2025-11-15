@@ -1,44 +1,53 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using sims_nosql_api.Database;
+using sims_nosql_api.Services;
 
 namespace sims_nosql_api
 {
     public class Program
     {
-        // Startskript Web-API
         public static void Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args); // Start WebApp
+            var builder = WebApplication.CreateBuilder(args);
 
-            // 
-            builder.Services.AddControllers();
+            // appsettings.json laden
+            builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
-            // Swagger Testseite einschalten
+            // Controller aktivieren
+            builder.Services.AddControllers()
+                .ConfigureApiBehaviorOptions(options =>
+                {
+                    options.SuppressModelStateInvalidFilter = false;
+                });
+
+            // Swagger aktivieren
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SupportNonNullableReferenceTypes();
+            });
+
+            // Dependency Injection für Redis
+            builder.Services.AddSingleton<RedisConnection>();
+            builder.Services.AddSingleton<RedisService>();
 
             var app = builder.Build();
 
-            // Swagger im Browser anzeigen
-           
+            // Swagger UI
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "sims-nosql-api v1");
-                c.RoutePrefix = string.Empty; // Swagger direkt unter http.. aufrufen
+                c.RoutePrefix = string.Empty;
             });
 
-
-
-            // https vorbereitung
+            // HTTPS
             app.UseHttpsRedirection();
             app.UseAuthorization();
 
-            // Controller aktivieren
             app.MapControllers();
-
-            // Anwendung starten
             app.Run();
         }
     }

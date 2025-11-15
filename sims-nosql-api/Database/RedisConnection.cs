@@ -1,23 +1,22 @@
-﻿using StackExchange.Redis; //Bibliothek für die Verbindung zu Redis
+﻿using StackExchange.Redis;
+using Microsoft.Extensions.Configuration;
 
 namespace sims_nosql_api.Database
 {
-    public static class RedisConnection
+    public class RedisConnection
     {
-        // lazy: Verbindung wird erst hergestellt, wenn sie gebraucht wird; nicht direkt beim Start
-        // multiplexer: Verbindungsverwaltung zur DB um set, get Befehle zu senden
-        private static Lazy<IConnectionMultiplexer> lazyConnection = new Lazy<IConnectionMultiplexer>(() =>
-        {
-            // Verbindung zur Redis-Datenbank im Docker-Netzwerk
-            return ConnectionMultiplexer.Connect("redis:6379");
-        });
+        private readonly Lazy<IConnectionMultiplexer> _lazyConnection;
 
-        // bestehende Verbindung erhalten, damit andere Teile (services, controller) über redisconnection zugreifen können
-        public static IConnectionMultiplexer Connection => lazyConnection.Value;
+        public RedisConnection(IConfiguration configuration)
+        {
+            var connectionString = configuration["Redis:ConnectionString"];
+
+            _lazyConnection = new Lazy<IConnectionMultiplexer>(() =>
+            {
+                return ConnectionMultiplexer.Connect(connectionString);
+            });
+        }
+
+        public IConnectionMultiplexer Connection => _lazyConnection.Value;
     }
 }
-
-// lädt die Redis Client Bibliothek
-// baut eine Verbindung auf
-// stellt die Verbindung zu Redis her
-// gibt die Verbindung an andere Klassen weiter
