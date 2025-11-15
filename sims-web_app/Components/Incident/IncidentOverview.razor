@@ -1,8 +1,7 @@
 ﻿@page "/Incident/Overview"
-@using sims_web_app.Data.Database
-@using sims_web_app.Data.Models
-@using sims_web_app.Components.Services
+@using sims_web_app.Services
 @using MudBlazor
+@using sims_web_app.Data.Model
 
 <style>
     .selected {
@@ -16,7 +15,7 @@
     }
 </style>
 
-<MudTable T="Incident" Items="@_incidents.Take(2)" Hover="true" Breakpoint="Breakpoint.Sm" @ref="mudTable"
+<MudTable T="Components.Incident" Items="@_incidents.Take(2)" Hover="true" Breakpoint="Breakpoint.Sm" @ref="mudTable"
           RowClass="cursor-pointer" RowClassFunc="@SelectedRowClassFunc" OnRowClick="RowClickEvent">
     <HeaderContent>
         <MudTh>Nr</MudTh>
@@ -50,17 +49,17 @@
 
 @code {
     private int selectedRowNumber = -1;
-    private MudTable<Incident> mudTable;
+    private MudTable<Components.Incident> mudTable;
     private List<string> clickedEvents = new();
 
-    private IEnumerable<Incident> _incidents = DatabaseService.GetIncidents();
+   // private IEnumerable<Incident> _incidents = BackendApiHandler.();
     
     private void RowClickEvent(TableRowClickEventArgs<Incident> tableRowClickEventArgs)
     {
         clickedEvents.Add("Row has been clicked");
     }
 
-    private string SelectedRowClassFunc(Incident incident, int rowNumber)
+    private string SelectedRowClassFunc(Components.Incident incident, int rowNumber)
     {
         if (selectedRowNumber == rowNumber)
         {

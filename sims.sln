@@ -9,9 +9,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sims-web_app", "sims-web_ap
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sims-nosql-api", "sims-nosql-api\sims-nosql-api.csproj", "{56C07382-D469-43B9-8902-1FA03159BFF4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IncidentApi", "IncidentApi\IncidentApi.csproj", "{A7E34C27-B64A-4EE0-9D03-FC1556E57994}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackendApi", "BackendApi\BackendApi.csproj", "{A7E34C27-B64A-4EE0-9D03-FC1556E57994}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IncidentApi.Tests", "IncidentApi.Tests\IncidentApi.Tests.csproj", "{50141AF4-0D2D-48E4-9927-E44D6322BD2C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackendApi.Tests", "BackendApi.Tests\BackendApi.Tests.csproj", "{50141AF4-0D2D-48E4-9927-E44D6322BD2C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

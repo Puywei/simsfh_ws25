@@ -1,6 +1,6 @@
 ﻿@page "/New_Ticket"
-@using sims_web_app.Data.Model
 @using sims_web_app.Data.Model.Enum
+@using sims_web_app.Data.Model
 @using sims_web_app.Services
 
 <PageTitle>New Ticket</PageTitle>
@@ -32,10 +32,10 @@
 
 @code {
     private MudForm form;
-    private Incident newIncident = new Incident();
+    private Data.Model.Incident newIncident = new Data.Model.Incident();
 
     private async Task SubmitIncident()
     {
-        await IncidentService.CreateIncident(newIncident);
+        await BackendApiHandler.CreateIncident(newIncident);
     }
 }
