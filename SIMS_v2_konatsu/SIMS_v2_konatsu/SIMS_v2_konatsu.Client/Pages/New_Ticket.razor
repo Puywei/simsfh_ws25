@@ -8,7 +8,7 @@
 <MudText Typo="Typo.body1" Class="mb-8">You can create a new incident Ticket here.</MudText>
 
 
-<MudTextField @bind-Value="TextValue" Label="Summary" Variant="Variant.Outlined"></MudTextField>
+<MudTextField @bind-Value="TextValue" Label="Subject" Variant="Variant.Outlined"></MudTextField>
 
 @code {
     public string TextValue { get; set; }
@@ -16,12 +16,7 @@
 
 
 
-<MudSelect @bind-Value="_selectedAuthor" Label="Author" FullWidth="_fullWidth" FitContent="_fitContent" Variant="Variant.Outlined" Clearable>
-    @foreach (var author in _user)
-    {
-        <MudSelectItem Value="@author">@author</MudSelectItem>
-    }
-</MudSelect>
+
 
 <MudSelect @bind-Value="_selectedAssignedPerson" Label="Assigned Person" FullWidth="_fullWidth" FitContent="_fitContent" Variant="Variant.Outlined" Clearable>
     @foreach (var author in _user)
@@ -36,7 +31,6 @@
     //TODO: value from user-database
     private bool _fullWidth;
     private bool _fitContent;
-    private string? _selectedAuthor;
     private string? _selectedAssignedPerson;
     private readonly string[] _user =
     [
@@ -47,11 +41,12 @@
 
 <MudGrid>
     <MudItem xs="12">
-        <MudField Label="priority" Variant="Variant.Outlined" InnerPadding="false">
+        <MudField Label="Severity" Variant="Variant.Outlined" InnerPadding="false">
             <MudRadioGroup T="string">
                 <MudRadio T="string">low</MudRadio>
-                <MudRadio T="string">middle</MudRadio>
+                <MudRadio T="string">medium</MudRadio>
                 <MudRadio T="string">high</MudRadio>
+                <MudRadio T="string">critical</MudRadio>
             </MudRadioGroup>
         </MudField>
     </MudItem>
@@ -62,6 +57,16 @@
 @code
 {
     string description = "";
+}
+
+<MudDatePicker Label="Ticket created" @bind-Date="_createdDate" ReadOnly="true" />
+@code {
+    private DateTime? _createdDate = DateTime.Today;
+}
+
+<MudDatePicker Label="Date to Resolve" Editable="true" @bind-Date="_solveDate" Placeholder="Date to resolve" />
+@code {
+    private DateTime? _solveDate = DateTime.Today;
 }
 
 <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Medium">Save</MudButton>

@@ -1,10 +1,10 @@
-﻿@page "/users"
+﻿@page "/User_Overview"
 
 
 
-<PageTitle>Manage User</PageTitle>
+<PageTitle>User Overview</PageTitle>
 
-<MudText Typo="Typo.h3" GutterBottom="true">Manage User</MudText>
+<MudText Typo="Typo.h3" GutterBottom="true">User Overview</MudText>
 <MudText Typo="Typo.body1" Class="mb-8">..............</MudText>
 
 <NavLink href="/Add_User"><MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary">Add User</MudButton></NavLink>
@@ -25,7 +25,7 @@ else
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Enabled"><MudCheckBox T="bool" Checked="@context.selected" ValueChanged="@(e => UpdateRecord(context, e))"></MudCheckBox></MudTd>
-            <MudTd DataLabel="User_ID"><MudLink Href="#">@context.User_ID</MudLink></MudTd>
+            <MudTd DataLabel="User_ID"><MudLink Href="/User">@context.User_ID</MudLink></MudTd>
             <MudTd DataLabel="Name">@context.Name</MudTd>
             <MudTd DataLabel="Role">@context.Role</MudTd>
             <MudTd DataLabel="Email">@context.Email</MudTd>

@@ -8,10 +8,44 @@
 <MudText Typo="Typo.body1" Class="mb-8">You can add a new user here.</MudText>
 
 
-<!---->
+<MudTextField @bind-Value="FirstName" Label="First Name" Variant="Variant.Outlined"></MudTextField>
+@code {
+    public string FirstName { get; set; }
+}
+<MudTextField @bind-Value="LastName" Label="Last Name" Variant="Variant.Outlined"></MudTextField>
+@code {
+    public string LastName { get; set; }
+}
+<MudTextField @bind-Value="Email" Label="Email Address" Variant="Variant.Outlined"></MudTextField>
+@code {
+    public string Email { get; set; }
+}
+<div class="d-flex">
+    <MudTextField @bind-Value="Password" Label="Password" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ButtonTestclick" AdornmentAriaLabel="Show Password" />
+</div>
+@code {
+    public string Password { get; set; } = "";
 
+    bool isShow;
+    InputType PasswordInput = InputType.Password;
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
 
-
+    void ButtonTestclick()
+    {
+        @if (isShow)
+        {
+            isShow = false;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInput = InputType.Password;
+        }
+        else
+        {
+            isShow = true;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInput = InputType.Text;
+        }
+    }
+}
 
 
 <MudGrid>
