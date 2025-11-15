@@ -22,7 +22,7 @@ namespace sims.Controllers
             _config = config;
         }
 
-        // ✅ Login only
+        //  Login
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
@@ -61,6 +61,31 @@ namespace sims.Controllers
                 lastname = user.Lastname,
                 role = user.Role.RoleName
             });
+        }
+        
+        // Logout
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            var authHeader = HttpContext.Request.Headers["Authorization"].ToString();
+            if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
+                return BadRequest(new { message = "No token found in request." });
+
+            var token = authHeader.Substring("Bearer ".Length).Trim();
+
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+            var expiry = jwtToken.ValidTo;
+
+            _db.BlacklistedTokens.Add(new BlacklistedToken
+            {
+                Token = token,
+                Expiry = expiry
+            });
+            await _db.SaveChangesAsync();
+
+            return Ok(new { message = "Logout successful. Token invalidated." });
+            
         }
     }
 

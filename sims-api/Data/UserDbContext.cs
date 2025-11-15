@@ -7,9 +7,10 @@ namespace sims.Data
     {
         public UserDbContext(DbContextOptions<UserDbContext> options) : base(options) { }
 
-        // Tables
+        // This creates the tables using EF
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
+        public DbSet<BlacklistedToken> BlacklistedTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -25,8 +26,7 @@ namespace sims.Data
                 entity.Property(u => u.Lastname).IsRequired().HasMaxLength(32);
                 entity.Property(u => u.Email).IsRequired().HasMaxLength(64);
                 entity.Property(u => u.PasswordHash).IsRequired();
-
-                // Relationship: User → Role
+                
                 entity.HasOne(u => u.Role)
                     .WithMany(r => r.Users)
                     .HasForeignKey(u => u.RoleId)
@@ -43,7 +43,23 @@ namespace sims.Data
                 entity.Property(r => r.RoleName).IsRequired().HasMaxLength(50);
             });
             
-            // Seed Default roles
+            
+            //Configure BlacklistedToken entity
+            modelBuilder.Entity<BlacklistedToken>(entity =>
+            {
+                entity.HasKey(b => b.Id);
+
+                entity.Property(b => b.Token)
+                    .IsRequired()
+                    .HasMaxLength(512); 
+
+                entity.Property(b => b.Expiry)
+                    .IsRequired();
+
+                entity.HasIndex(b => b.Token).IsUnique(); 
+            });
+            
+            // Seed roles
             modelBuilder.Entity<Role>().HasData(
                 new Role { RoleId = 1, RoleName = "Admin", Description = "Administrator - full access" },
                 new Role { RoleId = 2, RoleName = "User", Description = "Regular user - regular access" }

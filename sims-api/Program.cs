@@ -74,6 +74,23 @@ public class Program
                     ValidAudience = jwtIssuer,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
                 };
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = async context =>
+                    {
+                        var db = context.HttpContext.RequestServices.GetRequiredService<UserDbContext>();
+                        var token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+                        if (!string.IsNullOrEmpty(token))
+                        {
+                            var isBlacklisted = await db.BlacklistedTokens.AnyAsync(b => b.Token == token);
+                            if (isBlacklisted)
+                            {
+                                context.Fail("Token is blacklisted.");
+                            }
+                        }
+                    }
+                };
             });
         
 
