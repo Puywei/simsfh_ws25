@@ -1,4 +1,7 @@
 ﻿@page "/User_Overview"
+@using RestSharp;
+@using System.Text.Json;
+@using sims_web_app.Data.Model
 
 
 
@@ -18,14 +21,14 @@ else
     <MudTable Items="users" Hover="true" SortLabel="Sort By" Elevation="0" AllowUnsorted="false">
         <HeaderContent>
             <MudTh></MudTh>
-            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<UserManagement, object>(x => x.User_ID)">User ID</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<UserManagement, object>(x => x.Name)">Name</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<UserManagement, object>(x => x.Role)">Role</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<UserManagement, object>(x => x.Email!)">Email</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<UserOverview, object>(x => x.User_ID)">User ID</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<UserOverview, object>(x => x.Name)">Name</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<UserOverview, object>(x => x.Role)">Role</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<UserOverview, object>(x => x.Email!)">Email</MudTableSortLabel></MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Enabled"><MudCheckBox T="bool" Checked="@context.selected" ValueChanged="@(e => UpdateRecord(context, e))"></MudCheckBox></MudTd>
-            <MudTd DataLabel="User_ID"><MudLink Href="/User">@context.User_ID</MudLink></MudTd>
+            <MudTd DataLabel="User_ID"><MudLink Href="/User_ID">@context.User_ID</MudLink></MudTd>
             <MudTd DataLabel="Name">@context.Name</MudTd>
             <MudTd DataLabel="Role">@context.Role</MudTd>
             <MudTd DataLabel="Email">@context.Email</MudTd>
@@ -42,8 +45,9 @@ else
 
 
     public bool Basic_CheckBox1 { get; set; } = true;
-    private UserManagement[]? users;
+    private UserOverview[]? users;
 
+    /*
     protected override async Task OnInitializedAsync()
     {
         // Simulate asynchronous loading to demonstrate a loading indicator
@@ -66,8 +70,9 @@ else
 
        
     }
+    */
 
-    private async Task UpdateRecord(UserManagement record, bool ischecked)
+    private async Task UpdateRecord(UserOverview record, bool ischecked)
     {
         record.selected = ischecked;
 
@@ -75,12 +80,5 @@ else
 
 
 
-    private class UserManagement
-    {
-        public string User_ID { get; set; }
-        public string Name { get; set; }
-        public string Role { get; set; }
-        public string Email { get; set; }
-        public bool selected { get; set; }
-    }
+    
 }

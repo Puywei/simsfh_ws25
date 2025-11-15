@@ -1,7 +1,10 @@
 ﻿
-@page "/User"
+@page "/User_ID"
+@using RestSharp;
+@using System.Text.Json;
+@using sims_web_app.Data.Model
 
-<PageTitle>User</PageTitle>
+<PageTitle>User_ID</PageTitle>
 
 <MudText Typo="Typo.h3" GutterBottom="true">Manage User</MudText>
 
@@ -18,23 +21,9 @@
 
 <MudTextField @bind-Value="FirstName" Label="First Name" Variant="Variant.Outlined"></MudTextField>
 
-@code {
-    public string FirstName { get; set; }
-}
-
 <MudTextField @bind-Value="LastName" Label="Last Name" Variant="Variant.Outlined"></MudTextField>
 
-@code {
-    public string LastName { get; set; }
-}
-
 <MudTextField @bind-Value="Email" Label="Email Address" Variant="Variant.Outlined"></MudTextField>
-
-@code {
-    public string Email { get; set; }
-}
-
-
 
 <MudGrid>
     <MudItem xs="12">
@@ -51,4 +40,11 @@
 <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Medium">Save</MudButton>
 
 
+@code {
+    public string FirstName { get; set; }
+
+    public string LastName { get; set; }
+
+    public string Email { get; set; }
+}
 
