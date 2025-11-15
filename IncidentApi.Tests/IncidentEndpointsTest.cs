@@ -1,6 +1,8 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,10 +35,16 @@ namespace TestApi.Tests
                     var db = scope.ServiceProvider.GetRequiredService<ApiDbContext>();
                     db.Database.EnsureDeleted();
                     db.Database.EnsureCreated();
+                    
+                    db.Customers.AddRange(
+                        new Customer { Id = "C-0001", CompanyName = "Customer 1", Email = "test1@test.at" },
+                        new Customer { Id = "C-0002", CompanyName = "Customer 2", Email = "test2@test.at" }
+                    );
 
                     db.Incidents.AddRange(
-                        new Incident { IncidentId = "INC-1000", Summary = "Test incident 1" },
-                        new Incident { IncidentId = "INC-1001", Summary = "Test incident 2" }
+                        new Incident
+                        { Id = "INC-1000", Summary = "Test incident 1", CustomerId = "C-0001"},
+                        new Incident { Id = "INC-1001", Summary = "Test incident 2", CustomerId = "C-0002"}
                     );
                     db.SaveChanges();
                 });
@@ -48,7 +56,7 @@ namespace TestApi.Tests
         {
             HttpClient client = _factory.CreateClient();
 
-            HttpResponseMessage response = await client.GetAsync("/api/incidents");
+            HttpResponseMessage response = await client.GetAsync("/api/v1/incidents");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -65,7 +73,7 @@ namespace TestApi.Tests
             string id = "INC-1000";
             HttpClient client = _factory.CreateClient();
 
-            HttpResponseMessage response = await client.GetAsync($"/api/incidents/{id}");
+            HttpResponseMessage response = await client.GetAsync($"/api/v1/incidents/{id}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -78,6 +86,8 @@ namespace TestApi.Tests
         public async Task CreateIncident_ReturnsCreatedIncident()
         {
             HttpClient _client = _factory.CreateClient();
+            
+            Customer customer = new Customer { CompanyName = "Test Company", Email = "test@test.at", Id = "C-0004"};
 
             Incident newIncident = new Incident
             {
@@ -85,18 +95,18 @@ namespace TestApi.Tests
                 Description = "Created via integration test",
                 AssignedPerson = "Tester",
                 Severity = IncidentSeverity.Medium,
-                Author = "UnitTest",
+                CustomerId = customer.Id,
                 Status = IncidentStatus.Open,
                 IncidentType = IncidentType.SecurityIncident
             };
 
-            HttpResponseMessage response = await _client.PostAsJsonAsync("/api/incidents", newIncident);
+            HttpResponseMessage response = await _client.PostAsJsonAsync("/api/v1/incidents", newIncident);
 
             response.StatusCode.Should().Be(HttpStatusCode.Created);
 
             Incident createdIncident = await response.Content.ReadFromJsonAsync<Incident>();
             createdIncident.Should().NotBeNull();
-            createdIncident!.IncidentId.Should().StartWith("INC-");
+            createdIncident!.Id.Should().StartWith("INC-");
             createdIncident.AssignedPerson.Should().Be("Tester");
         }
 
@@ -104,62 +114,65 @@ namespace TestApi.Tests
         public async Task DeleteIncident_ShouldReturnNoContent_WhenIncidentExists()
         {
             HttpClient _client = _factory.CreateClient();
+            
+            Customer customer = new Customer { CompanyName = "Test Company", Email = "test@test.at", Id = "C-0006"};
 
             Incident newIncident = new Incident
             {
                 Summary = "Incident to be deleted",
                 Description = "This will be deleted in test",
-                Author = "TestUser",
+                CustomerId = customer.Id,
                 Severity = IncidentSeverity.Low,
                 Status = IncidentStatus.Open,
                 IncidentType = IncidentType.SecurityIncident
             };
 
-            HttpResponseMessage postResponse = await _client.PostAsJsonAsync("/api/incidents", newIncident);
+            HttpResponseMessage postResponse = await _client.PostAsJsonAsync("/api/v1/incidents", newIncident);
             postResponse.StatusCode.Should().Be(HttpStatusCode.Created);
 
             Incident createdIncident = await postResponse.Content.ReadFromJsonAsync<Incident>();
             createdIncident.Should().NotBeNull();
 
             HttpResponseMessage deleteResponse =
-                await _client.DeleteAsync($"/api/incidents/{createdIncident!.IncidentId}");
+                await _client.DeleteAsync($"/api/v1/incidents/{createdIncident!.Id}");
 
             deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
 
         [Fact]
-        public async Task UpdateIncident_ShouldReturnOk_WhenIncidentExists()
+        public async Task UpdateIncident_ShouldReturnOk()
         {
             HttpClient _client = _factory.CreateClient();
             
+            Customer customer = new Customer { CompanyName = "Test Company", Email = "test@test.at", Id = "C-0008"};
+            
             Incident newIncident = new Incident
             {
-                IncidentId = "INC-9999",
                 Summary = "Original Summary",
                 Description = "Original Description",
-                Author = "Original Author",
+                CustomerId = customer.Id,
                 AssignedPerson = "Original Assignee",
                 Status = IncidentStatus.Open,
                 Severity = IncidentSeverity.Low,
                 IncidentType = IncidentType.SecurityIncident
             };
 
-            HttpResponseMessage postResponse = await _client.PostAsJsonAsync("/api/incidents", newIncident);
+            HttpResponseMessage postResponse = await _client.PostAsJsonAsync("/api/v1/incidents", newIncident);
             postResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+            Incident createdIncident = await postResponse.Content.ReadFromJsonAsync<Incident>();
             
             Incident updatedIncident = new Incident
             {
                 Summary = "Updated Summary",
                 Description = "Updated Description",
-                Author = "Updated Author",
                 AssignedPerson = "Updated Assignee",
                 Status = IncidentStatus.onProgress,
                 Severity = IncidentSeverity.High,
                 IncidentType = IncidentType.SecurityIncident,
                 ClosedDate = DateTime.Now
             };
-
-            HttpResponseMessage putResponse = await _client.PutAsJsonAsync($"/api/incidents/{newIncident.IncidentId}", updatedIncident);
+            
+            HttpResponseMessage putResponse = await _client.PutAsJsonAsync($"/api/v1/incidents/{createdIncident.Id}", updatedIncident);
             
             putResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -168,7 +181,6 @@ namespace TestApi.Tests
             returnedIncident!.Summary.Should().Be(updatedIncident.Summary);
             returnedIncident.Description.Should().Be(updatedIncident.Description);
             returnedIncident.AssignedPerson.Should().Be(updatedIncident.AssignedPerson);
-            returnedIncident.Author.Should().Be(updatedIncident.Author);
             returnedIncident.Status.Should().Be(updatedIncident.Status);
             returnedIncident.Severity.Should().Be(updatedIncident.Severity);
         }
@@ -178,19 +190,24 @@ namespace TestApi.Tests
         {
             HttpClient _client = _factory.CreateClient();
             
-            var updatedIncident = new
+
+            
+            string existingIncident = "INC-1101";
+            
+            Incident updatedIncident = new Incident
             {
-                Summary = "Non-existent",
-                Description = "Non-existent",
-                Author = "Nobody",
-                AssignedPerson = "Nobody",
-                Status = "Open",
-                Severity = "Low",
-                IncidentType = "SecurityIncident"
+                Summary = "Updated Summary",
+                Description = "Updated Description",
+                AssignedPerson = "Updated Assignee",
+                Status = IncidentStatus.onProgress,
+                Severity = IncidentSeverity.High,
+                IncidentType = IncidentType.SecurityIncident,
+                ClosedDate = DateTime.Now
             };
 
-            var response = await _client.PutAsJsonAsync("/api/incidents/INC-1011", updatedIncident);
-            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            HttpResponseMessage putResponse = await _client.PutAsJsonAsync($"/api/v1/incidents/{existingIncident}", updatedIncident);
+            
+            putResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
     }
 }
