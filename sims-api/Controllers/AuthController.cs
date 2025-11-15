@@ -44,7 +44,7 @@ namespace sims.Controllers
             return Ok(new { message = "User registered successfully.", uid = user.Uid });
         }
 
-        // Login and issue JWT
+        // Login and here is also JWT Token created
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
@@ -54,7 +54,7 @@ namespace sims.Controllers
             if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
                 return Unauthorized("Invalid credentials.");
 
-            // ✅ Generate JWT token
+            
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_config["Jwt:Key"]);
             var tokenDescriptor = new SecurityTokenDescriptor

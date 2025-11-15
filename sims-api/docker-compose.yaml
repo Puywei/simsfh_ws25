@@ -23,7 +23,6 @@ services:
         - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=userapi;Username=postgres;Password=postgres
         - Jwt__Key=noneofyourgoddamnbusinessthishastobesogoddamnverylongjesuschristandmariaandjoseph
         - Jwt__Issuer=sims-api
-    depends_on:
         depends_on:
         - postgres
         networks:
