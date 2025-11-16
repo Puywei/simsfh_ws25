@@ -37,7 +37,7 @@ public class CustomersController : ControllerBase
     )]
     [SwaggerResponse(StatusCodes.Status200OK, "Incident found")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "Incident not found")]
-    public async Task<IActionResult> GetCustomerById(string id)
+    public async Task<ActionResult<Customer>> GetCustomerById(string id)
     {
         var customer = await _dbContext.Customers.FirstOrDefaultAsync(c => c.Id == id);
         if (customer is null)
@@ -74,11 +74,10 @@ public class CustomersController : ControllerBase
     [SwaggerResponse(StatusCodes.Status400BadRequest, "Customer can't be created")]
     public async Task<IActionResult> CreateCustomer([FromBody] Customer newCustomer)
     {
-        if (newCustomer == null ||
-            string.IsNullOrWhiteSpace(newCustomer.CompanyName) ||
+        if (string.IsNullOrWhiteSpace(newCustomer.CompanyName) ||
             string.IsNullOrWhiteSpace(newCustomer.Email))
         {
-            return BadRequest("Invalid request body");
+            return BadRequest("Invalid request body TEST");
         }
         
         newCustomer.Id = GenerateIdService.CustomerId(_dbContext);

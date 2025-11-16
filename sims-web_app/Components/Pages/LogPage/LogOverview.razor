@@ -1,80 +1,68 @@
-﻿@page "/LogOverview"
-@using RestSharp;
-@using System.Text.Json;
+﻿@page "/logoverview"
+@using MudBlazor
+@using System.Net.Http.Json
 @using sims_web_app.Data.Model
-@using sims_web_app.Data.Model.Enum
-@using sims_web_app.Services
+@inject HttpClient Http
 
-<PageTitle>Log</PageTitle>
+<PageTitle>Log Overview</PageTitle>
 
-<MudText Typo="Typo.h3" GutterBottom="true">Event Log</MudText>
-<MudText Typo="Typo.body1" Class="mb-8">..............</MudText>
+<MudPaper Class="pa-4" Elevation="3">
+    <MudText Typo="Typo.h5" Class="mb-4">Log Overview</MudText>
 
-@if (log == null)
-{
-    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
-}
-else
-{
-    <MudTable Items="log" Hover="true" SortLabel="Sort By" Elevation="0" AllowUnsorted="false">
+    <MudTable Items="pagedLogs" Elevation="0" Hover="true" Bordered="true">
         <HeaderContent>
-            <MudTh></MudTh>
-            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Data.Model.LogOverview, object>(x => x.logId)">Log ID</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<Data.Model.LogOverview, object>(x => x.message)">Message</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<Data.Model.LogOverview, object>(x => x.severity)">Severity</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<Data.Model.LogOverview, object>(x => x.timestamp)">Timestamp</MudTableSortLabel></MudTh>
+            <MudTh>Timestamp</MudTh>
+            <MudTh>Method</MudTh>
+            <MudTh>Path</MudTh>
+            <MudTh>User</MudTh>
+            <MudTh>Body</MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="Enabled"><MudCheckBox T="bool" Checked="@context.selected" ValueChanged="@(e => UpdateRecord(context, e))"></MudCheckBox></MudTd>
-            <MudTd DataLabel="logId">@context.logId</MudTd>
-            <MudTd DataLabel="message">@context.message</MudTd>
-            <MudTd DataLabel="severity">@context.severity</MudTd>
-            <MudTd DataLabel="timestamp">@context.timestamp</MudTd>
+            <MudTd DataLabel="Timestamp">@context.Timestamp.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")</MudTd>
+            <MudTd DataLabel="Method">@context.Method</MudTd>
+            <MudTd DataLabel="Path">@context.Path</MudTd>
+            <MudTd DataLabel="User">@context.User</MudTd>
+            <MudTd DataLabel="Body">@context.Body</MudTd>
         </RowTemplate>
-        <PagerContent>
-            <MudTablePager PageSizeOptions="new int[] { 50, 100 }" />
-        </PagerContent>
     </MudTable>
 
-}
+    <MudTablePager PageSizeOptions="new int[]{5,10,20}" PageSize="pageSize" PageIndex="pageIndex"
+                   OnPageChanged="OnPageChanged" Class="mt-4"/>
+</MudPaper>
 
 @code {
-    public bool Basic_CheckBox1 { get; set; } = true;
-    private Data.Model.LogOverview[]? log;
+    private List<LogEntry> logs = new();
+    private List<LogEntry> pagedLogs = new();
+    private int pageSize = 10;
+    private int pageIndex = 0;
+
     protected override async Task OnInitializedAsync()
     {
-       /*
-        //values from database
-        customer = new Customer[2];
-        customer[0] = new Customer();
-        customer[0].Id = "C-001";
-        customer[0].CompanyName = "USTP";
-        customer[0].Email = "is241305@ustp-students.at";
-        customer[0].PhoneNumber = "is241305@ustp-students.at";
-        customer[0].Address = "1";
-        customer[0].City = "St.Pölten";
-        customer[0].State = "NÖ";
-        customer[0].ZipCode = "1111";
-        customer[0].Country = "Austria";
-
-
-        customer[1] = new Customer();
-        customer[1].Id = "IS002";
-        customer[1].CompanyName = "Philipp Muehlparzer ";
-        customer[1].Email = "Admin";
-        customer[1].PhoneNumber = "....";
-        customer[1].Address = "Admin";
-        customer[1].City = "Admin";
-        customer[1].State = "Admin";
-        customer[1].ZipCode = "Admin";
-        customer[1].Country = "Admin";
-        */
-       
+        await LoadLogsAsync();
+        UpdatePagedLogs();
     }
 
-    private async Task UpdateRecord(Data.Model.LogOverview record, bool ischecked)
+    private async Task LoadLogsAsync()
     {
-        record.selected = ischecked;
+        try
+        {
+            // ruft die letzten 50 Logs von der API
+            logs = (await Http.GetFromJsonAsync<List<LogEntry>>("http://localhost:5001/api/logs?count=50")) ?? new List<LogEntry>();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Fehler beim Laden der Logs: {ex.Message}");
+        }
+    }
 
+    private void UpdatePagedLogs()
+    {
+        pagedLogs = logs.Skip(pageIndex * pageSize).Take(pageSize).ToList();
+    }
+
+    private void OnPageChanged(int index)
+    {
+        pageIndex = index;
+        UpdatePagedLogs();
     }
 }

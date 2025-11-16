@@ -1,8 +1,5 @@
 ﻿@page "/Customer/Overview"
-@using RestSharp;
-@using System.Text.Json;
 @using sims_web_app.Data.Model
-@using sims_web_app.Data.Model.Enum
 @using sims_web_app.Services
 
 <PageTitle>Manage Customer</PageTitle>
@@ -10,15 +7,15 @@
 <MudText Typo="Typo.h3" GutterBottom="true">Manage Customer</MudText>
 <MudText Typo="Typo.body1" Class="mb-8">..............</MudText>
 
-<NavLink href="/Add_Customer"><MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary">Add Customer</MudButton></NavLink>
+<NavLink href="/Customer/Create"><MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary">Create Customer</MudButton></NavLink>
 
-@if (customer == null)
+@if (_customers == null)
 {
     <MudProgressCircular Color="Color.Default" Indeterminate="true" />
 }
 else
 {
-    <MudTable Items="customer" Hover="true" SortLabel="Sort By" Elevation="0" AllowUnsorted="false">
+    <MudTable Items="_customers" Hover="true" SortLabel="Sort By" Elevation="0" AllowUnsorted="false">
         <HeaderContent>
             <MudTh></MudTh>
             <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<CustomerOverview, object>(x => x.Id)">Customer ID</MudTableSortLabel></MudTh>
@@ -32,8 +29,10 @@ else
             <MudTh><MudTableSortLabel SortBy="new Func<CustomerOverview, object>(x => x.Country)">Country</MudTableSortLabel></MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="Enabled"><MudCheckBox T="bool" Checked="@context.selected" ValueChanged="@(e => UpdateRecord(context, e))"></MudCheckBox></MudTd>
-            <MudTd DataLabel="Id"><MudLink Href="Customer">@context.Id</MudLink></MudTd>
+        @*    <MudTd DataLabel="Enabled"><MudCheckBox T="bool" Checked="@context.selected" ValueChanged="@(e => UpdateRecord(context, e))"></MudCheckBox></MudTd> *@
+        <MudTd DataLabel="Id">
+            <MudLink Href="@($"/customer/{context.Id}")">@context.Id</MudLink>
+        </MudTd>
             <MudTd DataLabel="CompanyName">@context.CompanyName</MudTd>
             <MudTd DataLabel="Email">@context.Email</MudTd>
             <MudTd DataLabel="PhoneNumber">@context.PhoneNumber</MudTd>
@@ -52,42 +51,11 @@ else
 
 @code {
     public bool Basic_CheckBox1 { get; set; } = true;
-    private CustomerOverview[]? customer;
+    private List<Data.Model.Customer> _customers = new List<Data.Model.Customer>();
 
     protected override async Task OnInitializedAsync()
     {
-       /*
-        //values from database
-        customer = new Customer[2];
-        customer[0] = new Customer();
-        customer[0].Id = "C-001";
-        customer[0].CompanyName = "USTP";
-        customer[0].Email = "is241305@ustp-students.at";
-        customer[0].PhoneNumber = "is241305@ustp-students.at";
-        customer[0].Address = "1";
-        customer[0].City = "St.Pölten";
-        customer[0].State = "NÖ";
-        customer[0].ZipCode = "1111";
-        customer[0].Country = "Austria";
-
-
-        customer[1] = new Customer();
-        customer[1].Id = "IS002";
-        customer[1].CompanyName = "Philipp Muehlparzer ";
-        customer[1].Email = "Admin";
-        customer[1].PhoneNumber = "....";
-        customer[1].Address = "Admin";
-        customer[1].City = "Admin";
-        customer[1].State = "Admin";
-        customer[1].ZipCode = "Admin";
-        customer[1].Country = "Admin";
-        */
-       
+        _customers = await BackendApiHandler.GetAllCustomer();
     }
-
-    private async Task UpdateRecord(CustomerOverview record, bool ischecked)
-    {
-        record.selected = ischecked;
-
-    }
+    
 }

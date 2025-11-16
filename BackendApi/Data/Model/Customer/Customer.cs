@@ -4,7 +4,7 @@ namespace BackendApi.Data.Model.Customer;
 
 public class Customer
 {
-    public string Id { get; set; }
+    public string? Id { get; set; }
     public string CompanyName { get; set; }
     public string Email { get; set; }
     public string? PhoneNumber { get; set; }
@@ -16,5 +16,5 @@ public class Customer
     public CustomerIsActive? Active { get; set; }
     public DateTime? CreateDate { get; set; }
     public DateTime? ChangeDate { get; set; }
-    public Guid UUId { get; set; }
+    public Guid? UUId { get; set; }
 }
