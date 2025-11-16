@@ -1,5 +1,7 @@
-﻿
-@page "/Customer"
+﻿@page "/Customer/{Id}"
+@using sims_web_app.Services
+@inject NavigationManager Navigation
+
 
 <PageTitle>Customer</PageTitle>
 
@@ -8,24 +10,36 @@
 <MudText Typo="Typo.body1" Class="mb-8">You can manage a customer here.</MudText>
 
 
-<MudTextField @bind-Value="CompanyName" Label="Company Name" Variant="Variant.Outlined"></MudTextField>
-<MudTextField @bind-Value="Email" Label="Email Address" Variant="Variant.Outlined"></MudTextField>
-<MudTextField @bind-Value="PhoneNumber" Label="Phone Number" Variant="Variant.Outlined"></MudTextField>
-<MudTextField @bind-Value="Address" Label="Address" Variant="Variant.Outlined"></MudTextField>
-<MudTextField @bind-Value="City" Label="City" Variant="Variant.Outlined"></MudTextField>
-<MudTextField @bind-Value="State" Label="State" Variant="Variant.Outlined"></MudTextField>
-<MudTextField @bind-Value="ZipCode" Label="Zip Code" Variant="Variant.Outlined"></MudTextField>
-<MudTextField @bind-Value="Country" Label="Country" Variant="Variant.Outlined"></MudTextField>
+<MudTextField @bind-Value="customer.CompanyName" Label="Company Name" Variant="Variant.Outlined"></MudTextField>
+<MudTextField @bind-Value="customer.Email" Label="Email Address" Variant="Variant.Outlined"></MudTextField>
+<MudTextField @bind-Value="customer.PhoneNumber" Label="Phone Number" Variant="Variant.Outlined"></MudTextField>
+<MudTextField @bind-Value="customer.Address" Label="Address" Variant="Variant.Outlined"></MudTextField>
+<MudTextField @bind-Value="customer.City" Label="City" Variant="Variant.Outlined"></MudTextField>
+<MudTextField @bind-Value="customer.City" Label="State" Variant="Variant.Outlined"></MudTextField>
+<MudTextField @bind-Value="customer.ZipCode" Label="Zip Code" Variant="Variant.Outlined"></MudTextField>
+<MudTextField @bind-Value="customer.Country" Label="Country" Variant="Variant.Outlined"></MudTextField>
 <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Medium">Save</MudButton>
 
 @code {
-    public string CompanyName { get; set; }
-    public string Email { get; set; }
-    public string PhoneNumber { get; set; }
-    public string Address { get; set; }
-    public string City { get; set; }
-    public string State { get; set; }
-    public string ZipCode { get; set; }
-    public string Country { get; set; }
-}
+    [Parameter]
+    public string Id { get; set; }
+
+    private Data.Model.Customer? customer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            customer = await BackendApiHandler.GetCustomerById(Id);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading customer: {ex.Message}");
+        }
+    }
+
+    private void Back()
+    {
+        Navigation.NavigateTo("/customers");
+    }
 }

@@ -1,7 +1,6 @@
 ﻿@page "/Incident/Overview"
-@using RestSharp; 
-@using System.Text.Json; 
 @using sims_web_app.Data.Model
+@using sims_web_app.Services
 
 <PageTitle>Incidents Overview</PageTitle>
 
@@ -12,26 +11,28 @@
 
 <MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium" />
 
-@if (incidents == null)
+@if (_incidents == null)
 {
     <MudProgressCircular Color="Color.Default" Indeterminate="true" />
 }
 else
 {
-    <MudTable Items="incidents" Hover="true" SortLabel="Sort By" Elevation="0" AllowUnsorted="false">
+    <MudTable Items="_incidents" Hover="true" SortLabel="Sort By" Elevation="0" AllowUnsorted="false">
         <HeaderContent>
             <MudTh></MudTh>
-            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<IncidentsOverview, object>(x => x.Id)">Incident ID</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<IncidentsOverview, object>(x => x.Summary)">Subject</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<IncidentsOverview, object>(x => x.Severity)">Severity</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<IncidentsOverview, object>(x => x.AssignedPerson!)">Assigned Person</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<IncidentsOverview, object>(x => x.Status)">Status</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<IncidentsOverview, object>(x => x.CreateDate)">created Date</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<IncidentsOverview, object>(x => x.Id)">Time to Resolution</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Incident, object>(x => x.Id)">Incident ID</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Incident, object>(x => x.Summary)">Subject</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Incident, object>(x => x.Severity)">Severity</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Incident, object>(x => x.AssignedPerson!)">Assigned Person</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Incident, object>(x => x.Status)">Status</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Incident, object>(x => x.CreateDate)">created Date</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Incident, object>(x => x.Id)">Time to Resolution</MudTableSortLabel></MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="Enabled"><MudCheckBox T="bool" Checked="@context.selected" ValueChanged="@(e => UpdateRecord(context, e))"></MudCheckBox></MudTd>
-            <MudTd DataLabel="Key"><MudLink Href="/INC">@context.Id</MudLink></MudTd>
+         @*   <MudTd DataLabel="Enabled"><MudCheckBox T="bool" Checked="@context.selected" ValueChanged="@(e => UpdateRecord(context, e))"></MudCheckBox></MudTd> *@
+         <MudTd DataLabel="Incident ID">
+             <MudLink Href="@($"/INC/{context.Id}")">@context.Id</MudLink>
+         </MudTd>
             <MudTd DataLabel="summary">@context.Summary</MudTd>
             <MudTd DataLabel="author">@context.Severity</MudTd>
             <MudTd DataLabel="assigned_person">@context.AssignedPerson</MudTd>
@@ -49,13 +50,14 @@ else
 @code {
 
     public bool Basic_CheckBox1 { get; set; } = true;
-    private IncidentsOverview[]? incidents;
 
-    private const string ApiBaseUrl = "hier URL";
-    private const string IncidentsEndpoint = "/api/incidents  Path?????";
+    private List<Incident> _incidents = new List<Incident>();
+
 
     protected override async Task OnInitializedAsync()
     {
+        _incidents = await BackendApiHandler.GetAllIncidents();
+
         /*
         try
         {
@@ -75,15 +77,11 @@ else
         if (!response.IsSuccessful || string.IsNullOrWhiteSpace(response.Content))
             {
                 Console.Error.WriteLine($"Failed to load incidents. Status: {response.StatusCode}, Error: {response.ErrorMessage}");
-                incidents = new List<IncidentsOverview>();
+                incidents = new List<Incident>();
                 return;
             }
         }
         */
-    }
-    private async Task UpdateRecord(IncidentsOverview record, bool ischecked)
-    {
-        record.selected = ischecked;
     }
 }
 

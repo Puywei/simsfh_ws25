@@ -1,10 +1,7 @@
-﻿
-@page "/Add_Customer"
-@using RestSharp;
-@using System.Text.Json;
-@using sims_web_app.Data.Model
-@using sims_web_app.Data.Model.Enum
+﻿@page "/Customer/Create"
+@using sims_web_app.Data.Model;
 @using sims_web_app.Services
+
 
 <PageTitle>Add Customer</PageTitle>
 
@@ -25,20 +22,12 @@
 </MudForm>
 
 @code {
-    public string CompanyName { get; set; }
-    public string Email { get; set; }
-    public string PhoneNumber { get; set; }
-    public string Address { get; set; }
-    public string City { get; set; }
-    public string State { get; set; }
-    public string ZipCode { get; set; }
-    public string Country { get; set; }
 
     private MudForm form;
     private Data.Model.Customer newCustomer = new Data.Model.Customer();
 
     private async Task SubmitCustomer()
     {
-        await BackendApiHandler.CreateCustomer(newCustomer);
+       await BackendApiHandler.CreateCustomer(newCustomer);
     }
 }

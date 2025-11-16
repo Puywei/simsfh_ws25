@@ -19,7 +19,6 @@ namespace BackendApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<LogEntry>>> GetLogs([FromQuery] int count = 50)
         {
-            // LRANGE list: start=0, end=count-1
             var redisValues = await _db.ListRangeAsync("logs", 0, count - 1);
 
             var logs = redisValues
