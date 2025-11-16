@@ -19,13 +19,17 @@ else
     <MudTable Items="log" Hover="true" SortLabel="Sort By" Elevation="0" AllowUnsorted="false">
         <HeaderContent>
             <MudTh></MudTh>
-            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Data.Model.LogOverview, object>(x => x.Id)">Log ID</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<Data.Model.LogOverview, object>(x => x.Event)">Event</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Data.Model.LogOverview, object>(x => x.logId)">Log ID</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Data.Model.LogOverview, object>(x => x.message)">Message</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Data.Model.LogOverview, object>(x => x.severity)">Severity</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Data.Model.LogOverview, object>(x => x.timestamp)">Timestamp</MudTableSortLabel></MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Enabled"><MudCheckBox T="bool" Checked="@context.selected" ValueChanged="@(e => UpdateRecord(context, e))"></MudCheckBox></MudTd>
-            <MudTd DataLabel="Id"><MudLink Href="Id">@context.Id</MudLink></MudTd>
-            <MudTd DataLabel="Event">@context.Event</MudTd>
+            <MudTd DataLabel="logId">@context.logId</MudTd>
+            <MudTd DataLabel="message">@context.message</MudTd>
+            <MudTd DataLabel="severity">@context.severity</MudTd>
+            <MudTd DataLabel="timestamp">@context.timestamp</MudTd>
         </RowTemplate>
         <PagerContent>
             <MudTablePager PageSizeOptions="new int[] { 50, 100 }" />
