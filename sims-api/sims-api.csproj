@@ -28,4 +28,12 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Migrations\UserDbContextModelSnapshot.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>
