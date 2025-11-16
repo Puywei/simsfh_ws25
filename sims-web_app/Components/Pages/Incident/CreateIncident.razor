@@ -2,6 +2,7 @@
 @using sims_web_app.Data.Model.Enum
 @using sims_web_app.Data.Model
 @using sims_web_app.Services
+@inject NavigationManager NavManager
 
 <PageTitle>New Ticket</PageTitle>
 
@@ -16,7 +17,7 @@
     <MudGrid>
         <MudItem xs="12">
             <MudField Label="Severity" Variant="Variant.Outlined" InnerPadding="false">
-                <MudRadioGroup T="IncidentSeverity?" @bind-Value="newIncident.Severity" Label="Severity">
+                <MudRadioGroup T="IncidentSeverity?" Required="true" @bind-Value="newIncident.Severity" Label="Severity">
                     <MudRadio T="IncidentSeverity?" Value="IncidentSeverity.Low">Low</MudRadio>
                     <MudRadio T="IncidentSeverity?" Value="IncidentSeverity.Medium">Medium</MudRadio>
                     <MudRadio T="IncidentSeverity?" Value="IncidentSeverity.High">High</MudRadio>
@@ -28,14 +29,20 @@
     <MudTextField T="string" Label="Description" Variant="Variant.Outlined" @bind-Value="newIncident.Description" Lines="10" />
     <MudButton Variant="Variant.Filled" ButtonType="ButtonType.Submit" OnClick="(() => SubmitIncident())" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Medium">Save</MudButton>
 </MudForm>
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <MudAlert Severity="Severity.Error" Class="my-4">@errorMessage</MudAlert>
+}
 
 
 @code {
+    private string errorMessage = string.Empty;
     private MudForm form;
     private Data.Model.Incident newIncident = new Data.Model.Incident();
 
     private async Task SubmitIncident()
     {
         await BackendApiHandler.CreateIncident(newIncident);
+        NavManager.NavigateTo("/Incident/Overview"); 
     }
 }

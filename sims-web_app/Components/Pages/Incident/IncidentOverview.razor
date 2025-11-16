@@ -1,0 +1,64 @@
+﻿@page "/Incident/Overview"
+@using sims_web_app.Data.Model
+@using sims_web_app.Services
+
+<PageTitle>Incidents Overview</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">Incidents Overview</MudText>
+<MudText Typo="Typo.body1" Class="mb-8">Security Incidents</MudText>
+
+<NavLink href="/Incident/Create"><MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary">Create new Ticket</MudButton></NavLink>
+
+<MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium" />
+
+@if (_incidents == null)
+{
+    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+}
+else
+{
+    <MudTable Items="_incidents" Hover="true" SortLabel="Sort By" Elevation="0" AllowUnsorted="false">
+        <HeaderContent>
+            <MudTh></MudTh>
+            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Data.Model.Incident, object>(x => x.Id)">Incident ID</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Data.Model.Incident, object>(x => x.Summary)">Subject</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Data.Model.Incident, object>(x => x.Severity)">Severity</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Data.Model.Incident, object>(x => x.AssignedPerson!)">Assigned Person</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Data.Model.Incident, object>(x => x.Status)">Status</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Data.Model.Incident, object>(x => x.CreateDate)">created Date</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Data.Model.Incident, object>(x => x.Id)">Time to Resolution</MudTableSortLabel></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+         @*   <MudTd DataLabel="Enabled"><MudCheckBox T="bool" Checked="@context.selected" ValueChanged="@(e => UpdateRecord(context, e))"></MudCheckBox></MudTd> *@
+         <MudTd DataLabel="Incident ID">
+             <MudLink Href="@($"/Incident/{context.Id}")">@context.Id</MudLink>
+         </MudTd>
+            <MudTd DataLabel="summary">@context.Summary</MudTd>
+            <MudTd DataLabel="author">@context.Severity</MudTd>
+            <MudTd DataLabel="assigned_person">@context.AssignedPerson</MudTd>
+            <MudTd DataLabel="assigned_person">@context.Status</MudTd>
+            <MudTd DataLabel="assigned_person">@context.CreateDate</MudTd>
+            <MudTd DataLabel="assigned_person">@context.Id</MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager PageSizeOptions="new int[] { 50, 100 }" />
+        </PagerContent>
+    </MudTable>
+
+}
+
+@code {
+
+    public bool Basic_CheckBox1 { get; set; } = true;
+
+    private List<Data.Model.Incident> _incidents = new List<Data.Model.Incident>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        _incidents = await BackendApiHandler.GetAllIncidents();
+        
+    }
+}
+
+

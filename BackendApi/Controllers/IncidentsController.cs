@@ -50,13 +50,14 @@ public class IncidentsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Incident>> Create(Incident newIncident)
     {
-        if (newIncident == null || newIncident.CustomerId == null)
+        if (newIncident.CustomerId == null)
             return BadRequest("Invalid request body");
 
         newIncident.Id = GenerateIdService.IncidentId(_dbContext);
         newIncident.UUId = Guid.NewGuid();
         newIncident.CreateDate = DateTime.Now;
         newIncident.ChangeDate = DateTime.Now;
+        newIncident.Comments = new List<IncidentComment>();
 
         _dbContext.Incidents.Add(newIncident);
         await _dbContext.SaveChangesAsync();

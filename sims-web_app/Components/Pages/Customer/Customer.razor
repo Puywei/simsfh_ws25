@@ -1,28 +1,35 @@
 ﻿@page "/Customer/{Id}"
 @using sims_web_app.Services
-@inject NavigationManager Navigation
 
 
 <PageTitle>Customer</PageTitle>
 
-<MudText Typo="Typo.h3" GutterBottom="true">// CustomerName!!!</MudText>
+@if (!isDone)
+{
+    <h1>Loading data...</h1>
+}
+else
+{
+    <MudText Typo="Typo.h3" GutterBottom="true">// CustomerName!!!</MudText>
 
-<MudText Typo="Typo.body1" Class="mb-8">You can manage a customer here.</MudText>
+    <MudText Typo="Typo.body1" Class="mb-8">You can manage a customer here.</MudText>
 
-
-<MudTextField @bind-Value="customer.CompanyName" Label="Company Name" Variant="Variant.Outlined"></MudTextField>
-<MudTextField @bind-Value="customer.Email" Label="Email Address" Variant="Variant.Outlined"></MudTextField>
-<MudTextField @bind-Value="customer.PhoneNumber" Label="Phone Number" Variant="Variant.Outlined"></MudTextField>
-<MudTextField @bind-Value="customer.Address" Label="Address" Variant="Variant.Outlined"></MudTextField>
-<MudTextField @bind-Value="customer.City" Label="City" Variant="Variant.Outlined"></MudTextField>
-<MudTextField @bind-Value="customer.City" Label="State" Variant="Variant.Outlined"></MudTextField>
-<MudTextField @bind-Value="customer.ZipCode" Label="Zip Code" Variant="Variant.Outlined"></MudTextField>
-<MudTextField @bind-Value="customer.Country" Label="Country" Variant="Variant.Outlined"></MudTextField>
-<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Medium">Save</MudButton>
+    <MudTextField @bind-Value="customer.CompanyName" Label="Company Name" Variant="Variant.Outlined"></MudTextField>
+    <MudTextField @bind-Value="customer.Email" Label="Email Address" Variant="Variant.Outlined"></MudTextField>
+    <MudTextField @bind-Value="customer.PhoneNumber" Label="Phone Number" Variant="Variant.Outlined"></MudTextField>
+    <MudTextField @bind-Value="customer.Address" Label="Address" Variant="Variant.Outlined"></MudTextField>
+    <MudTextField @bind-Value="customer.City" Label="City" Variant="Variant.Outlined"></MudTextField>
+    <MudTextField @bind-Value="customer.City" Label="State" Variant="Variant.Outlined"></MudTextField>
+    <MudTextField @bind-Value="customer.ZipCode" Label="Zip Code" Variant="Variant.Outlined"></MudTextField>
+    <MudTextField @bind-Value="customer.Country" Label="Country" Variant="Variant.Outlined"></MudTextField>
+    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Medium">Save</MudButton>
+}
 
 @code {
     [Parameter]
     public string Id { get; set; }
+
+    private bool isDone = false;
 
     private Data.Model.Customer? customer;
 
@@ -36,10 +43,7 @@
         {
             Console.WriteLine($"Error loading customer: {ex.Message}");
         }
-    }
 
-    private void Back()
-    {
-        Navigation.NavigateTo("/customers");
+        this.isDone = true;
     }
 }
