@@ -1,21 +1,29 @@
 ﻿@page "/"
+@using RestSharp
+@using System.Text.Json
 
 <PageTitle>SIMS Home</PageTitle>
 
 <MudText Typo="Typo.h3" GutterBottom="true">SIMS HOME</MudText>
 
-
 <div class="d-flex flex-column align-center mt-4">
-<MudTextField @bind-Value="user_email" Style="width: 280px;" Label="Email Address" Variant="Variant.Outlined"></MudTextField>
-@code {
-    public string user_email { get; set; }
-}
+<MudTextField @bind-Value="Email" Style="width: 280px;" Label="Email Address" Variant="Variant.Outlined"></MudTextField>
 </div>
 
 <div class="d-flex flex-column align-center mt-4">
     <MudTextField @bind-Value="Password" Style="width: 280px;" Label="Password" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ButtonTestclick" AdornmentAriaLabel="Show Password" />
 </div>
+
+<div style="
+     display:flex;
+     justify-content:center;">
+    <div style="transform: translateX(100px) translateY(40px);">
+<MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary">Login</MudButton>
+    </div>
+</div>
+
 @code {
+    public string Email { get; set; }
     public string Password { get; set; } = "";
 
     bool isShow;
@@ -37,12 +45,9 @@
             PasswordInput = InputType.Text;
         }
     }
-}
 
-<div style="
-     display:flex;
-     justify-content:center;">
-    <div style="transform: translateX(100px) translateY(40px);">
-<MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary">Login</MudButton>
-    </div>
-</div>
+    private async Task OnLoginClicked()
+    {
+        // We will fill this with a RestSharp call to your API
+    }
+}
