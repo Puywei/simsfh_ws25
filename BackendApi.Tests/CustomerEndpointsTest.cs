@@ -2,11 +2,10 @@
 using System.Net.Http.Json;
 using BackendApi.Data.Database;
 using BackendApi.Data.Model.Customer;
-using BackendApi.Data.Model.Incident;
+using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using FluentAssertions;
 using Xunit;
 
 namespace BackendApi.Test;
@@ -15,7 +14,6 @@ public class CustomerEndpointsTest
 {
     public class CustomerEndpointsTests : IClassFixture<WebApplicationFactory<Program>>
     {
-
         private readonly WebApplicationFactory<Program> _factory;
 
         public CustomerEndpointsTests(WebApplicationFactory<Program> factory)
@@ -40,79 +38,86 @@ public class CustomerEndpointsTest
                     db.Database.EnsureCreated();
 
                     db.Customers.AddRange(
-                        new Customer { Id = "C-1000", CompanyName = "Customer KG", Email = "customer@kg.at", UUId = Guid.NewGuid()},
-                        new Customer { Id = "C-1001", CompanyName = "Customer GmbH", Email = "customer@gmbh.at", UUId = Guid.NewGuid() }
+                        new Customer
+                        {
+                            Id = "C-1000", CompanyName = "Customer KG", Email = "customer@kg.at", UUId = Guid.NewGuid()
+                        },
+                        new Customer
+                        {
+                            Id = "C-1001", CompanyName = "Customer GmbH", Email = "customer@gmbh.at",
+                            UUId = Guid.NewGuid()
+                        }
                     );
                     db.SaveChanges();
                 });
             });
         }
-        
+
         [Fact]
         public async Task GetAllCustomers_ReturnsOk()
         {
-            HttpClient client = _factory.CreateClient();
+            var client = _factory.CreateClient();
 
-            HttpResponseMessage response = await client.GetAsync("/api/v1/customers");
+            var response = await client.GetAsync("/api/v1/Customers");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            List<Customer> customers = await response.Content.ReadFromJsonAsync<List<Customer>>();
+            var customers = await response.Content.ReadFromJsonAsync<List<Customer>>();
             customers.Should().NotBeNull();
             customers.Should().HaveCount(2);
             customers![0].CompanyName.Should().Be("Customer KG");
         }
-        
+
         [Fact]
         public async Task GetCustomerById_ReturnsOk()
         {
-            HttpClient client = _factory.CreateClient();
-            
-            string id = "C-1000";
-            HttpResponseMessage response = await client.GetAsync($"/api/v1/customers/{id}");
+            var client = _factory.CreateClient();
+
+            var id = "C-1000";
+            var response = await client.GetAsync($"/api/v1/Customers/{id}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            Customer customer = await response.Content.ReadFromJsonAsync<Customer>();
+            var customer = await response.Content.ReadFromJsonAsync<Customer>();
             customer.Should().NotBeNull();
             customer.CompanyName.Should().Be("Customer KG");
         }
-        
+
         [Fact]
         public async Task GetCustomerById_ReturnsNotFound()
         {
-            HttpClient client = _factory.CreateClient();
-            
-            string id = "C-1009";
-            HttpResponseMessage response = await client.GetAsync($"/api/v1/customers/{id}");
+            var client = _factory.CreateClient();
+
+            var id = "C-1009";
+            var response = await client.GetAsync($"/api/v1/Customers/{id}");
 
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
-        
+
         [Fact]
         public async Task CreateCustomer_ReturnsOk()
         {
-            HttpClient client = _factory.CreateClient();
+            var client = _factory.CreateClient();
 
             Customer customer = new()
             {
                 CompanyName = "Customer KG12",
                 Email = "customer@cus.at"
             };
-            HttpResponseMessage response = await client.PostAsJsonAsync($"/api/v1/customers/", customer);
+            var response = await client.PostAsJsonAsync("/api/v1/Customers/", customer);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
-            
-            Customer? newCustomer = await response.Content.ReadFromJsonAsync<Customer>();
-            
+
+            var newCustomer = await response.Content.ReadFromJsonAsync<Customer>();
+
             newCustomer.Should().NotBeNull();
             newCustomer.CompanyName.Should().Be("Customer KG12");
             newCustomer.Email.Should().Be("customer@cus.at");
         }
-        
+
         [Fact]
         public async Task CreateCustomerWithId_ReturnsWithOtherIdOk()
         {
-            HttpClient client = _factory.CreateClient();
+            var client = _factory.CreateClient();
 
             Customer customer = new()
             {
@@ -120,46 +125,46 @@ public class CustomerEndpointsTest
                 CompanyName = "Customer KG12",
                 Email = "customer@cus.at"
             };
-            HttpResponseMessage response = await client.PostAsJsonAsync($"/api/v1/customers/", customer);
+            var response = await client.PostAsJsonAsync("/api/v1/Customers/", customer);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
-            
-            Customer? newCustomer = await response.Content.ReadFromJsonAsync<Customer>();
-            
+
+            var newCustomer = await response.Content.ReadFromJsonAsync<Customer>();
+
             newCustomer.Should().NotBeNull();
             newCustomer.Id.Should().NotBe("C-1000");
             newCustomer.CompanyName.Should().Be("Customer KG12");
             newCustomer.Email.Should().Be("customer@cus.at");
         }
-        
+
         [Fact]
         public async Task UpdateCustomer_ReturnsOk()
         {
-            HttpClient client = _factory.CreateClient();
-            
-            string customerToUpdate = "C-1000";
+            var client = _factory.CreateClient();
 
-            Customer customer = new Customer() { CompanyName = "Updated Customer KG12", Email = "update mailaddress" };
-            HttpResponseMessage response = await client.PutAsJsonAsync($"/api/v1/customers/{customerToUpdate}", customer);
+            var customerToUpdate = "C-1000";
+
+            var customer = new Customer { CompanyName = "Updated Customer KG12", Email = "update mailaddress" };
+            var response = await client.PutAsJsonAsync($"/api/v1/customers/{customerToUpdate}", customer);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            
-            Customer? newCustomer = await response.Content.ReadFromJsonAsync<Customer>();
-            
+
+            var newCustomer = await response.Content.ReadFromJsonAsync<Customer>();
+
             newCustomer.Should().NotBeNull();
             newCustomer.Id.Should().Be("C-1000");
             newCustomer.CompanyName.Should().Be("Updated Customer KG12");
             newCustomer.Email.Should().Be("update mailaddress");
         }
-        
+
         [Fact]
         public async Task UpdateCustomerWrongId_ReturnsBadRequest()
         {
-            HttpClient client = _factory.CreateClient();
-            
-            string customerToUpdate = "C-1000";
+            var client = _factory.CreateClient();
 
-            Customer customer = new Customer(); // { CompanyName = "Updated Customer KG12", Email = "update mailaddress" };
-            
-            HttpResponseMessage response = await client.PutAsJsonAsync($"/api/v1/customers/{customerToUpdate}", customer);
+            var customerToUpdate = "C-1000";
+
+            var customer = new Customer(); // { CompanyName = "Updated Customer KG12", Email = "update mailaddress" };
+
+            var response = await client.PutAsJsonAsync($"/api/v1/Customers/{customerToUpdate}", customer);
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
     }

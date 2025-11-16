@@ -4,7 +4,6 @@ using StackExchange.Redis;
 
 namespace BackendApi.Data.Database;
 
-
 public class RedisNoSqlDbContextDbSet<T> where T : class
 {
     private readonly IDatabase _db;
@@ -16,7 +15,10 @@ public class RedisNoSqlDbContextDbSet<T> where T : class
         _prefix = typeof(T).Name + ":";
     }
 
-    private string Key(string id) => _prefix + id;
+    private string Key(string id)
+    {
+        return _prefix + id;
+    }
 
     public async Task<T?> FirstOrDefaultAsync(Func<T, bool> predicate)
     {

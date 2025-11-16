@@ -1,6 +1,4 @@
 ﻿using BackendApi.Data.Database;
-using BackendApi.Data.Model.Customer;
-using BackendApi.Data.Model.Incident;
 
 namespace BackendApi.Data.Services;
 
@@ -8,35 +6,29 @@ public static class GenerateIdService
 {
     public static string IncidentId(MsSqlDbContext dbContext)
     {
-        Incident? lastIncident = dbContext.Incidents.OrderByDescending(inc => inc.Id).FirstOrDefault();
+        var lastIncident = dbContext.Incidents.OrderByDescending(inc => inc.Id).FirstOrDefault();
 
-        int newIncidentNr = 1; 
-        
+        var newIncidentNr = 1;
+
         if (lastIncident != null)
         {
-            string lastId = lastIncident.Id!;
-            if (int.TryParse(lastId.Substring(4), out int lastIncidentNr))
-            {
-                newIncidentNr = lastIncidentNr +1;
-            }
+            var lastId = lastIncident.Id!;
+            if (int.TryParse(lastId.Substring(4), out var lastIncidentNr)) newIncidentNr = lastIncidentNr + 1;
         }
 
         return $"INC-{newIncidentNr:D4}";
     }
-    
+
     public static string CustomerId(MsSqlDbContext dbContext)
     {
-        Customer? lastCustomer = dbContext.Customers.OrderByDescending(c => c.Id).FirstOrDefault();
+        var lastCustomer = dbContext.Customers.OrderByDescending(c => c.Id).FirstOrDefault();
 
-        int newCustomerId = 1; 
-        
+        var newCustomerId = 1;
+
         if (lastCustomer != null)
         {
-            string lastId = lastCustomer.Id!;
-            if (int.TryParse(lastId.Substring(2), out int lastCustomerNr))
-            {
-                newCustomerId = lastCustomerNr +1;
-            }
+            var lastId = lastCustomer.Id!;
+            if (int.TryParse(lastId.Substring(2), out var lastCustomerNr)) newCustomerId = lastCustomerNr + 1;
         }
 
         return $"C-{newCustomerId:D4}";

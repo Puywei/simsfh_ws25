@@ -1,5 +1,4 @@
 ﻿using BackendApi.Data.Model.Enum;
-using Microsoft.EntityFrameworkCore;
 
 namespace BackendApi.Data.Model.Incident;
 
@@ -18,5 +17,4 @@ public class Incident
     public IncidentSeverity? Severity { get; set; }
     public string CustomerId { get; set; }
     public Guid UUId { get; set; }
-    
 }

@@ -4,9 +4,21 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "REDIS_CONNECTION": "localhost:6379,password=SecurePassword",
+        "MSSQL_CONNECTION": "Data Source=localhost;User ID=sa;Password=eZW6FZ7zswB8Dzy@L9L9cAQBUt*@*jda;Database=SIMSData;TrustServerCertificate=true"
       },
       "applicationUrl": "https://localhost:51930;http://localhost:51931"
+    },
+    "BackendApiTesting": {
+      "commandName": "Project",
+      "launchBrowser": false,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Testing",
+        "TESTING": "true",
+        "REDIS_CONNECTION": "localhost:6379"
+      },
+      "applicationUrl": "http://localhost:5005"
     }
   }
 }

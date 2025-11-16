@@ -1,22 +1,32 @@
-using Microsoft.EntityFrameworkCore;
+using BackendApi;
 using BackendApi.Data.Database;
 using BackendApi.Data.Services;
-using BackendApi.Endpoints;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
-if (builder.Environment.EnvironmentName == "IntegrationTesting")
-{
-    builder.Services.AddDbContext<MsSqlDbContext>(options =>
-        options.UseSqlServer("Data Source=localhost;User ID=sa;Password=eZW6FZ7zswB8Dzy@L9L9cAQBUt*@*jda;Database=SIMSDataTEST;TrustServerCertificate=true"));
-}
-builder.Services.AddDbContext<MsSqlDbContext>(options =>
-    options.UseSqlServer("Data Source=localhost;User ID=sa;Password=eZW6FZ7zswB8Dzy@L9L9cAQBUt*@*jda;Database=SIMSData;TrustServerCertificate=true"));
+builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<RedisLogService>();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "SIMS Backend API", Version = "v1" });
+    c.EnableAnnotations();
+});
+
+builder.Services.AddDbContext<MsSqlDbContext>(options =>
+    options.UseSqlServer(Environment.GetEnvironmentVariable("MSSQL_CONNECTION")));
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(provider =>
+{
+    string? redisConnectionString = Environment.GetEnvironmentVariable("REDIS_CONNECTION");
+    return ConnectionMultiplexer.Connect(redisConnectionString);
+});
+
+builder.Services.AddScoped<IRedisLogService, RedisLogService>();
 
 var app = builder.Build();
 
@@ -34,15 +44,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
-app.MapIncidentEndpoints(); 
-app.MapCustomerEndpoints();
-app.MapLogEndpoints();
-
+app.UseMiddleware<RedisLoggingMiddleware>();
+app.MapControllers();
 
 
 app.Run();
 
 // notwendig für Unit Tests
-public partial class Program { }
+public partial class Program
+{
+}

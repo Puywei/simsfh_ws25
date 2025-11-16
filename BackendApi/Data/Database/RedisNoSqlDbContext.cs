@@ -1,18 +1,24 @@
 ﻿using BackendApi.Data.Model.LogData;
 using StackExchange.Redis;
-using Microsoft.Extensions.Configuration;
 
 namespace BackendApi.Data.Database;
+
 public class RedisNoSqlDbContext
 {
-    private readonly IConnectionMultiplexer _redis;
-    private readonly IDatabase _db;
-
-    public RedisNoSqlDbContext(IConnectionMultiplexer redis)
+    public RedisNoSqlDbContext()
     {
-        _redis = redis;
-        _db = redis.GetDatabase();
-        Logs = new RedisNoSqlDbContextDbSet<LogEntry>(_db);
+        ConnectionMultiplexer redis = ConnectionMultiplexer.Connect(Environment.GetEnvironmentVariable("REDIS_CONNECTION"));
+        try
+        {
+            IDatabase db = redis.GetDatabase();
+            Logs = new RedisNoSqlDbContextDbSet<LogEntry>(db);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+
     }
 
     public RedisNoSqlDbContextDbSet<LogEntry> Logs { get; }

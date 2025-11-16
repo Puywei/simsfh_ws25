@@ -1,30 +1,28 @@
-﻿using StackExchange.Redis;
-using System.Text.Json;
-using BackendApi.Data.Database;
+﻿using BackendApi.Data.Database;
 using BackendApi.Data.Model.LogData;
+using StackExchange.Redis;
+using System.Text.Json;
 
 
 namespace BackendApi.Data.Services;
 
-public class RedisLogService
+public interface IRedisLogService
 {
-    private readonly RedisNoSqlDbContext _dbContext;
+    Task LogRequestAsync(LogEntry entry);
+}
 
-    public RedisLogService(RedisNoSqlDbContext dbContext)
+public class RedisLogService : IRedisLogService
+{
+    private readonly IDatabase _db;
+
+    public RedisLogService(IConnectionMultiplexer redis)
     {
-        _dbContext = dbContext;
+        _db = redis.GetDatabase();
     }
 
-    public async Task<LogEntry> LogAsync(string message)
+    public async Task LogRequestAsync(LogEntry entry)
     {
-        var log = new LogEntry
-        {
-            LogId = Guid.NewGuid().ToString(),
-            Message = message,
-            Timestamp = DateTime.UtcNow
-        };
-
-        await _dbContext.Logs.AddAsync(log.LogId, log);
-        return log;
+        var json = JsonSerializer.Serialize(entry);
+        await _db.ListLeftPushAsync("logs", json);
     }
 }

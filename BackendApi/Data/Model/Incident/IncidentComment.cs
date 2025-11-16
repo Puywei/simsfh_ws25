@@ -4,11 +4,10 @@ namespace BackendApi.Data.Model.Incident;
 
 public class IncidentComment
 {
-    [Key]
-    public Guid CommentId { get; set; }
-    
+    [Key] public Guid CommentId { get; set; }
+
     public int CommentOrder { get; internal set; }
-    
+
     public Incident Incident { get; set; }
     public string IncidentId { get; set; }
     public Guid UserId { get; set; }
