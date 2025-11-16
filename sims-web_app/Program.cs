@@ -1,15 +1,20 @@
 using MudBlazor.Services;
 using sims_web_app.Components;
 using sims_web_app.Services;
+using Blazored.LocalStorage;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add MudBlazor services
 builder.Services.AddMudServices();
 
+//Add Blazored LocalStorage
+builder.Services.AddBlazoredLocalStorage();
+
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
 
 var app = builder.Build();
 
