@@ -482,3 +482,8 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+
+# Ignore the whole directory
+sims-api/container-data/postgres/*
+sims-api/Migrations/*

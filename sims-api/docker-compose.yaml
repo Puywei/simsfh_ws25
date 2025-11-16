@@ -17,9 +17,9 @@ services:
         build: .
         restart: unless-stopped
         ports:
-        - "5000:80"
+        - "5000:8080"
         environment:
-        - ASPNETCORE_ENVIRONMENT=Development
+        - ASPNETCORE_ENVIRONMENT=Production
         - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=userapi;Username=postgres;Password=postgres
         - Jwt__Key=noneofyourgoddamnbusinessthishastobesogoddamnverylongjesuschristandmariaandjoseph
         - Jwt__Issuer=sims-api

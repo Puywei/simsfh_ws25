@@ -95,7 +95,17 @@ public class Program
         
 
         var app = builder.Build();
-
+        
+        using (var scope = app.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<UserDbContext>();
+            db.Database.Migrate();
+            db.Seed();
+        }
+        
+        
+        
+        
         // For Swagger (only during the development....I guess
         if (app.Environment.IsDevelopment())
         {
