@@ -34,7 +34,10 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<MsSqlDbContext>();
-    db.Database.EnsureCreated();
+    if (!db.Database.CanConnect())
+    {
+        db.Database.EnsureCreated();
+    }
 }
 
 

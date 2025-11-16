@@ -5,23 +5,56 @@ using RestSharp;
 
 public static class BackendApiHandler
 {
-    private static readonly string baseUrl = "http://localhost:5001/api/v1/"; // Dein Endpoint
-
+    private static readonly string baseUrl = Environment.GetEnvironmentVariable("BackendApiBaseUrl");
+    
+    private static (RestRequest, RestClient) RestRequestHelper(string subUrl, Method method)
+    {
+        RestClient client = new RestClient(baseUrl + subUrl);
+        RestRequest request = new RestRequest("", method);
+        return (request, client);
+    }
+    
     public static async Task<Incident?> CreateIncident(Incident incident)
     {
-        var client = new RestClient(baseUrl + "incidents");
-        var request = new RestRequest("", Method.Post);
+        (RestRequest request,RestClient client) = RestRequestHelper("/Incidents", Method.Post);
         request.AddJsonBody(incident);
-
-        var response = await client.ExecuteAsync<Incident>(request);
-
-        if (response.IsSuccessful)
-        {
-            return response.Data;
-        }
-        else
-        {
-            throw new Exception($"Error creating incident: {response.StatusCode} - {response.Content}");
-        }
+        RestResponse<Incident> response = await client.ExecuteAsync<Incident>(request);
+        
+        return response.Data;
     }
+
+    public static async Task<List<Incident>> GetAllIncidents()
+    {
+        (RestRequest request,RestClient client) = RestRequestHelper("/Incidents", Method.Get);
+        RestResponse<List<Incident>> response = await client.ExecuteAsync<List<Incident>>(request);
+        
+        return response.Data;
+    }
+
+    public static async Task<Incident?> GetIncidentById(int id)
+    {
+        RestClient client = new RestClient(baseUrl + $"/Incidents/{id}");
+        RestRequest request = new RestRequest("");
+        RestResponse<Incident> response = await client.ExecuteAsync<Incident>(request);
+        
+        return response.Data;
+    }
+    
+    public static async Task<RestResponse> DeleteIncident(int id)
+    {
+        (RestRequest request,RestClient client) = RestRequestHelper($"/Incidents/{id}", Method.Delete);
+        RestResponse response = await client.ExecuteAsync(request);
+        
+        return response;
+    }
+
+    public static async Task<RestResponse> UpdateIncident(Incident incident, string incidentId)
+    {
+        (RestRequest request,RestClient client) = RestRequestHelper($"/Incidents/{incidentId}", Method.Put);
+        request.AddJsonBody(incident);
+        RestResponse response = await client.ExecuteAsync(request);
+        
+        return response;
+    }
+    
 }
