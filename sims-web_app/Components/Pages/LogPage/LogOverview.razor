@@ -1,0 +1,80 @@
+﻿@page "/LogOverview"
+@using RestSharp;
+@using System.Text.Json;
+@using sims_web_app.Data.Model
+@using sims_web_app.Data.Model.Enum
+@using sims_web_app.Services
+
+<PageTitle>Log</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">Event Log</MudText>
+<MudText Typo="Typo.body1" Class="mb-8">..............</MudText>
+
+@if (log == null)
+{
+    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+}
+else
+{
+    <MudTable Items="log" Hover="true" SortLabel="Sort By" Elevation="0" AllowUnsorted="false">
+        <HeaderContent>
+            <MudTh></MudTh>
+            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Data.Model.LogOverview, object>(x => x.logId)">Log ID</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Data.Model.LogOverview, object>(x => x.message)">Message</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Data.Model.LogOverview, object>(x => x.severity)">Severity</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Data.Model.LogOverview, object>(x => x.timestamp)">Timestamp</MudTableSortLabel></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Enabled"><MudCheckBox T="bool" Checked="@context.selected" ValueChanged="@(e => UpdateRecord(context, e))"></MudCheckBox></MudTd>
+            <MudTd DataLabel="logId">@context.logId</MudTd>
+            <MudTd DataLabel="message">@context.message</MudTd>
+            <MudTd DataLabel="severity">@context.severity</MudTd>
+            <MudTd DataLabel="timestamp">@context.timestamp</MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager PageSizeOptions="new int[] { 50, 100 }" />
+        </PagerContent>
+    </MudTable>
+
+}
+
+@code {
+    public bool Basic_CheckBox1 { get; set; } = true;
+    private Data.Model.LogOverview[]? log;
+    protected override async Task OnInitializedAsync()
+    {
+       /*
+        //values from database
+        customer = new Customer[2];
+        customer[0] = new Customer();
+        customer[0].Id = "C-001";
+        customer[0].CompanyName = "USTP";
+        customer[0].Email = "is241305@ustp-students.at";
+        customer[0].PhoneNumber = "is241305@ustp-students.at";
+        customer[0].Address = "1";
+        customer[0].City = "St.Pölten";
+        customer[0].State = "NÖ";
+        customer[0].ZipCode = "1111";
+        customer[0].Country = "Austria";
+
+
+        customer[1] = new Customer();
+        customer[1].Id = "IS002";
+        customer[1].CompanyName = "Philipp Muehlparzer ";
+        customer[1].Email = "Admin";
+        customer[1].PhoneNumber = "....";
+        customer[1].Address = "Admin";
+        customer[1].City = "Admin";
+        customer[1].State = "Admin";
+        customer[1].ZipCode = "Admin";
+        customer[1].Country = "Admin";
+        */
+       
+    }
+
+    private async Task UpdateRecord(Data.Model.LogOverview record, bool ischecked)
+    {
+        record.selected = ischecked;
+
+    }
+}
