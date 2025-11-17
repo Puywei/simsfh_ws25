@@ -486,4 +486,3 @@ $RECYCLE.BIN/
 
 # Ignore the whole directory
 sims-api/container-data/postgres/*
-sims-api/Migrations/*
