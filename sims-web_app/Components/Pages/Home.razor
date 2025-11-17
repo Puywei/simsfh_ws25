@@ -1,6 +1,11 @@
 ﻿@page "/"
 @using RestSharp
 @using System.Text.Json
+@using Blazored.LocalStorage
+@using MudBlazor
+@inject ILocalStorageService LocalStorage
+@inject NavigationManager Nav
+@inject ISnackbar Snackbar
 
 <PageTitle>SIMS Home</PageTitle>
 
@@ -18,13 +23,13 @@
      display:flex;
      justify-content:center;">
     <div style="transform: translateX(100px) translateY(40px);">
-<MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary">Login</MudButton>
+<MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" OnClick="OnLoginClicked">Login</MudButton>
     </div>
 </div>
 
 @code {
-    public string Email { get; set; }
-    public string Password { get; set; } = "";
+    public string Email { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
 
     bool isShow;
     InputType PasswordInput = InputType.Password;
@@ -32,7 +37,7 @@
 
     void ButtonTestclick()
     {
-        @if (isShow)
+        if (isShow)
         {
             isShow = false;
             PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
@@ -48,6 +53,41 @@
 
     private async Task OnLoginClicked()
     {
-        // We will fill this with a RestSharp call to your API
+        var client = new RestClient("http://localhost:5000"); 
+        var request = new RestRequest("/api/Auth/login", Method.Post);
+
+
+        request.AddJsonBody(new
+        {
+            email = Email,
+            password = Password
+        });
+
+        var response = await client.ExecuteAsync(request);
+
+        if (!response.IsSuccessful)
+        {
+            Snackbar.Add("Login failed. Invalid credentials.");
+            return;
+        }
+
+        var loginResult = JsonSerializer.Deserialize<LoginResult>(response.Content!,
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        await LocalStorage.SetItemAsync("authToken", loginResult.Token);
+
+        Snackbar.Add($"Welcome {loginResult.Firstname}!");
+
+        Nav.NavigateTo("/Incident/Overview");
+    }
+    
+    public class LoginResult
+    {
+        public string Message { get; set; }
+        public string Token { get; set; }
+        public Guid Uid { get; set; }
+        public string Firstname { get; set; }
+        public string Lastname { get; set; }
+        public string Role { get; set; }
     }
 }

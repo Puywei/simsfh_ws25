@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics;
+using System.Net;
 using sims_web_app.Data.Model;
 using RestSharp;
 using System.Net.Http; 
@@ -18,41 +19,26 @@ public static class BackendApiHandler
         return (request, client);
     }
     
+
     public static async Task<Incident?> CreateIncident(Incident incident)
     {
-        var client = new RestClient(baseUrl + "incidents");
-        var request = new RestRequest("", Method.Post);
-        request.AddJsonBody(incident);
-
-        var response = await client.ExecuteAsync<Incident>(request);
-
-        if (response.IsSuccessful)
-        {
-            return response.Data;
-        }
-        else
-        {
-            throw new Exception($"Error creating incident: {response.StatusCode} - {response.Content}");
-        }
-    }
-    /*public static async Task<Incident?> CreateIncident(Incident incident)
-    {
         (RestRequest request,RestClient client) = RestRequestHelper("/Incidents", Method.Post);
+        incident.Comments = new List<IncidentComment>();
         request.AddJsonBody(incident);
         RestResponse<Incident> response = await client.ExecuteAsync<Incident>(request);
         
         return response.Data;
-    }*/
+    }
 
     public static async Task<List<Incident>> GetAllIncidents()
     {
         (RestRequest request,RestClient client) = RestRequestHelper("/Incidents", Method.Get);
         RestResponse<List<Incident>> response = await client.ExecuteAsync<List<Incident>>(request);
         
-        return response.Data.ToList();
+        return response.Data;
     }
 
-    public static async Task<Incident?> GetIncidentById(int id)
+    public static async Task<Incident?> GetIncidentById(string id)
     {
         RestClient client = new RestClient(baseUrl + $"/Incidents/{id}");
         RestRequest request = new RestRequest("");
@@ -100,12 +86,22 @@ public static class BackendApiHandler
     
     public static async Task<Customer> GetCustomerById(string id)
     {
-       
-        RestClient client = new RestClient(baseUrl + $"/Customers/{id}");
-        RestRequest request = new RestRequest("");
-       
+        /*
+        using (HttpClient httpClient = new HttpClient())
+        using (HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, $"{baseUrl}/Customers/{id}"))
+        {
+            HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(httpRequestMessage);
+
+            var x = 0;
+        }
+        */
+        
+        RestClient client = new RestClient(baseUrl);
+        RestRequest request = new RestRequest($"Customers/{id}");
+        
         var response = await client.ExecuteAsync<Customer>(request);
-        return response.Data;
+        
+        return response.Data!;
     }
     
 }
