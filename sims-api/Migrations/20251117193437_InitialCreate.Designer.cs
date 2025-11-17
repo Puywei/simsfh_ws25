@@ -12,8 +12,8 @@ using sims.Data;
 namespace sims.Migrations
 {
     [DbContext(typeof(UserDbContext))]
-    [Migration("20251117162250_InitializeDB")]
-    partial class InitializeDB
+    [Migration("20251117193437_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

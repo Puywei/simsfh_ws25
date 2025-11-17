@@ -12,6 +12,11 @@ services:
         - ./container-data/postgres:/var/lib/postgresql/data
         networks:
         - userapi-net
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U postgres -d userapi"]
+            interval: 10s
+            timeout: 5s
+            retries: 10
 
     user-api:
         build: .
@@ -19,12 +24,13 @@ services:
         ports:
         - "5000:8080"
         environment:
-        - ASPNETCORE_ENVIRONMENT=Production
+        - ASPNETCORE_ENVIRONMENT=Development
         - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=userapi;Username=postgres;Password=postgres
         - Jwt__Key=noneofyourgoddamnbusinessthishastobesogoddamnverylongjesuschristandmariaandjoseph
         - Jwt__Issuer=sims-api
         depends_on:
-        - postgres
+            postgres:
+                condition: service_healthy
         networks:
         - userapi-net
 
