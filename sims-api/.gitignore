@@ -1,3 +1,2 @@
 # Ignore the whole directory
 container-data/postgres/*
-Migrations/*
