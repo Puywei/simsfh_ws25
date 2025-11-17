@@ -22,6 +22,9 @@ namespace sims.Data
             modelBuilder.Entity<User>(entity =>
             {
                 entity.HasKey(u => u.Uid);
+                entity.Property(u => u.Uid)
+                    .ValueGeneratedOnAdd();
+                
                 entity.HasIndex(u => u.Email).IsUnique();
 
                 entity.Property(u => u.Firstname).IsRequired().HasMaxLength(32);
@@ -81,7 +84,6 @@ namespace sims.Data
                 Users.AddRange(
                     new User
                     {
-                        Uid = 1,
                         Firstname = "Default",
                         Lastname = "Administrator",
                         Email = "admin@admin.com",
@@ -90,7 +92,6 @@ namespace sims.Data
                     },
                     new User
                     {
-                        Uid = 2,
                         Firstname = "Max",
                         Lastname = "Mustermann",
                         Email = "max@mustermann.com",
@@ -99,7 +100,6 @@ namespace sims.Data
                     },
                     new User
                     {
-                        Uid = 3,
                         Firstname = "Maria",
                         Lastname = "Musterfrau",
                         Email = "maria@musterfrau.com",
