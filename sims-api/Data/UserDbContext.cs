@@ -9,7 +9,7 @@ namespace sims.Data
         {
         }
 
-        // This creates the tables using EF
+        // Creates tables
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<BlacklistedToken> BlacklistedTokens { get; set; }
