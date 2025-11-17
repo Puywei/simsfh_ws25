@@ -1,0 +1,42 @@
+﻿@using sims_web_app.Data.Model
+@using MudBlazor
+@using sims_web_app.Services
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <DialogContent>
+        <MudTextField @bind-Value="_customer.CompanyName" Label="Firma" Required="true" />
+        <MudTextField @bind-Value="_customer.Email" Label="E-Mail" Required="true" />
+        <MudTextField @bind-Value="_customer.PhoneNumber" Label="Telefon" />
+        <MudTextField @bind-Value="_customer.City" Label="Stadt" />
+        <MudTextField @bind-Value="_customer.Country" Label="Land" />
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton Color="Color.Default" OnClick="Cancel">Abbrechen</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Save">Speichern</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private Customer _customer = new();
+
+    [CascadingParameter] IMudDialogInstance? MudDialog { get; set; }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private async void Save()
+    {
+        bool isCreated = await BackendApiHandler.CreateCustomer(_customer);
+        MudDialog.Close(DialogResult.Ok(_customer));
+
+        if (isCreated)
+        {
+            Snackbar.Add($"Customer {_customer.CompanyName} created successfully!", Severity.Success);
+        }
+        else
+        {
+            Snackbar.Add($"Error by creating the customer!", Severity.Error);
+        }
+    }
+}

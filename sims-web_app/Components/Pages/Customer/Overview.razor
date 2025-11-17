@@ -1,61 +1,173 @@
 ﻿@page "/Customer/Overview"
 @using sims_web_app.Data.Model
 @using sims_web_app.Services
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
 
-<PageTitle>Manage Customer</PageTitle>
+<PageTitle>Customer Overview</PageTitle>
 
-<MudText Typo="Typo.h3" GutterBottom="true">Manage Customer</MudText>
-<MudText Typo="Typo.body1" Class="mb-8">..............</MudText>
+<MudPaper Class="pa-6" Elevation="2">
+    <MudStack Spacing="2">
+        <MudText Typo="Typo.h4" Color="Color.Primary">Customer Management</MudText>
+        <MudText Typo="Typo.body2" Color="Color.Default">
+            Übersicht aller Kunden im System
+        </MudText>
 
-<NavLink href="/Customer/Create"><MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary">Create Customer</MudButton></NavLink>
+        @if (!isDone)
+        {
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+            <MudText Typo="Typo.body1">Daten werden geladen...</MudText>
+        }
+        else
+        {
+            <MudDataGrid Items="_customers">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Customer Overview</MudText>
+                    <MudSpacer />
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenCreateCustomerDialog"
+                               StartIcon="@Icons.Material.Filled.Add">
+                        Neuer Kunde
+                    </MudButton>
+                </ToolBarContent>
 
-@if (_customers == null)
-{
-    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
-}
-else
-{
-    <MudTable Items="_customers" Hover="true" SortLabel="Sort By" Elevation="0" AllowUnsorted="false">
-        <HeaderContent>
-            <MudTh></MudTh>
-            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<CustomerOverview, object>(x => x.Id)">Customer ID</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<CustomerOverview, object>(x => x.CompanyName)">Company Name</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<CustomerOverview, object>(x => x.Email)">Email</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<CustomerOverview, object>(x => x.PhoneNumber!)">Phone Number</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<CustomerOverview, object>(x => x.Address)">Address</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<CustomerOverview, object>(x => x.City)">City</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<CustomerOverview, object>(x => x.State)">State</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<CustomerOverview, object>(x => x.ZipCode)">Zip Code</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<CustomerOverview, object>(x => x.Country)">Country</MudTableSortLabel></MudTh>
-        </HeaderContent>
-        <RowTemplate>
-        @*    <MudTd DataLabel="Enabled"><MudCheckBox T="bool" Checked="@context.selected" ValueChanged="@(e => UpdateRecord(context, e))"></MudCheckBox></MudTd> *@
-        <MudTd DataLabel="Id">
-            <MudLink Href="@($"/customer/{context.Id}")">@context.Id</MudLink>
-        </MudTd>
-            <MudTd DataLabel="CompanyName">@context.CompanyName</MudTd>
-            <MudTd DataLabel="Email">@context.Email</MudTd>
-            <MudTd DataLabel="PhoneNumber">@context.PhoneNumber</MudTd>
-            <MudTd DataLabel="Address">@context.Address</MudTd>
-            <MudTd DataLabel="City">@context.City</MudTd>
-            <MudTd DataLabel="State">@context.State</MudTd>
-            <MudTd DataLabel="ZipCode">@context.ZipCode</MudTd>
-            <MudTd DataLabel="Country">@context.Country</MudTd>
-        </RowTemplate>
-        <PagerContent>
-            <MudTablePager PageSizeOptions="new int[] { 50, 100 }" />
-        </PagerContent>
-    </MudTable>
+                <Columns>
+                    <SelectColumn T="EditCustomer" />
 
-}
+                    <!-- CompanyName klickbar -->
+                    <PropertyColumn Property="x => x.CompanyName" Title="Firma">
+                        <CellTemplate Context="x">
+                            <MudLink Href="@($"/customer/{x.Item.Id}")">@x.Item.CompanyName</MudLink>
+                        </CellTemplate>
+                    </PropertyColumn>
+
+                    <PropertyColumn Property="x => x.Email" Title="E-Mail" />
+                    <PropertyColumn Property="x => x.PhoneNumber" Title="Telefon" />
+                    <PropertyColumn Property="x => x.City" Title="Stadt" />
+                    <PropertyColumn Property="x => x.Country" Title="Land" />
+
+                    <!-- Aktionen -->
+                    <TemplateColumn Title="Aktionen">
+                        <CellTemplate Context="x">
+                            <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                           Color="Color.Primary"
+                                           OnClick="async () => await OpenEditCustomerDialog(x.Item)"/>
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                           Color="Color.Error"
+                                           OnClick="async () => await ConfirmDeleteCustomer(x.Item.Id, x.Item.CompanyName)" />
+                        </CellTemplate>
+                    </TemplateColumn>
+                </Columns>
+
+                <PagerContent>
+                    <MudDataGridPager/>
+                </PagerContent>
+            </MudDataGrid>
+        }
+    </MudStack>
+</MudPaper>
 
 @code {
-    public bool Basic_CheckBox1 { get; set; } = true;
+    private bool isDone = false;
     private List<Data.Model.Customer> _customers = new List<Data.Model.Customer>();
+    private string _searchString = "";
 
     protected override async Task OnInitializedAsync()
     {
+        try
+        {
+            _customers = await BackendApiHandler.GetAllCustomer();
+            
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+        isDone = true;
+    }
+    private async Task LoadData()
+    {
         _customers = await BackendApiHandler.GetAllCustomer();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ConfirmDeleteCustomer(string id, string customerName)
+    {
+        var parameters = new DialogParameters
+        {
+            { nameof(DeleteCustomerDialog.ContentText), $"Do you really want to delete customer {customerName}? This process cannot be undone." },
+            { nameof(DeleteCustomerDialog.ButtonText), "Delete" },
+            { nameof(DeleteCustomerDialog.Color), Color.Error }
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var dialog = DialogService.Show<DeleteCustomerDialog>("Delete", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            DeleteCustomer(id, customerName);
+        }
     }
     
+    private async Task DeleteCustomer(string id, string customerName)
+    {
+        try
+        {
+            bool isDeleted = await BackendApiHandler.DeleteCustomer(id);
+
+            if (isDeleted)
+            {
+                Snackbar.Add($"Kunde {customerName} wurde erfolgreich gelöscht.", Severity.Success);
+                _customers = await BackendApiHandler.GetAllCustomer();
+                StateHasChanged();
+            }
+            else
+            {
+                Snackbar.Add($"Kunde mit ID {customerName} konnte nicht gelöscht.", Severity.Error);
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+    
+    private async Task OpenCreateCustomerDialog()
+    {
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = DialogService.Show<CreateCustomerDialog>("Neuen Kunden anlegen", options);
+
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+
+            await LoadData();
+        }
+
+        StateHasChanged();
+    }
+    
+    private async Task OpenEditCustomerDialog(Customer customer)
+    {
+        var parameters = new DialogParameters
+        {
+            { nameof(EditCustomerDialog.CustomerToEdit), customer }
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+
+        var dialog = DialogService.Show<EditCustomerDialog>("Kunden bearbeiten", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await LoadData();
+            StateHasChanged();
+        }
+    }
+
+
 }
