@@ -22,7 +22,6 @@
         {
             <MudDataGrid Items="_customers">
                 <ToolBarContent>
-                    <MudText Typo="Typo.h6">Customer Overview</MudText>
                     <MudSpacer />
                     <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenCreateCustomerDialog"
                                StartIcon="@Icons.Material.Filled.Add">
@@ -31,15 +30,9 @@
                 </ToolBarContent>
 
                 <Columns>
-                    <SelectColumn T="EditCustomer" />
-
                     <!-- CompanyName klickbar -->
-                    <PropertyColumn Property="x => x.CompanyName" Title="Firma">
-                        <CellTemplate Context="x">
-                            <MudLink Href="@($"/customer/{x.Item.Id}")">@x.Item.CompanyName</MudLink>
-                        </CellTemplate>
-                    </PropertyColumn>
-
+                    <PropertyColumn Property="x => x.Id" Title="Id" />
+                    <PropertyColumn Property="x => x.CompanyName" Title="Firma" />
                     <PropertyColumn Property="x => x.Email" Title="E-Mail" />
                     <PropertyColumn Property="x => x.PhoneNumber" Title="Telefon" />
                     <PropertyColumn Property="x => x.City" Title="Stadt" />
