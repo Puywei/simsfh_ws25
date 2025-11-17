@@ -13,7 +13,7 @@ public class Customer
     public string? State { get; set; }
     public string? ZipCode { get; set; }
     public string? Country { get; set; }
-    public CustomerIsActive? Active { get; set; }
+    public CustomerIsActive? Active { get; set; } = CustomerIsActive.Active;
     public DateTime? CreateDate { get; set; }
     public DateTime? ChangeDate { get; set; }
     public Guid? UUId { get; set; }

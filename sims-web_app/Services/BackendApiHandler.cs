@@ -65,15 +65,25 @@ public static class BackendApiHandler
     }
     // ******************  Customer  *********************
     
-    public static async Task<Customer?> CreateCustomer(Customer customer)
+    public static async Task<bool> CreateCustomer(Customer customer)
     {
         (RestRequest request,RestClient client) = RestRequestHelper("/Customers", Method.Post);
         request.AddHeader("Content-Type", "application/json");
         request.AddJsonBody(customer);
-        Console.WriteLine(client.Options.BaseUrl);
         RestResponse<Customer> response = await client.ExecuteAsync<Customer>(request);
         
-        return response.Data;
+        return (response.StatusCode == HttpStatusCode.Created);
+    }
+    
+    public static async Task<bool> DeleteCustomer(string customerId)
+    {
+        (RestRequest request,RestClient client) = RestRequestHelper($"/Customers/{customerId}", Method.Delete);
+
+        RestResponse response = await client.ExecuteAsync(request);
+        
+        if (response.StatusCode == HttpStatusCode.NoContent)
+            return true;
+        return false;
     }
     
     public static async Task<List<Customer>> GetAllCustomer()
@@ -86,22 +96,23 @@ public static class BackendApiHandler
     
     public static async Task<Customer> GetCustomerById(string id)
     {
-        /*
-        using (HttpClient httpClient = new HttpClient())
-        using (HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, $"{baseUrl}/Customers/{id}"))
-        {
-            HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(httpRequestMessage);
-
-            var x = 0;
-        }
-        */
-        
+       
         RestClient client = new RestClient(baseUrl);
         RestRequest request = new RestRequest($"Customers/{id}");
         
         var response = await client.ExecuteAsync<Customer>(request);
         
         return response.Data!;
+    }
+    
+    public static async Task<bool> UpdateCustomer(Customer customer, string customerId)
+    {
+        (RestRequest request,RestClient client) = RestRequestHelper($"/Customers/{customerId}", Method.Put);
+        request.AddHeader("Content-Type", "application/json");
+        request.AddJsonBody(customer);
+        RestResponse<Customer> response = await client.ExecuteAsync<Customer>(request);
+        
+        return (response.StatusCode == HttpStatusCode.OK);
     }
     
 }

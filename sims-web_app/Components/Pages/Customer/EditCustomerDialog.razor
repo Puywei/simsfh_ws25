@@ -1,0 +1,71 @@
+﻿@using sims_web_app.Data.Model
+@using MudBlazor
+@using sims_web_app.Services
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.h6">Kunden bearbeiten</MudText>
+        <MudTextField @bind-Value="_customer.CompanyName" Label="Firma" Required="true" />
+        <MudTextField @bind-Value="_customer.Email" Label="E-Mail" Required="true" />
+        <MudTextField @bind-Value="_customer.PhoneNumber" Label="Telefon" />
+        <MudTextField @bind-Value="_customer.City" Label="Stadt" />
+        <MudTextField @bind-Value="_customer.Country" Label="Land" />
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton Color="Color.Default" OnClick="Cancel">Abbrechen</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Save">Speichern</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private Customer _customer = new();
+
+    [CascadingParameter] IMudDialogInstance? MudDialog { get; set; }
+
+    [Parameter] public Customer CustomerToEdit { get; set; } = new();
+
+    protected override void OnInitialized()
+    {
+        // Kopie erstellen, damit Original nicht sofort überschrieben wird
+        _customer = new Customer
+        {
+            Id = CustomerToEdit.Id,
+            CompanyName = CustomerToEdit.CompanyName,
+            Email = CustomerToEdit.Email,
+            PhoneNumber = CustomerToEdit.PhoneNumber,
+            City = CustomerToEdit.City,
+            Country = CustomerToEdit.Country,
+            CreateDate = CustomerToEdit.CreateDate,
+            ChangeDate = CustomerToEdit.ChangeDate,
+            UUId = CustomerToEdit.UUId,
+            Active = CustomerToEdit.Active
+        };
+    }
+
+    private void Cancel() => MudDialog?.Cancel();
+
+    private async Task Save()
+    {
+        try
+        {
+            bool isCreated = await BackendApiHandler.UpdateCustomer(_customer, _customer.Id);
+            MudDialog.Close(DialogResult.Ok(_customer));
+
+            if (isCreated)
+            {
+                Snackbar.Add($"Kunde {_customer.CompanyName} erfolgreich aktualisiert!", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add($"Error by updateing the the customer {_customer.CompanyName}!", Severity.Error);
+            }
+            MudDialog?.Close(DialogResult.Ok(_customer));
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add($"Error by updateing the the customer {_customer.CompanyName}!", Severity.Error);
+        }
+    }
+}

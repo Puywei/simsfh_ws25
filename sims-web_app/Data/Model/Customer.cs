@@ -5,7 +5,7 @@ namespace sims_web_app.Data.Model;
 
 public class Customer
 {
-    public string? Id { get; set; }
+    public string Id { get; set; }
     public string CompanyName { get; set; }
     public string Email { get; set; }
     public string? PhoneNumber { get; set; }
