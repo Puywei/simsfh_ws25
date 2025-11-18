@@ -43,8 +43,8 @@ namespace sims.Controllers
             await _db.SaveChangesAsync();
 
             await _eventLogger.LogEventAsync(
-                $"User created: {user.Email} (RoleId={user.RoleId})",
-                severity: 1
+                $"User created: UserID:{user.Uid} \"{user.Email}\" (RoleId={user.RoleId})",
+                severity: 2
             );
             
 
@@ -59,23 +59,42 @@ namespace sims.Controllers
             var user = await _db.Users.FirstOrDefaultAsync(u => u.Uid == uid);
             if (user == null)
                 return NotFound("User not found.");
-
-            if (!string.IsNullOrEmpty(request.Firstname))
+            var changes = new List<string>();
+            
+            if (!string.IsNullOrWhiteSpace(request.Firstname) && request.Firstname != user.Firstname)
                 user.Firstname = request.Firstname;
-            if (!string.IsNullOrEmpty(request.Lastname))
+                changes.Add($"Firstname → {request.Firstname}");
+                
+            if (!string.IsNullOrWhiteSpace(request.Lastname) && request.Lastname != user.Lastname)
                 user.Lastname = request.Lastname;
-            if (!string.IsNullOrEmpty(request.Email))
+                changes.Add($"Lastname → {request.Lastname}");
+                
+            if (!string.IsNullOrWhiteSpace(request.Email) && request.Email != user.Email)
             {
                 if (await _db.Users.AnyAsync(u => u.Email == request.Email && u.Uid != uid))
                     return BadRequest("Email already exists.");
                 user.Email = request.Email;
+                changes.Add($"Email → {request.Email}");
             }
-            if (request.RoleId.HasValue)
+            if (request.RoleId.HasValue && request.RoleId.Value != user.RoleId)
                 user.RoleId = request.RoleId.Value;
-            if (!string.IsNullOrEmpty(request.Password))
+                changes.Add($"RoleId → {request.RoleId}");
+                
+            if (!string.IsNullOrWhiteSpace(request.Password))
                 user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+                changes.Add($"Password has been changed!");
 
             await _db.SaveChangesAsync();
+            
+            if (changes.Any())
+            {
+                var changeSummary = string.Join(", ", changes);
+                await _eventLogger.LogEventAsync(
+                    $"User {user.Email} (UserID = {user.Uid}) modified. Changes: {changeSummary}",
+                    severity: 2
+                );
+            }
+                
             return Ok(new { message = "User successfully updated.", uid = user.Uid });
         }
 
