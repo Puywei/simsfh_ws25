@@ -11,7 +11,7 @@ services:
         volumes:
         - postgres-data:/var/lib/postgresql/data
         networks:
-        - sims-net
+        - sims-network
         healthcheck:
             test: ["CMD-SHELL", "pg_isready -U postgres -d userapi"]
             interval: 5s
@@ -32,11 +32,11 @@ services:
             postgres:
                 condition: service_healthy
         networks:
-        - sims-net
+        - sims-network
 
 
 networks:
-  sims-net:
+  sims-network:
     driver: bridge
     
 volumes:

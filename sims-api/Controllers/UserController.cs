@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using sims.Data;
 using sims.Models;
 using System.Security.Claims;
+using System.Xml.Schema;
+using sims.Services;
 
 namespace sims.Controllers
 {
@@ -12,10 +14,12 @@ namespace sims.Controllers
     public class UsersController : ControllerBase
     {
         private readonly UserDbContext _db;
+        private readonly IEventLogger _eventLogger;
 
-        public UsersController(UserDbContext db)
+        public UsersController(UserDbContext db, IEventLogger eventLogger)
         {
             _db = db;
+            _eventLogger = eventLogger;
         }
 
         //  Create user endpoint
@@ -37,6 +41,12 @@ namespace sims.Controllers
 
             _db.Users.Add(user);
             await _db.SaveChangesAsync();
+
+            await _eventLogger.LogEventAsync(
+                $"User created: {user.Email} (RoleId={user.RoleId})",
+                severity: 1
+            );
+            
 
             return Ok(new { message = "User successfully created.", uid = user.Uid });
         }

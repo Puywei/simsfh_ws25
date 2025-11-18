@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using sims.Data;
 using sims.Models;
+using sims.Services;
 
 namespace sims.Controllers
 {
@@ -22,7 +23,7 @@ namespace sims.Controllers
             _config = config;
         }
 
-        //  Login
+        //  Login endpoint
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
@@ -51,7 +52,7 @@ namespace sims.Controllers
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
-
+            
             return Ok(new
             {
                 message = "Login successful",

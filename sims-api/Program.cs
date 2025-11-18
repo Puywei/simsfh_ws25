@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using sims.Services;
 
 namespace sims;
 
@@ -92,7 +93,11 @@ public class Program
                     }
                 };
             });
-        
+        builder.Services.AddHttpClient("EventLogger", client =>
+        {
+            client.BaseAddress = new Uri("http://sims-nosql-api:8080/");
+        });
+        builder.Services.AddScoped<IEventLogger, EventLogger>();
 
         var app = builder.Build();
         
