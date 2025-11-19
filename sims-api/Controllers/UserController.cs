@@ -67,30 +67,49 @@ namespace sims.Controllers
             var user = await _db.Users.FirstOrDefaultAsync(u => u.Uid == uid);
             if (user == null)
                 return NotFound("User not found.");
-            var changes = new List<string>();
             
+            var changes = new List<string>();
+
             if (!string.IsNullOrWhiteSpace(request.Firstname) && request.Firstname != user.Firstname)
+            {
                 user.Firstname = request.Firstname;
                 changes.Add($"Firstname → {request.Firstname}");
-                
+            }
+
             if (!string.IsNullOrWhiteSpace(request.Lastname) && request.Lastname != user.Lastname)
-                user.Lastname = request.Lastname;
-                changes.Add($"Lastname → {request.Lastname}");
-                
-            if (!string.IsNullOrWhiteSpace(request.Email) && request.Email != user.Email)
+                {
+                    user.Lastname = request.Lastname;
+                    changes.Add($"Lastname → {request.Lastname}");
+                }
+
+                if (!string.IsNullOrWhiteSpace(request.Email) && request.Email != user.Email)
             {
                 if (await _db.Users.AnyAsync(u => u.Email == request.Email && u.Uid != uid))
                     return BadRequest("Email already exists.");
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+                
                 user.Email = request.Email;
                 changes.Add($"Email → {request.Email}");
             }
+
             if (request.RoleId.HasValue && request.RoleId.Value != user.RoleId)
+            {
+                var roleId = request.RoleId ?? 2;
+            
+                var roleExists = await _db.Roles.AnyAsync(r => r.RoleId == roleId);
+                if (!roleExists)
+                    return BadRequest($"RoleId {roleId} does not exist.");
+                
                 user.RoleId = request.RoleId.Value;
                 changes.Add($"RoleId → {request.RoleId}");
-                
+            }
+
             if (!string.IsNullOrWhiteSpace(request.Password))
+            {
                 user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
                 changes.Add($"Password has been changed!");
+            }
 
             await _db.SaveChangesAsync();
             
