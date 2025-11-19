@@ -4,9 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using sims.Data;
 using sims.Models;
 using System.Security.Claims;
-using System.Xml.Schema;
 using sims.Services;
-
+using System.ComponentModel.DataAnnotations;
 namespace sims.Controllers
 {
     [ApiController]
@@ -27,15 +26,24 @@ namespace sims.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] CreateUserRequest request)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            
             if (await _db.Users.AnyAsync(u => u.Email == request.Email))
                 return BadRequest("Email already exists.");
+            
+            var roleId = request.RoleId ?? 2;
+            
+            var roleExists = await _db.Roles.AnyAsync(r => r.RoleId == roleId);
+            if (!roleExists)
+                return BadRequest($"RoleId {roleId} does not exist.");
 
             var user = new User
             {
                 Firstname = request.Firstname,
                 Lastname = request.Lastname,
                 Email = request.Email,
-                RoleId = request.RoleId ?? 2,
+                RoleId = roleId,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password)
             };
 
@@ -43,8 +51,8 @@ namespace sims.Controllers
             await _db.SaveChangesAsync();
 
             await _eventLogger.LogEventAsync(
-                $"User created: {user.Email} (RoleId={user.RoleId})",
-                severity: 1
+                $"User created: UserID:{user.Uid} \"{user.Email}\" (RoleId={user.RoleId})",
+                severity: 2
             );
             
 
@@ -59,23 +67,61 @@ namespace sims.Controllers
             var user = await _db.Users.FirstOrDefaultAsync(u => u.Uid == uid);
             if (user == null)
                 return NotFound("User not found.");
+            
+            var changes = new List<string>();
 
-            if (!string.IsNullOrEmpty(request.Firstname))
+            if (!string.IsNullOrWhiteSpace(request.Firstname) && request.Firstname != user.Firstname)
+            {
                 user.Firstname = request.Firstname;
-            if (!string.IsNullOrEmpty(request.Lastname))
-                user.Lastname = request.Lastname;
-            if (!string.IsNullOrEmpty(request.Email))
+                changes.Add($"Firstname → {request.Firstname}");
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.Lastname) && request.Lastname != user.Lastname)
+                {
+                    user.Lastname = request.Lastname;
+                    changes.Add($"Lastname → {request.Lastname}");
+                }
+
+                if (!string.IsNullOrWhiteSpace(request.Email) && request.Email != user.Email)
             {
                 if (await _db.Users.AnyAsync(u => u.Email == request.Email && u.Uid != uid))
                     return BadRequest("Email already exists.");
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+                
                 user.Email = request.Email;
+                changes.Add($"Email → {request.Email}");
             }
-            if (request.RoleId.HasValue)
+
+            if (request.RoleId.HasValue && request.RoleId.Value != user.RoleId)
+            {
+                var roleId = request.RoleId ?? 2;
+            
+                var roleExists = await _db.Roles.AnyAsync(r => r.RoleId == roleId);
+                if (!roleExists)
+                    return BadRequest($"RoleId {roleId} does not exist.");
+                
                 user.RoleId = request.RoleId.Value;
-            if (!string.IsNullOrEmpty(request.Password))
+                changes.Add($"RoleId → {request.RoleId}");
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.Password))
+            {
                 user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+                changes.Add($"Password has been changed!");
+            }
 
             await _db.SaveChangesAsync();
+            
+            if (changes.Any())
+            {
+                var changeSummary = string.Join(", ", changes);
+                await _eventLogger.LogEventAsync(
+                    $"User {user.Email} (UserID = {user.Uid}) modified. Changes: {changeSummary}",
+                    severity: 2
+                );
+            }
+                
             return Ok(new { message = "User successfully updated.", uid = user.Uid });
         }
 
@@ -90,6 +136,12 @@ namespace sims.Controllers
 
             _db.Users.Remove(user);
             await _db.SaveChangesAsync();
+            
+            
+            await _eventLogger.LogEventAsync(
+                $"User deleted: UserID:{user.Uid} '{user.Email}'",
+                severity: 2
+            );
 
             return Ok(new { message = "User successfully deleted.", uid = uid });
         }
@@ -129,10 +181,16 @@ namespace sims.Controllers
     // DTOs
     public class CreateUserRequest
     {
+        [Required]
         public string Firstname { get; set; }
+        [Required]
         public string Lastname { get; set; }
+        [Required]
+        [EmailAddress(ErrorMessage = "Invalid email format.")]
         public string Email { get; set; }
+        [Required]
         public int? RoleId { get; set; }
+        [Required]
         public string Password { get; set; }
     }
 
@@ -140,6 +198,7 @@ namespace sims.Controllers
     {
         public string? Firstname { get; set; }
         public string? Lastname { get; set; }
+        [EmailAddress(ErrorMessage = "Invalid email format.")]
         public string? Email { get; set; }
         public int? RoleId { get; set; }
         public string? Password { get; set; }
