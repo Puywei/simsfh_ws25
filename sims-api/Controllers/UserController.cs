@@ -158,9 +158,9 @@ namespace sims.Controllers
                      return Ok(new { userId, email, role });
                  }
         //  Get all users endpoint
-        [HttpGet("getAll")]
+        [HttpGet("getAllUsers")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAllUsers()
         {
             var users = await _db.Users
                 .Include(u => u.Role)
@@ -175,6 +175,21 @@ namespace sims.Controllers
                 .ToListAsync();
 
             return Ok(users);
+        }
+        
+        [HttpGet("getAllRoles")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAllRoles()
+        {
+            var roles = await _db.Roles
+                .Select(r => new
+                {
+                    Rolid = r.RoleId,
+                    RoleName = r.RoleName
+                })
+                .ToListAsync();
+
+            return Ok(roles);
         }
     }
 
