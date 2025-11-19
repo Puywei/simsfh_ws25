@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using sims.Data;
 using sims.Models;
-using System.Security.Claims;
 using sims.Services;
-using System.ComponentModel.DataAnnotations;
+using sims.Models.DTOs;
+using sims.Helpers;
+
 namespace sims.Controllers
 {
     [ApiController]
@@ -36,10 +38,11 @@ namespace sims.Controllers
                 return BadRequest("Email already exists.");
             
             var roleId = request.RoleId ?? 2;
-            
-            var roleExists = await _db.Roles.AnyAsync(r => r.RoleId == roleId);
+
+            var roleExists = await RoleHelper.CheckIfRoleExists(_db, roleId);
             if (!roleExists)
-                return BadRequest($"RoleId '{roleId}' does not exist.");
+                return BadRequest(new { message = $"RoleId '{roleId}' does not exist." });
+
 
             var user = new User
             {
@@ -54,7 +57,7 @@ namespace sims.Controllers
             await _db.SaveChangesAsync();
 
             await _eventLogger.LogEventAsync(
-                $"Acting User:'{actingUser.Email}' - User created: UserID:'{user.Uid}' '{user.Email}' (RoleId='{user.RoleId}') by '{actingUser.Email}'",
+                $"Acting User:'{actingUser.Email}' - User created: UserID:'{user.Uid}' '{user.Email}' (RoleId='{user.RoleId}')",
                 severity: 2
             );
             
@@ -102,9 +105,9 @@ namespace sims.Controllers
             {
                 var roleId = request.RoleId ?? 2;
             
-                var roleExists = await _db.Roles.AnyAsync(r => r.RoleId == roleId);
+                var roleExists = await RoleHelper.CheckIfRoleExists(_db, roleId);
                 if (!roleExists)
-                    return BadRequest($"RoleId {roleId} does not exist.");
+                    return BadRequest(new { message = $"RoleId '{roleId}' does not exist." });
                 
                 user.RoleId = request.RoleId.Value;
                 changes.Add($"RoleId → {request.RoleId}");
@@ -199,30 +202,5 @@ namespace sims.Controllers
             return Ok(roles);
         }
     }
-
-    // DTOs
-    public class CreateUserRequest
-    {
-        [Required]
-        public string Firstname { get; set; }
-        [Required]
-        public string Lastname { get; set; }
-        [Required]
-        [EmailAddress(ErrorMessage = "Invalid email format.")]
-        public string Email { get; set; }
-        [Required]
-        public int? RoleId { get; set; }
-        [Required]
-        public string Password { get; set; }
-    }
-
-    public class ModifyUserRequest
-    {
-        public string? Firstname { get; set; }
-        public string? Lastname { get; set; }
-        [EmailAddress(ErrorMessage = "Invalid email format.")]
-        public string? Email { get; set; }
-        public int? RoleId { get; set; }
-        public string? Password { get; set; }
-    }
+    
 }
