@@ -4,9 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using sims.Data;
 using sims.Models;
 using System.Security.Claims;
-using System.Xml.Schema;
 using sims.Services;
-
+using System.ComponentModel.DataAnnotations;
 namespace sims.Controllers
 {
     [ApiController]
@@ -27,15 +26,24 @@ namespace sims.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] CreateUserRequest request)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            
             if (await _db.Users.AnyAsync(u => u.Email == request.Email))
                 return BadRequest("Email already exists.");
+            
+            var roleId = request.RoleId ?? 2;
+            
+            var roleExists = await _db.Roles.AnyAsync(r => r.RoleId == roleId);
+            if (!roleExists)
+                return BadRequest($"RoleId {roleId} does not exist.");
 
             var user = new User
             {
                 Firstname = request.Firstname,
                 Lastname = request.Lastname,
                 Email = request.Email,
-                RoleId = request.RoleId ?? 2,
+                RoleId = roleId,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password)
             };
 
@@ -109,6 +117,12 @@ namespace sims.Controllers
 
             _db.Users.Remove(user);
             await _db.SaveChangesAsync();
+            
+            
+            await _eventLogger.LogEventAsync(
+                $"User deleted: UserID:{user.Uid} '{user.Email}'",
+                severity: 2
+            );
 
             return Ok(new { message = "User successfully deleted.", uid = uid });
         }
@@ -148,10 +162,16 @@ namespace sims.Controllers
     // DTOs
     public class CreateUserRequest
     {
+        [Required]
         public string Firstname { get; set; }
+        [Required]
         public string Lastname { get; set; }
+        [Required]
+        [EmailAddress(ErrorMessage = "Invalid email format.")]
         public string Email { get; set; }
+        [Required]
         public int? RoleId { get; set; }
+        [Required]
         public string Password { get; set; }
     }
 
@@ -159,6 +179,7 @@ namespace sims.Controllers
     {
         public string? Firstname { get; set; }
         public string? Lastname { get; set; }
+        [EmailAddress(ErrorMessage = "Invalid email format.")]
         public string? Email { get; set; }
         public int? RoleId { get; set; }
         public string? Password { get; set; }
