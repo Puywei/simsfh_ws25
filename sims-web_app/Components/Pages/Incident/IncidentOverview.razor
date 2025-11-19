@@ -1,6 +1,8 @@
 ﻿@page "/Incident/Overview"
 @using sims_web_app.Data.Model
 @using sims_web_app.Services
+@using Blazored.LocalStorage
+@inject ILocalStorageService LocalStorage
 
 <PageTitle>Incidents Overview</PageTitle>
 
@@ -56,6 +58,8 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        
+        var token = LocalStorage.GetItemAsync<string>("authToken");
         _incidents = await BackendApiHandler.GetAllIncidents();
         
     }
