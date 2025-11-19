@@ -1,4 +1,6 @@
 ﻿@page "/Customer/Overview"
+@attribute [Authorize]
+@using Microsoft.AspNetCore.Authorization
 @using sims_web_app.Data.Model
 @using sims_web_app.Services
 @inject IDialogService DialogService

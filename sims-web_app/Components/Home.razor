@@ -1,16 +1,22 @@
 ﻿@page "/"
-@using RestSharp
-@using System.Text.Json
+@attribute [Authorize]
 @using Blazored.LocalStorage
-@using MudBlazor
+@using Blazored.SessionStorage
+@using Microsoft.AspNetCore.Authorization
+@using sims_web_app.Components.Identity.Services
 @inject ILocalStorageService LocalStorage
+@inject ISessionStorageService SessionStorage
 @inject NavigationManager Nav
 @inject ISnackbar Snackbar
+@inject AuthService AuthService
+
 
 <PageTitle>SIMS Home</PageTitle>
 
 <MudText Typo="Typo.h3" GutterBottom="true">SIMS HOME</MudText>
 
+
+@*
 <div class="d-flex flex-column align-center mt-4">
 <MudTextField @bind-Value="Email" Style="width: 280px;" Label="Email Address" Variant="Variant.Outlined"></MudTextField>
 </div>
@@ -26,8 +32,9 @@
 <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" OnClick="OnLoginClicked">Login</MudButton>
     </div>
 </div>
-
+*@
 @code {
+    /**
     public string Email { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
 
@@ -89,4 +96,6 @@
         public string Lastname { get; set; }
         public string Role { get; set; }
     }
+    **/
+   
 }

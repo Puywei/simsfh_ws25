@@ -1,25 +1,25 @@
-{
+﻿{
   "$schema": "https://json.schemastore.org/launchsettings.json",
-    "profiles": {
-      "http": {
-        "commandName": "Project",
-        "dotnetRunMessages": true,
-        "launchBrowser": false,
-        "applicationUrl": "http://localhost:5008",
-        "environmentVariables": {
-          "ASPNETCORE_ENVIRONMENT": "Development",
-          "BackendApiBaseUrl" : "http://localhost:5001/api/v1"
-        }
-      },
-      "https": {
-        "commandName": "Project",
-        "dotnetRunMessages": true,
-        "launchBrowser": true,
-        "applicationUrl": "https://localhost:7114;http://localhost:5008",
-        "environmentVariables": {
-          "ASPNETCORE_ENVIRONMENT": "Development",
-          "BackendApiBaseUrl": "http://localhost:5001/api/v1"
-        }
+  "profiles": {
+    "http": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5008",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "BackendApiBaseUrl" : "http://localhost:5001/api/v1",
+        "AuthApiBaseUrl": "http://localhost:5000/api"
+      }
+    },
+    "https": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "applicationUrl": "https://localhost:7114;http://localhost:5008",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     }
   }
+}

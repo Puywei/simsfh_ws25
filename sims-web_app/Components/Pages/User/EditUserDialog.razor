@@ -1,0 +1,80 @@
+﻿@using sims_web_app.Data.Model
+@using MudBlazor
+@using sims_web_app.Components.Identity.Contracts
+@using sims_web_app.Services
+@inject ISnackbar Snackbar
+@inject AuthApiHandler AuthApiHandler
+
+<MudDialog>
+    <DialogContent>
+        <MudTextField @bind-Value="_user.FirstName" Label="Firstname" Required="true" />
+        <MudTextField @bind-Value="_user.LastName" Label="Lastname" Required="true" />
+        <MudTextField @bind-Value="_user.Email" Label="E-Mail" />
+        <MudSelect T="int" Placeholder="Rolle wählen" FullWidth="true" @bind-Value="_user.RoleId" Class="mt-3">
+            @foreach (var role in roles)
+            {
+                <MudSelectItem Value="@role.Id">@($"{role.Name}")</MudSelectItem>
+            }
+        </MudSelect>
+        <MudTextField @bind-Value="_user.Password" Label="Land" InputType="InputType.Password" />
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton Color="Color.Default" OnClick="Cancel">Abbrechen</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Save">Speichern</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private User _user = new();
+
+    [CascadingParameter] IMudDialogInstance? MudDialog { get; set; }
+
+    [Parameter] public User UserToEdit { get; set; } = new();
+
+    private List<UserRole> roles = new List<UserRole>()
+    {
+        new UserRole {Id = 0, Name = "Admin" },
+        new UserRole {Id = 1, Name = "User" }
+    };
+    
+    
+    protected override void OnInitialized()
+    {
+        // Kopie erstellen, damit Original nicht sofort überschrieben wird
+        _user = new User
+        {
+            uid = UserToEdit.uid,
+            Email = UserToEdit.Email,
+            FirstName = UserToEdit.FirstName,
+            LastName = UserToEdit.LastName,
+            RoleId = UserToEdit.RoleId,
+            Password = UserToEdit.Password
+        };
+    }
+
+    private void Cancel() => MudDialog?.Cancel();
+
+    private async Task Save()
+    {
+        try
+        {
+            bool isCreated = await AuthApiHandler.ModifyUser(_user, _user.uid);
+            MudDialog.Close(DialogResult.Ok(_user));
+
+            if (isCreated)
+            {
+                Snackbar.Add($"Kunde {_user.Email} erfolgreich aktualisiert!", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add($"Error by changing the the customer {_user.Email}!", Severity.Error);
+            }
+            MudDialog?.Close(DialogResult.Ok(_user));
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add($"Error by updateing the the customer {_user.Email}!", Severity.Error);
+        }
+    }
+}

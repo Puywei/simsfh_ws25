@@ -1,0 +1,66 @@
+﻿@using sims_web_app.Data.Model
+@using MudBlazor
+@using sims_web_app.Services
+@inject ISnackbar Snackbar
+@inject AuthApiHandler AuthApiHandler
+
+
+<MudDialog>
+    <DialogContent>
+        <MudTextField @bind-Value="_user.FirstName" Label="Firstname" Required="true" />
+        <MudTextField @bind-Value="_user.LastName" Label="Lastname" Required="true" />
+        <MudTextField @bind-Value="_user.Email" Label="E-Mail" Required="true" />
+        <MudSelect T="int" Placeholder="Rolle wählen" FullWidth="true" @bind-Value="_user.RoleId" Class="mt-3">
+            @foreach (var role in roles)
+            {
+                <MudSelectItem Value="@role.Id">@($"{role.Name}")</MudSelectItem>
+            }
+        </MudSelect>
+        <MudTextField Label="Password" HelperText="Choose a strong password" @bind-Value="_user.Password" For="@(() => _user.Password)" InputType="InputType.Password" />
+        <MudTextField Label="Password" HelperText="Repeat the password" @bind-Value="_passVerify" For="@(() => _passVerify)" InputType="InputType.Password" />
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton Color="Color.Default" OnClick="Cancel">Abbrechen</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Save">Speichern</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private User _user = new();
+    private string _passVerify = "";
+
+    [CascadingParameter] IMudDialogInstance? MudDialog { get; set; }
+    
+    private List<UserRole> roles = new List<UserRole>()
+    {
+        new UserRole {Id = 0, Name = "Admin" },
+        new UserRole {Id = 1, Name = "User" }
+    };
+    
+    private void Cancel() => MudDialog.Cancel();
+
+    private async void Save()
+    {
+        bool isCreated = await AuthApiHandler.CreateUser(_user);
+        MudDialog.Close(DialogResult.Ok(_user));
+
+        if (_user.Password == _passVerify)
+        {
+            if (isCreated)
+            {
+                Snackbar.Add($"Customer {_user.Email} created successfully!", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add($"Error by creating the customer!", Severity.Error);
+            }
+        }
+        else
+        {
+            Snackbar.Add($"Password does not match!", Severity.Error);
+        }
+        
+
+    }
+}
