@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using sims.Data;
+using sims.Helpers;
 using sims.Models;
 using sims.Services;
+
 
 namespace sims.Controllers
 {
@@ -33,27 +32,11 @@ namespace sims.Controllers
                                       .FirstOrDefaultAsync(u => u.Email == request.Email);
 
             if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
-                return Unauthorized("Invalid credentials.");
+                return Unauthorized(new { message = "Invalid credentials." });
 
-            var key = Encoding.UTF8.GetBytes(_config["Jwt:Key"]);
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new[]
-                {
-                    new Claim(ClaimTypes.NameIdentifier, user.Uid.ToString()),
-                    new Claim(ClaimTypes.Name, user.Email),
-                    new Claim(ClaimTypes.Role, user.Role.RoleName)
-                }),
-                Expires = DateTime.UtcNow.AddHours(4),
-                Issuer = _config["Jwt:Issuer"],
-                Audience = _config["Jwt:Issuer"],
-                SigningCredentials = new SigningCredentials(
-                    new SymmetricSecurityKey(key),
-                    SecurityAlgorithms.HmacSha256Signature)
-            };
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var token = JwtTokenService.GenerateToken(user, _config);
+
             
             await _eventLogger.LogEventAsync(
                 $"User logged in: '{user.Email}' (Role='{user.Role.RoleName}')",
@@ -63,7 +46,7 @@ namespace sims.Controllers
             return Ok(new
             {
                 message = "Login successful",
-                token = tokenHandler.WriteToken(token),
+                token,
                 uid = user.Uid,
                 firstname = user.Firstname,
                 lastname = user.Lastname,
@@ -88,12 +71,8 @@ namespace sims.Controllers
             var jwtToken = handler.ReadJwtToken(token);
             var expiry = jwtToken.ValidTo;
 
-            _db.BlacklistedTokens.Add(new BlacklistedToken
-            {
-                Token = token,
-                Expiry = expiry
-            });
-            await _db.SaveChangesAsync();
+            await TokenBlacklistService.BlacklistToken(_db, token, expiry);
+
             
             await _eventLogger.LogEventAsync(
                 $"User: '{actingUser.Email}' with Role '{actingUser.Role}' logged out.",
@@ -103,12 +82,5 @@ namespace sims.Controllers
             return Ok(new { message = "Logout successful. Token invalidated." });
             
         }
-    }
-
-    // DTOs
-    public class LoginRequest
-    {
-        public string Email { get; set; }
-        public string Password { get; set; }
     }
 }
