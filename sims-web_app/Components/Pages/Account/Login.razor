@@ -1,13 +1,15 @@
-﻿@page "/login"
+﻿@page "/Account/Login"
 @using Blazored.SessionStorage
 @using Microsoft.AspNetCore.Components.Authorization
 @using sims_web_app.Components.Identity.Services
 @using sims_web_app.Components.Identity.Contracts
+@using sims_web_app.Data.Model
 @using MudBlazor
 @inject AuthService AuthService
 @inject NavigationManager NavigationManager
 @inject ISessionStorageService SessionStorage
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject TokenProvider TokenProvider
 
 
 <MudPaper>
@@ -38,6 +40,9 @@
     [CascadingParameter]
     private Task<AuthenticationState>? AuthStateTask { get; set; }
     private bool isAuthenticated; 
+    
+
+
 
     private AuthRequest? authRequest = new AuthRequest();
     private MudForm? form;
@@ -74,6 +79,7 @@
             await SessionStorage.SetItemAsync("token", authResponse.Token);
             ((CustomAuthenticationStateProvider)AuthenticationStateProvider)
                 .AuthenticateUser(authResponse.Token!);
+            TokenProvider.SetToken(authResponse.Token);
             NavigationManager.NavigateTo("/");
         }
     }

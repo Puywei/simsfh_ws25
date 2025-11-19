@@ -1,15 +1,10 @@
-﻿using sims_web_app.Data.Model.Enum;
+﻿using sims_web_app.Components.Identity.Contracts;
+using sims_web_app.Data.Model.Enum;
 
 namespace sims_web_app.Data.Model;
 
 
-public class User
+public class User : AuthResponseUser
 {
-    public string User_ID { get; set; }
-    public string Name { get; set; }
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public string Password { get; set; }
-    public string Role { get; set; }
-    public string Email { get; set; }
+    public int Id { get; set; }
 }

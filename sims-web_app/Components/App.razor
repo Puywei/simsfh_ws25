@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using sims_web_app.Data.Model
+@inject TokenProvider TokenProvider
+
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -19,3 +22,17 @@
 </body>
 
 </html>
+
+@code
+{
+    
+    [Parameter]
+    public string AccessToken { get; set; }
+
+    protected override void OnInitialized()
+    {
+        //Accept the parameter from _Host.cshtml and move into the Token Provider 
+        TokenProvider.SetToken(AccessToken);
+        base.OnInitialized();
+    }
+}

@@ -1,84 +1,182 @@
 ﻿@page "/User/Overview"
-@using RestSharp;
-@using System.Text.Json;
+@attribute [Authorize]
+@using Microsoft.AspNetCore.Authorization
+@using sims_web_app.Components.Identity.Contracts
+@using sims_web_app.Components.Identity.Services
 @using sims_web_app.Data.Model
-
+@using sims_web_app.Services
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@inject AuthApiHandler AuthApiHandler
 
 
 <PageTitle>User Overview</PageTitle>
 
-<MudText Typo="Typo.h3" GutterBottom="true">User Overview</MudText>
-<MudText Typo="Typo.body1" Class="mb-8">..............</MudText>
+<MudPaper Class="pa-6" Elevation="2">
+    <MudStack Spacing="2">
+        <MudText Typo="Typo.body2" Color="Color.Default">
+            Übersicht aller User im System
+        </MudText>
 
-<NavLink href="/Add_User"><MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary">Add User</MudButton></NavLink>
+        @if (!isDone)
+        {
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+            <MudText Typo="Typo.body1">Daten werden geladen...</MudText>
+        }
+        else
+        {
+            <MudDataGrid Items="_users">
+                <ToolBarContent>
+                    <MudSpacer />
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenCreateUserDialog"
+                               StartIcon="@Icons.Material.Filled.Add">
+                        Neuer Kunde
+                    </MudButton>
+                </ToolBarContent>
 
-@if (users == null)
-{
-    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
-}
-else
-{
-    <MudTable Items="users" Hover="true" SortLabel="Sort By" Elevation="0" AllowUnsorted="false">
-        <HeaderContent>
-            <MudTh></MudTh>
-            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<UserOverview, object>(x => x.User_ID)">User ID</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<UserOverview, object>(x => x.Name)">Name</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<UserOverview, object>(x => x.Role)">Role</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<UserOverview, object>(x => x.Email!)">Email</MudTableSortLabel></MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd DataLabel="Enabled"><MudCheckBox T="bool" Checked="@context.selected" ValueChanged="@(e => UpdateRecord(context, e))"></MudCheckBox></MudTd>
-            <MudTd DataLabel="User_ID"><MudLink Href="/User_ID">@context.User_ID</MudLink></MudTd>
-            <MudTd DataLabel="Name">@context.Name</MudTd>
-            <MudTd DataLabel="Role">@context.Role</MudTd>
-            <MudTd DataLabel="Email">@context.Email</MudTd>
-        </RowTemplate>
-        <PagerContent>
-            <MudTablePager PageSizeOptions="new int[] { 50, 100 }" />
-        </PagerContent>
-    </MudTable>
+                <Columns>
+                    <!-- CompanyName klickbar -->
+                    <PropertyColumn Property="x => x.FirstName" Title="Firstname" />
+                    <PropertyColumn Property="x => x.LastName" Title="Lastname" />
+                    <PropertyColumn Property="x => x.Email" Title="E-Mail" />
+                    <PropertyColumn Property="x => x.RoleId" Title="Rolle" />
 
-}
+                    <!-- Aktionen -->
+                    <TemplateColumn Title="Aktionen">
+                        <CellTemplate Context="x">
+                            <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                           Color="Color.Primary"
+                                           OnClick="async () => await OpenEditUserDialog(x.Item)"/>
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                           Color="Color.Error"
+                                           OnClick="async () => await ConfirmDeleteUser(x.Item.Id, x.Item.Email)" />
+                        </CellTemplate>
+                    </TemplateColumn>
+                </Columns>
+
+                <PagerContent>
+                    <MudDataGridPager/>
+                </PagerContent>
+            </MudDataGrid>
+        }
+    </MudStack>
+</MudPaper>
 
 @code {
+    private bool isDone = false;
+    private List<User> _users = new List<User>();
+    private string _searchString = "";
+    
+    private List<UserRole> roles = new List<UserRole>()
+    {
+        new UserRole {Id = 0, Name = "Admin" },
+        new UserRole {Id = 1, Name = "User" }
+    };
+    
 
+    public async Task<string> GetRoleName(int roleId)
+    {
+        return roles.First(r => r.Id == roleId).Name;
+    }
+    
 
-
-    public bool Basic_CheckBox1 { get; set; } = true;
-    private UserOverview[]? users;
-
-    /*
     protected override async Task OnInitializedAsync()
     {
-        // Simulate asynchronous loading to demonstrate a loading indicator
-        //await Task.Delay(500);
-
-        //values from database
-        users = new UserManagement[2];
-        users[0] = new UserManagement();
-        users[0].User_ID = "IS001";
-        users[0].Name = "Konatsu Macala";
-        users[0].Role = "User";
-        users[0].Email = "is241305@ustp-students.at";
-
-
-        users[1] = new UserManagement();
-        users[1].User_ID = "IS002";
-        users[1].Name = "Philipp Muehlparzer ";
-        users[1].Role = "Admin";
-        users[1].Email = "....";
-
-       
+        try
+        {
+            _users = await AuthApiHandler.GetAllUsers();
+            
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+        isDone = true;
     }
-    */
-
-    private async Task UpdateRecord(UserOverview record, bool ischecked)
+    private async Task LoadData()
     {
-        record.selected = ischecked;
+        _users = await AuthApiHandler.GetAllUsers();
+        await InvokeAsync(StateHasChanged);
+    }
 
+    private async Task ConfirmDeleteUser(int id, string customerName)
+    {
+        var parameters = new DialogParameters
+        {
+            { nameof(DeleteUserDialog.ContentText), $"Do you really want to delete user {customerName}?"},
+            { nameof(DeleteUserDialog.ButtonText), "Delete" },
+            { nameof(DeleteUserDialog.Color), Color.Error }
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var dialog = DialogService.Show<DeleteUserDialog>("Delete", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await DeleteCustomer(id, customerName);
+        }
+    }
+    
+    private async Task DeleteCustomer(int id, string customerName)
+    {
+        try
+        {
+            bool isDeleted = await AuthApiHandler.DeleteUser(id);
+
+            if (isDeleted)
+            {
+                Snackbar.Add($"User {customerName} deleted successfully.", Severity.Success);
+                _users = await AuthApiHandler.GetAllUsers();
+                StateHasChanged();
+            }
+            else
+            {
+                Snackbar.Add($"User with ID {customerName} could not be deleted.", Severity.Error);
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+    
+    private async Task OpenCreateUserDialog()
+    {
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = DialogService.Show<CreateUserDialog>("Create new user", options);
+
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+
+            await LoadData();
+        }
+
+        StateHasChanged();
+    }
+    
+    private async Task OpenEditUserDialog(User user)
+    {
+        var parameters = new DialogParameters
+        {
+            { nameof(EditUserDialog.UserToEdit), user }
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+
+        var dialog = DialogService.Show<EditUserDialog>("Modify user", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await LoadData();
+            StateHasChanged();
+        }
     }
 
 
-
-    
 }

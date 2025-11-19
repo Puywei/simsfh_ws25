@@ -1,6 +1,6 @@
 ﻿namespace sims_web_app.Components.Identity.Contracts;
 
-public class AuthResponse
+public class AuthResponseUserLogon
 {
     public string message { get; set; }
     public string Token { get; set; }

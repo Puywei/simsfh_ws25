@@ -1,28 +1,40 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
 @using sims_web_app.Components.Layout
+@inject NavigationManager Navigation
+
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
-            @if (routeData.PageType == typeof(Pages.Login.Login))
+
+            @* Login-Seite ist immer erlaubt *@
+            @if (routeData.PageType == typeof(Pages.Account.Login))
             {
-                <!-- Login direkt rendern, kein AuthorizeRouteView -->
                 <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
             }
             else
             {
-                <!-- Alle anderen Seiten geschützt -->
                 <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
                     <NotAuthorized>
-                        <RedirectToLogin />
+                        @* Redirect statt weißer Seite *@
+                        @RedirectToLogin()
                     </NotAuthorized>
                 </AuthorizeRouteView>
             }
+
         </Found>
+
         <NotFound>
-            <PageTitle>Not found</PageTitle>
             <LayoutView Layout="@typeof(MainLayout)">
-                <p role="alert">Sorry, there's nothing at this address.</p>
+                <p>Not Found.</p>
             </LayoutView>
         </NotFound>
     </Router>
 </CascadingAuthenticationState>
+
+@code {
+    private RenderFragment RedirectToLogin() => builder =>
+    {
+        // Sofortiger Redirect
+        Navigation.NavigateTo("/login", true);
+    };
+}
