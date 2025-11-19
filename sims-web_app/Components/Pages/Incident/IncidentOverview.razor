@@ -31,7 +31,7 @@ else
             <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Data.Model.Incident, object>(x => x.Id)">Incident ID</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<Data.Model.Incident, object>(x => x.Summary)">Subject</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<Data.Model.Incident, object>(x => x.Severity)">Severity</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<Data.Model.Incident, object>(x => x.AssignedPerson!)">Assigned Person</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Data.Model.Incident, object>(x => x.AssignedPersonName!)">Assigned Person</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<Data.Model.Incident, object>(x => x.Status)">Status</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<Data.Model.Incident, object>(x => x.CreateDate)">created Date</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<Data.Model.Incident, object>(x => x.Id)">Time to Resolution</MudTableSortLabel></MudTh>
@@ -43,7 +43,7 @@ else
          </MudTd>
             <MudTd DataLabel="summary">@context.Summary</MudTd>
             <MudTd DataLabel="author">@context.Severity</MudTd>
-            <MudTd DataLabel="assigned_person">@context.AssignedPerson</MudTd>
+            <MudTd DataLabel="assigned_person">@context.AssignedPersonName</MudTd>
             <MudTd DataLabel="assigned_person">@context.Status</MudTd>
             <MudTd DataLabel="assigned_person">@context.CreateDate</MudTd>
             <MudTd DataLabel="assigned_person">@context.Id</MudTd>
@@ -64,7 +64,14 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-            _incidents = await BackendApiHandler.GetAllIncidents();        
+        LoadData();
+        StateHasChanged();
+    }
+    
+    private async Task LoadData()
+    {
+        _incidents = await BackendApiHandler.GetAllIncidents();   
+        await InvokeAsync(StateHasChanged);
     }
 }
 

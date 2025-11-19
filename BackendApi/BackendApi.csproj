@@ -33,9 +33,5 @@
         <InternalsVisibleTo Include="BackendApi.Tests" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Endpoints\" />
-    </ItemGroup>
-
 
 </Project>

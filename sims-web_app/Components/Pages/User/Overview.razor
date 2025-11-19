@@ -35,13 +35,12 @@
                         Neuer Kunde
                     </MudButton>
                 </ToolBarContent>
-
                 <Columns>
                     <PropertyColumn Property="x =>x.uid" Title="User Id" />
                     <PropertyColumn Property="x => x.FirstName" Title="Firstname"/>
                     <PropertyColumn Property="x => x.LastName" Title="Lastname"/>
                     <PropertyColumn Property="x => x.Email" Title="E-Mail"/>
-                    <PropertyColumn Property="x => x.RoleName"  Title="Rolle"/>
+                    <PropertyColumn Property="x => x.role"  Title="Rolle"/>
 
                     <TemplateColumn Title="Aktionen">
                         <CellTemplate Context="x">
@@ -54,7 +53,6 @@
                         </CellTemplate>
                     </TemplateColumn>
                 </Columns>
-
                 <PagerContent>
                     <MudDataGridPager/>
                 </PagerContent>
@@ -69,11 +67,6 @@
     private string _searchString = "";
 
     private List<UserRole> _userRoles = new List<UserRole>();
-
-    private string GetRoleName(int roleId)
-    {
-        return _userRoles.Find(ur => ur.RoleId == roleId).RoleName;
-    }
     
     protected override async Task OnInitializedAsync()
     {
@@ -158,12 +151,12 @@
     {
         var parameters = new DialogParameters
         {
-            { nameof(EditUserDialog.UserToEdit), user }
+            { nameof(ModifyUserDialog.UserToEdit), user }
         };
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
 
-        var dialog = DialogService.Show<EditUserDialog>("Modify user", parameters, options);
+        var dialog = DialogService.Show<ModifyUserDialog>("Modify user", parameters, options);
         var result = await dialog.Result;
 
         if (!result.Canceled)
@@ -172,6 +165,4 @@
             StateHasChanged();
         }
     }
-
-
 }

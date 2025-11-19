@@ -22,7 +22,7 @@ namespace BackendApi.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("TestApi.Data.Model.Incident.Customer", b =>
+            modelBuilder.Entity("BackendApi.Data.Model.Customer.Customer", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -59,7 +59,7 @@ namespace BackendApi.Migrations
                     b.Property<string>("State")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UUId")
+                    b.Property<Guid?>("UUId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ZipCode")
@@ -70,12 +70,15 @@ namespace BackendApi.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("TestApi.Data.Model.Incident.Incident", b =>
+            modelBuilder.Entity("BackendApi.Data.Model.Incident.Incident", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("AssignedPerson")
+                    b.Property<int>("AssignedPerson")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AssignedPersonName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("ChangeDate")
@@ -114,7 +117,7 @@ namespace BackendApi.Migrations
                     b.ToTable("Incidents");
                 });
 
-            modelBuilder.Entity("TestApi.Data.Model.Incident.IncidentComment", b =>
+            modelBuilder.Entity("BackendApi.Data.Model.Incident.IncidentComment", b =>
                 {
                     b.Property<Guid>("CommentId")
                         .ValueGeneratedOnAdd()
@@ -146,9 +149,9 @@ namespace BackendApi.Migrations
                     b.ToTable("IncidentComments");
                 });
 
-            modelBuilder.Entity("TestApi.Data.Model.Incident.IncidentComment", b =>
+            modelBuilder.Entity("BackendApi.Data.Model.Incident.IncidentComment", b =>
                 {
-                    b.HasOne("TestApi.Data.Model.Incident.Incident", "Incident")
+                    b.HasOne("BackendApi.Data.Model.Incident.Incident", "Incident")
                         .WithMany("Comments")
                         .HasForeignKey("IncidentId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -157,7 +160,7 @@ namespace BackendApi.Migrations
                     b.Navigation("Incident");
                 });
 
-            modelBuilder.Entity("TestApi.Data.Model.Incident.Incident", b =>
+            modelBuilder.Entity("BackendApi.Data.Model.Incident.Incident", b =>
                 {
                     b.Navigation("Comments");
                 });
