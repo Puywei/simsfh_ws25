@@ -6,5 +6,5 @@ namespace sims_web_app.Data.Model;
 
 public class User : AuthResponseUser
 {
-    public int Id { get; set; }
+    public int uid { get; set; }
 }

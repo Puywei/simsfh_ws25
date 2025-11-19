@@ -31,8 +31,7 @@ public class AuthApiHandler
         (RestRequest request,RestClient client) = RestRequestHelper("/Users/getAll", Method.Get);
         request.Authenticator = new JwtAuthenticator(_tokenProvider.AccessToken);
         RestResponse<List<User>> response = await client.ExecuteAsync<List<User>>(request);
-
-        return response.Data.ToList();
+        return response.Data;
     }
     
     public async Task<bool> CreateUser(User user)
@@ -45,10 +44,11 @@ public class AuthApiHandler
         return (response.IsSuccessful);
     }
     
-    public async Task<bool> ModifyUser(User user, int userId )
+    public async Task<bool> ModifyUser(AuthResponseUser user, int userId )
     {
-        (RestRequest request,RestClient client) = RestRequestHelper("/Users/modify", Method.Put);
+        (RestRequest request,RestClient client) = RestRequestHelper($"/Users/modify?uid={userId}", Method.Put);
         request.Authenticator = new JwtAuthenticator(_tokenProvider.AccessToken);
+        request.AddJsonBody(user);
         RestResponse response = await client.ExecuteAsync(request);
 
         return (response.IsSuccessful);
@@ -56,7 +56,7 @@ public class AuthApiHandler
     
     public async Task<bool> DeleteUser(int userId)
     {
-        (RestRequest request,RestClient client) = RestRequestHelper("/Users/delete", Method.Delete);
+        (RestRequest request,RestClient client) = RestRequestHelper($"/Users/delete?uid={userId}", Method.Delete);
         request.Authenticator = new JwtAuthenticator(_tokenProvider.AccessToken);
         RestResponse response = await client.ExecuteAsync(request);
 

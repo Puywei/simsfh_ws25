@@ -49,7 +49,7 @@
                                            OnClick="async () => await OpenEditUserDialog(x.Item)"/>
                             <MudIconButton Icon="@Icons.Material.Filled.Delete"
                                            Color="Color.Error"
-                                           OnClick="async () => await ConfirmDeleteUser(x.Item.Id, x.Item.Email)" />
+                                           OnClick="async () => await ConfirmDeleteUser(x.Item.uid, x.Item.Email)" />
                         </CellTemplate>
                     </TemplateColumn>
                 </Columns>

@@ -1,5 +1,6 @@
 ﻿@using sims_web_app.Data.Model
 @using MudBlazor
+@using sims_web_app.Components.Identity.Contracts
 @using sims_web_app.Services
 @inject ISnackbar Snackbar
 @inject AuthApiHandler AuthApiHandler
@@ -43,7 +44,7 @@
         // Kopie erstellen, damit Original nicht sofort überschrieben wird
         _user = new User
         {
-            Id = UserToEdit.Id,
+            uid = UserToEdit.uid,
             Email = UserToEdit.Email,
             FirstName = UserToEdit.FirstName,
             LastName = UserToEdit.LastName,
@@ -58,7 +59,7 @@
     {
         try
         {
-            bool isCreated = await AuthApiHandler.ModifyUser(_user, _user.Id);
+            bool isCreated = await AuthApiHandler.ModifyUser(_user, _user.uid);
             MudDialog.Close(DialogResult.Ok(_user));
 
             if (isCreated)
