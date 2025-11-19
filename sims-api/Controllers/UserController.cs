@@ -26,6 +26,9 @@ namespace sims.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] CreateUserRequest request)
         {
+            
+            var actingUser = UserContextHelper.GetActingUserInfo(User);
+            
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             
@@ -36,7 +39,7 @@ namespace sims.Controllers
             
             var roleExists = await _db.Roles.AnyAsync(r => r.RoleId == roleId);
             if (!roleExists)
-                return BadRequest($"RoleId {roleId} does not exist.");
+                return BadRequest($"RoleId '{roleId}' does not exist.");
 
             var user = new User
             {
@@ -51,7 +54,7 @@ namespace sims.Controllers
             await _db.SaveChangesAsync();
 
             await _eventLogger.LogEventAsync(
-                $"User created: UserID:{user.Uid} \"{user.Email}\" (RoleId={user.RoleId})",
+                $"Acting User:'{actingUser.Email}' - User created: UserID:'{user.Uid}' '{user.Email}' (RoleId='{user.RoleId}') by '{actingUser.Email}'",
                 severity: 2
             );
             
@@ -64,6 +67,8 @@ namespace sims.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Modify(int uid, [FromBody] ModifyUserRequest request)
         {
+            var actingUser = UserContextHelper.GetActingUserInfo(User);
+            
             var user = await _db.Users.FirstOrDefaultAsync(u => u.Uid == uid);
             if (user == null)
                 return NotFound("User not found.");
@@ -77,12 +82,12 @@ namespace sims.Controllers
             }
 
             if (!string.IsNullOrWhiteSpace(request.Lastname) && request.Lastname != user.Lastname)
-                {
-                    user.Lastname = request.Lastname;
-                    changes.Add($"Lastname → {request.Lastname}");
-                }
+            {
+                user.Lastname = request.Lastname;
+                changes.Add($"Lastname → {request.Lastname}");
+            }
 
-                if (!string.IsNullOrWhiteSpace(request.Email) && request.Email != user.Email)
+            if (!string.IsNullOrWhiteSpace(request.Email) && request.Email != user.Email)
             {
                 if (await _db.Users.AnyAsync(u => u.Email == request.Email && u.Uid != uid))
                     return BadRequest("Email already exists.");
@@ -117,7 +122,7 @@ namespace sims.Controllers
             {
                 var changeSummary = string.Join(", ", changes);
                 await _eventLogger.LogEventAsync(
-                    $"User {user.Email} (UserID = {user.Uid}) modified. Changes: {changeSummary}",
+                    $"Acting User:{actingUser.Email} - User {user.Email} (UserID = {user.Uid}) modified. Changes: {changeSummary}",
                     severity: 2
                 );
             }
@@ -130,6 +135,8 @@ namespace sims.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int uid)
         {
+            var actingUser = UserContextHelper.GetActingUserInfo(User);
+            
             var user = await _db.Users.FirstOrDefaultAsync(u => u.Uid == uid);
             if (user == null)
                 return NotFound(new { message = "User not found." });
@@ -139,7 +146,7 @@ namespace sims.Controllers
             
             
             await _eventLogger.LogEventAsync(
-                $"User deleted: UserID:{user.Uid} '{user.Email}'",
+                $"Acting User:{actingUser.Email} - User deleted: UserID:{user.Uid} '{user.Email}'",
                 severity: 2
             );
 
@@ -184,7 +191,7 @@ namespace sims.Controllers
             var roles = await _db.Roles
                 .Select(r => new
                 {
-                    Rolid = r.RoleId,
+                    Roleid = r.RoleId,
                     RoleName = r.RoleName
                 })
                 .ToListAsync();

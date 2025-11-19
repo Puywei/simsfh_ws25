@@ -16,11 +16,13 @@ namespace sims.Controllers
     {
         private readonly UserDbContext _db;
         private readonly IConfiguration _config;
+        private readonly IEventLogger _eventLogger;
 
-        public AuthController(UserDbContext db, IConfiguration config)
+        public AuthController(UserDbContext db, IConfiguration config, IEventLogger eventLogger)
         {
             _db = db;
             _config = config;
+            _eventLogger = eventLogger;
         }
 
         //  Login endpoint
@@ -53,6 +55,11 @@ namespace sims.Controllers
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
             
+            await _eventLogger.LogEventAsync(
+                $"User logged in: '{user.Email}' (Role='{user.Role.RoleName}')",
+                severity: 1
+            );
+            
             return Ok(new
             {
                 message = "Login successful",
@@ -69,9 +76,12 @@ namespace sims.Controllers
         public async Task<IActionResult> Logout()
         {
             var authHeader = HttpContext.Request.Headers["Authorization"].ToString();
+            
             if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
                 return BadRequest(new { message = "No token found in request." });
 
+            var actingUser = UserContextHelper.GetActingUserInfo(User);
+            
             var token = authHeader.Substring("Bearer ".Length).Trim();
 
             var handler = new JwtSecurityTokenHandler();
@@ -84,6 +94,11 @@ namespace sims.Controllers
                 Expiry = expiry
             });
             await _db.SaveChangesAsync();
+            
+            await _eventLogger.LogEventAsync(
+                $"User: '{actingUser.Email}' with Role '{actingUser.Role}' logged out.",
+                severity: 1
+            );
 
             return Ok(new { message = "Logout successful. Token invalidated." });
             
