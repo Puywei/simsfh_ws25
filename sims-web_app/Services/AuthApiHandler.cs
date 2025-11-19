@@ -27,13 +27,29 @@ public class AuthApiHandler
     
     public async Task<List<User>> GetAllUsers()
     {
-        
-        (RestRequest request,RestClient client) = RestRequestHelper("/Users/getAll", Method.Get);
+        (RestRequest request,RestClient client) = RestRequestHelper("/Users/getAllUsers", Method.Get);
         request.Authenticator = new JwtAuthenticator(_tokenProvider.AccessToken);
         RestResponse<List<User>> response = await client.ExecuteAsync<List<User>>(request);
+        List<UserRole> userRoles = new List<UserRole>();
+        userRoles = await GetAllRoles();
+        foreach (User user in response.Data)
+        {
+            UserRole userRole = userRoles.Find(r => r.RoleId == user.RoleId);
+            user.RoleName = userRole.RoleName;
+        }
+        
         return response.Data;
     }
-    
+
+    public async Task<List<UserRole>> GetAllRoles()
+    {
+        (RestRequest request, RestClient client) = RestRequestHelper("/Users/getAllRoles", Method.Get);
+        request.Authenticator = new JwtAuthenticator(_tokenProvider.AccessToken);
+        RestResponse<List<UserRole>> response = await client.ExecuteAsync<List<UserRole>>(request);
+        return response.Data;
+    }
+
+
     public async Task<bool> CreateUser(User user)
     {
         (RestRequest request,RestClient client) = RestRequestHelper("/Users/create", Method.Post);

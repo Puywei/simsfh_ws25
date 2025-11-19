@@ -15,9 +15,9 @@
         <MudTextField @bind-Value="_user.LastName" Label="Lastname" Required="true" />
         <MudTextField @bind-Value="_user.Email" Label="E-Mail" Required="true" />
         <MudSelect T="int" Placeholder="Rolle wählen" FullWidth="true" @bind-Value="_user.RoleId" Class="mt-3">
-            @foreach (var role in roles)
+            @foreach (var role in _userRoles)
             {
-                <MudSelectItem Value="@role.Id">@($"{role.Name}")</MudSelectItem>
+                <MudSelectItem Value="@role.RoleId">@($"{role.RoleName}")</MudSelectItem>
             }
         </MudSelect>
         <MudTextField Label="Password" HelperText="Choose a strong password" @bind-Value="_user.Password" For="@(() => _user.Password)" InputType="InputType.Password" />
@@ -35,12 +35,8 @@
     private string _passVerify = "";
 
     [CascadingParameter] IMudDialogInstance? MudDialog { get; set; }
-    
-    private List<UserRole> roles = new List<UserRole>()
-    {
-        new UserRole {Id = 0, Name = "Admin" },
-        new UserRole {Id = 1, Name = "User" }
-    };
+
+    private List<UserRole> _userRoles = new List<UserRole>();
     
     private void Cancel() => MudDialog.Cancel();
 
@@ -66,5 +62,10 @@
         }
         
 
+    }
+
+    protected override  async void OnInitialized()
+    {
+        _userRoles = await AuthApiHandler.GetAllRoles();
     }
 }

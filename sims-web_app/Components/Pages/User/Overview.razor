@@ -37,13 +37,12 @@
                 </ToolBarContent>
 
                 <Columns>
-                    <!-- CompanyName klickbar -->
-                    <PropertyColumn Property="x => x.FirstName" Title="Firstname" />
-                    <PropertyColumn Property="x => x.LastName" Title="Lastname" />
-                    <PropertyColumn Property="x => x.Email" Title="E-Mail" />
-                    <PropertyColumn Property="x => x.RoleId" Title="Rolle" />
+                    <PropertyColumn Property="x =>x.uid" Title="User Id" />
+                    <PropertyColumn Property="x => x.FirstName" Title="Firstname"/>
+                    <PropertyColumn Property="x => x.LastName" Title="Lastname"/>
+                    <PropertyColumn Property="x => x.Email" Title="E-Mail"/>
+                    <PropertyColumn Property="x => x.RoleName"  Title="Rolle"/>
 
-                    <!-- Aktionen -->
                     <TemplateColumn Title="Aktionen">
                         <CellTemplate Context="x">
                             <MudIconButton Icon="@Icons.Material.Filled.Edit"
@@ -51,7 +50,7 @@
                                            OnClick="async () => await OpenEditUserDialog(x.Item)"/>
                             <MudIconButton Icon="@Icons.Material.Filled.Delete"
                                            Color="Color.Error"
-                                           OnClick="async () => await ConfirmDeleteUser(x.Item.uid, x.Item.Email)" />
+                                           OnClick="async () => await ConfirmDeleteUser(x.Item.uid, x.Item.Email)"/>
                         </CellTemplate>
                     </TemplateColumn>
                 </Columns>
@@ -68,26 +67,19 @@
     private bool isDone = false;
     private List<User> _users = new List<User>();
     private string _searchString = "";
-    
-    private List<UserRole> roles = new List<UserRole>()
-    {
-        new UserRole {Id = 0, Name = "Admin" },
-        new UserRole {Id = 1, Name = "User" }
-    };
-    
 
-    public async Task<string> GetRoleName(int roleId)
+    private List<UserRole> _userRoles = new List<UserRole>();
+
+    private string GetRoleName(int roleId)
     {
-        return roles.First(r => r.Id == roleId).Name;
+        return _userRoles.Find(ur => ur.RoleId == roleId).RoleName;
     }
     
-
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            _users = await AuthApiHandler.GetAllUsers();
-            
+            await LoadData();
         }
         catch (Exception e)
         {
@@ -98,6 +90,7 @@
     private async Task LoadData()
     {
         _users = await AuthApiHandler.GetAllUsers();
+        _userRoles = await AuthApiHandler.GetAllRoles();
         await InvokeAsync(StateHasChanged);
     }
 
@@ -130,7 +123,7 @@
             if (isDeleted)
             {
                 Snackbar.Add($"User {customerName} deleted successfully.", Severity.Success);
-                _users = await AuthApiHandler.GetAllUsers();
+                await LoadData();
                 StateHasChanged();
             }
             else
