@@ -1,0 +1,80 @@
+﻿@page "/login"
+@using Blazored.SessionStorage
+@using Microsoft.AspNetCore.Components.Authorization
+@using sims_web_app.Components.Identity.Services
+@using sims_web_app.Components.Identity.Contracts
+@using MudBlazor
+@inject AuthService AuthService
+@inject NavigationManager NavigationManager
+@inject ISessionStorageService SessionStorage
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+
+<MudPaper>
+    <MudForm @ref="form" Model="@authRequest" OnValidSubmit="HandleValidSubmit" Class="new-blog-form">
+        <MudText Typo="Typo.h6" Class="mb-4">Login</MudText>
+        <MudTextField @bind-Value="authRequest!.email"
+                      Label="Username"
+                      Variant="Variant.Outlined"
+                      Required="true"
+                      FullWidth="true"
+                      Class="mb-3"/>
+        <MudTextField @bind-Value="authRequest!.Password"
+                      Label="Password"
+                      Variant="Variant.Outlined"
+                      InputType="InputType.Password"
+                      Required="true"
+                      FullWidth="true"
+                      Class="mb-3"/>
+        <MudStack Direction="Row" Spacing="2">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@SubmitForm">Login</MudButton>
+            <MudButton Variant="Variant.Outlined" Color="Color.Secondary" Href="/auth/register">New User? Register</MudButton>
+        </MudStack>
+    </MudForm>
+</MudPaper>
+
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthStateTask { get; set; }
+    private bool isAuthenticated; 
+
+    private AuthRequest? authRequest = new AuthRequest();
+    private MudForm? form;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        if (AuthStateTask != null)
+        {
+            var authState = await AuthStateTask;
+            isAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
+        }
+    }
+
+    private async Task SubmitForm()
+    {
+        if (form is not null)
+        {
+            await form.Validate();
+            if (form.IsValid)
+            {
+                await HandleValidSubmit();
+            }
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (authRequest is null)
+            return;
+
+        var authResponse = await AuthService.Login(authRequest);
+        if (authResponse != null)
+        {
+            await SessionStorage.SetItemAsync("token", authResponse.Token);
+            ((CustomAuthenticationStateProvider)AuthenticationStateProvider)
+                .AuthenticateUser(authResponse.Token!);
+            NavigationManager.NavigateTo("/");
+        }
+    }
+}

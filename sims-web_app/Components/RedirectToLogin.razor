@@ -1,0 +1,16 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager NavigationManager
+
+@code {
+    protected override void OnInitialized()
+    {
+        if (NavigationManager.Uri.Contains("/login"))
+            return; // nicht erneut weiterleiten
+
+        var returnUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        NavigationManager.NavigateTo($"/login?returnUrl={returnUrl}", true);
+    }
+}
+
+
+
