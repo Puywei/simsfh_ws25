@@ -2,6 +2,8 @@
 @using MudBlazor
 @using sims_web_app.Services
 @inject ISnackbar Snackbar
+@attribute [Authorize]
+@using Microsoft.AspNetCore.Authorization
 
 <MudDialog>
     <DialogContent>

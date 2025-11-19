@@ -1,10 +1,11 @@
 ﻿@page "/User/Overview"
-@attribute [Authorize]
+@attribute [Authorize(Roles ="Admin")]
 @using Microsoft.AspNetCore.Authorization
 @using sims_web_app.Components.Identity.Contracts
 @using sims_web_app.Components.Identity.Services
 @using sims_web_app.Data.Model
 @using sims_web_app.Services
+@using Microsoft.AspNetCore.Components.Authorization
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 @inject AuthApiHandler AuthApiHandler
@@ -12,12 +13,13 @@
 
 <PageTitle>User Overview</PageTitle>
 
+
+
 <MudPaper Class="pa-6" Elevation="2">
     <MudStack Spacing="2">
         <MudText Typo="Typo.body2" Color="Color.Default">
             Übersicht aller User im System
         </MudText>
-
         @if (!isDone)
         {
             <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />

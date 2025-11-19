@@ -39,8 +39,24 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
     {
         var handler = new JwtSecurityTokenHandler();
         var jwt = handler.ReadJwtToken(token);
+        //test
+        var claims = jwt.Claims
+               .Select(c => c.Type switch
+               {
+                   "role" => new Claim(ClaimTypes.Role, c.Value),  
+                   "unique_name" => new Claim(ClaimTypes.Name, c.Value),   
+                   _ => c
+               })
+               .ToList();
 
-        var identity = new ClaimsIdentity(jwt.Claims, "jwt");
+        var identity = new ClaimsIdentity(
+                                claims,
+                                "jwt",
+                             ClaimTypes.Name,  
+                             ClaimTypes.Role   
+                         );
+        //test end
+        //var identity = new ClaimsIdentity(jwt.Claims, "jwt");
         var user = new ClaimsPrincipal(identity);
 
         var state = new AuthenticationState(user);
