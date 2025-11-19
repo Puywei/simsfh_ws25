@@ -1,5 +1,7 @@
 ﻿using System.Security.Claims;
 
+namespace sims.Helpers;
+
 public class ActingUserInfo
 {
     public string UserId { get; set; }
