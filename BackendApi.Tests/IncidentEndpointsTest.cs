@@ -88,7 +88,7 @@ public class IncidentEndpointsTests : IClassFixture<WebApplicationFactory<Progra
         {
             Summary = "API Test Incident",
             Description = "Created via integration test",
-            AssignedPerson = "Tester",
+            AssignedPerson = 2,
             Severity = IncidentSeverity.Medium,
             CustomerId = customer.Id,
             Status = IncidentStatus.Open,
@@ -102,7 +102,7 @@ public class IncidentEndpointsTests : IClassFixture<WebApplicationFactory<Progra
         var createdIncident = await response.Content.ReadFromJsonAsync<Incident>();
         createdIncident.Should().NotBeNull();
         createdIncident!.Id.Should().StartWith("INC-");
-        createdIncident.AssignedPerson.Should().Be("Tester");
+        createdIncident.AssignedPerson.Should().Be(2);
     }
 
     [Fact]
@@ -146,7 +146,7 @@ public class IncidentEndpointsTests : IClassFixture<WebApplicationFactory<Progra
             Summary = "Original Summary",
             Description = "Original Description",
             CustomerId = customer.Id,
-            AssignedPerson = "Original Assignee",
+            AssignedPerson = 2,
             Status = IncidentStatus.Open,
             Severity = IncidentSeverity.Low,
             IncidentType = IncidentType.SecurityIncident
@@ -160,7 +160,7 @@ public class IncidentEndpointsTests : IClassFixture<WebApplicationFactory<Progra
         {
             Summary = "Updated Summary",
             Description = "Updated Description",
-            AssignedPerson = "Updated Assignee",
+            AssignedPerson = 2,
             Status = IncidentStatus.onProgress,
             Severity = IncidentSeverity.High,
             IncidentType = IncidentType.SecurityIncident,
@@ -191,7 +191,7 @@ public class IncidentEndpointsTests : IClassFixture<WebApplicationFactory<Progra
         {
             Summary = "Updated Summary",
             Description = "Updated Description",
-            AssignedPerson = "Updated Assignee",
+            AssignedPerson = 2,
             Status = IncidentStatus.onProgress,
             Severity = IncidentSeverity.High,
             IncidentType = IncidentType.SecurityIncident,

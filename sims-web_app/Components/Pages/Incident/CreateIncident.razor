@@ -17,7 +17,7 @@
     <MudTextField @bind-Value="newIncident.Summary" Label="Subject" Variant="Variant.Outlined"></MudTextField>
     <MudTextField @bind-Value="newIncident.CustomerId" Label="Customer ID" Variant="Variant.Outlined"></MudTextField>
 
-    <MudSelect T="int" Placeholder="choose a person" FullWidth="true" @bind-Value="newIncident.AssignedPerson" Class="mt-3">
+    <MudSelect T="int?" Placeholder="choose a person" FullWidth="true" @bind-Value="newIncident.AssignedPerson" Class="mt-3">
         @foreach (var user in users)
         {
             <MudSelectItem Value="@user.uid">@($"{user.FirstName} {user.LastName}")</MudSelectItem>

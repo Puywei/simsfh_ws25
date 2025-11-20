@@ -1,13 +1,13 @@
 ﻿@page "/Account/Login"
-@using Blazored.SessionStorage
 @using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using sims_web_app.Components.Identity.Services
 @using sims_web_app.Components.Identity.Contracts
 @using sims_web_app.Data.Model
 @using MudBlazor
 @inject AuthService AuthService
 @inject NavigationManager NavigationManager
-@inject ISessionStorageService SessionStorage
+@inject ProtectedLocalStorage SessionStorage
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject TokenProvider TokenProvider
 
@@ -50,19 +50,12 @@
     private Task<AuthenticationState>? AuthStateTask { get; set; }
     private bool isAuthenticated; 
     
-
-
-
     private AuthRequest? authRequest = new AuthRequest();
     private MudForm? form;
     
     protected override async Task OnInitializedAsync()
     {
-        if (AuthStateTask != null)
-        {
-            var authState = await AuthStateTask;
-            isAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
-        }
+
     }
 
     private async Task SubmitForm()
@@ -85,7 +78,7 @@
         var authResponse = await AuthService.Login(authRequest);
         if (authResponse != null)
         {
-            await SessionStorage.SetItemAsync("token", authResponse.Token);
+            await SessionStorage.SetAsync("token", authResponse.Token);
             ((CustomAuthenticationStateProvider)AuthenticationStateProvider)
                 .AuthenticateUser(authResponse.Token!);
             TokenProvider.SetToken(authResponse.Token);

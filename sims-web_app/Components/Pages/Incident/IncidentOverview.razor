@@ -46,12 +46,19 @@
                     <!-- Aktionen -->
                     <TemplateColumn Title="Aktionen">
                         <CellTemplate Context="x">
-                            <MudIconButton Icon="@Icons.Material.Filled.Edit"
-                                           Color="Color.Primary"
-                                           OnClick="async () => await OpenEditIncidentDialog(x.Item)"/>
-                            <MudIconButton Icon="@Icons.Material.Filled.Delete"
-                                           Color="Color.Error"
-                                           OnClick="async () => await ConfirmDeleteIncident(x.Item.Id, x.Item.Summary)" />
+                            @if (x.Item.Id == "No Data Found")
+                            {
+                                
+                            }
+                            else
+                            {
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                               Color="Color.Primary"
+                                               OnClick="async () => await OpenEditIncidentDialog(x.Item)"/>
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                               Color="Color.Error"
+                                               OnClick="async () => await ConfirmDeleteIncident(x.Item.Id, x.Item.Summary)"/>
+                            }
                         </CellTemplate>
                     </TemplateColumn>
                 </Columns>
@@ -74,6 +81,11 @@
       try
       {
         _incidents = await BackendApiHandler.GetAllIncidents();
+        if (_incidents is null)
+            _incidents = new List<Data.Model.Incident>()
+            {
+                new Data.Model.Incident { Id = "No Data Found", Summary = "No Data Found" }
+            };
 
       }
       catch (Exception e)
@@ -85,6 +97,11 @@
     private async Task LoadData()
     {
         _incidents = await BackendApiHandler.GetAllIncidents();
+        if (_incidents is null)
+            _incidents = new List<Data.Model.Incident>()
+            {
+                new Data.Model.Incident { Id = "No Data Found", Summary = "No Data Found" }
+            };
         await InvokeAsync(StateHasChanged);
     }
 
