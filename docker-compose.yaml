@@ -92,6 +92,22 @@ services:
         - sims-net
         
     #Container für Web-App
+    sims-web-app:
+        build:
+            context: ./sims-web_app
+            dockerfile: Dockerfile
+        container_name: sims-web-app
+        ports:
+        - "8080:8080"
+        - "8082:8081"
+        environment:
+            APP_UID: "${APP_UID:-1000}"
+            DOTNET_RUNNING_IN_CONTAINER: "true"
+            DOTNET_USE_POLLING_FILE_WATCHER: "true"
+        restart: unless-stopped
+        working_dir: /app
+        networks:
+        - sims-net
     
     
 networks:
