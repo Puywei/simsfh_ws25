@@ -3,17 +3,42 @@
 @using sims_web_app.Components.Identity.Contracts
 @using sims_web_app.Components.Identity.Services
 @using sims_web_app.Data.Model
+@using sims_web_app.Data.Model.Enum
 @using MudBlazor
 @using sims_web_app.Services
 @inject ISnackbar Snackbar
+@inject AuthApiHandler AuthApiHandler
+
 
 <MudDialog>
-    <DialogContent>
+    <DialogContent> 
         <MudTextField @bind-Value="_incident.Summary" Label="Subject" Required="true" />
-        <MudTextField @bind-Value="_incident.Severity" Label="Severity" Required="true" />
-        
+        <MudGrid>
+            <MudItem xs="12">
+                <MudField  Label="Severity" InnerPadding="false">
+                    <MudRadioGroup @bind-Value="_incident.Severity" T="IncidentSeverity?">
+                        <MudRadio Value="IncidentSeverity.Low" T="IncidentSeverity?">low</MudRadio>
+                        <MudRadio Value="IncidentSeverity.Medium" T="IncidentSeverity?">medium</MudRadio>
+                        <MudRadio Value="IncidentSeverity.High" T="IncidentSeverity?">high</MudRadio>
+                        <MudRadio Value="IncidentSeverity.Critical" T="IncidentSeverity?">critical</MudRadio>
+                    </MudRadioGroup>
+                </MudField>
+            </MudItem>
+        </MudGrid>
+        <MudSelect T="string" Label="Affected Customer" @bind-Value="_incident.CustomerId" Required="true">
+            @foreach(var cust in customers)
+            {
+                <MudSelectItem Value="@cust.Id">@cust.CompanyName</MudSelectItem>
+            }
+        </MudSelect>
         <MudTextField @bind-Value="_incident.AssignedPerson" Label="Assigned Person" />
-        <MudTextField @bind-Value="_incident.Status" Label="Stasus" />
+        <MudSelect T="IncidentStatus?" Label="Status" @bind-Value="_incident.Status" Required="true">
+            <MudSelectItem Value="IncidentStatus.Open" T="IncidentStatus?">Open</MudSelectItem>
+            <MudSelectItem Value="IncidentStatus.onProgress" T="IncidentStatus?">In Progress</MudSelectItem>
+            <MudSelectItem Value="IncidentStatus.onHold" T="IncidentStatus?">On Hold</MudSelectItem>
+            <MudSelectItem Value="IncidentStatus.Solved" T="IncidentStatus?">Solved</MudSelectItem>
+            <MudSelectItem Value="IncidentStatus.Aborted" T="IncidentStatus?">Aborted</MudSelectItem>
+        </MudSelect>
         <MudTextField @bind-Value="_incident.Description" Label="Description" Lines="10" />
     </DialogContent>
 
@@ -25,8 +50,17 @@
 
 @code {
     private sims_web_app.Data.Model.Incident _incident = new();
+    private List<User> users = new List<User>();
+    private List<Customer> customers = new List<Customer>();
 
     [CascadingParameter] IMudDialogInstance? MudDialog { get; set; }
+
+    protected override async void OnInitialized()
+    {
+        //users = await AuthApiHandler.GetAllUsers();
+        customers = await BackendApiHandler.GetAllCustomer();
+    }
+
 
     private void Cancel() => MudDialog.Cancel();
 
