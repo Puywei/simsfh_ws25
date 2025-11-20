@@ -1,5 +1,8 @@
-﻿@using sims_web_app.Data.Model
+﻿@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Microsoft.AspNetCore.Session
+@using sims_web_app.Data.Model
 @inject TokenProvider TokenProvider
+@inject ProtectedLocalStorage ProtectedLocalStorage
 
 <!DOCTYPE html>
 <html lang="en">
@@ -26,13 +29,12 @@
 @code
 {
     
-    [Parameter]
-    public string AccessToken { get; set; }
 
     protected override void OnInitialized()
     {
+        var token = ProtectedLocalStorage.GetAsync<string>("token");
         //Accept the parameter from _Host.cshtml and move into the Token Provider 
-        TokenProvider.SetToken(AccessToken);
+        TokenProvider.SetToken(token.ToString());
         base.OnInitialized();
     }
 }

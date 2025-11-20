@@ -30,13 +30,9 @@ public class AuthApiHandler
         (RestRequest request,RestClient client) = RestRequestHelper("/Users/getAllUsers", Method.Get);
         request.Authenticator = new JwtAuthenticator(_tokenProvider.AccessToken);
         RestResponse<List<User>> response = await client.ExecuteAsync<List<User>>(request);
-        List<UserRole> userRoles = new List<UserRole>();
-        userRoles = await GetAllRoles();
+        
         foreach (User user in response.Data)
-        {
-            UserRole userRole = userRoles.Find(r => r.RoleId == user.RoleId);
-            user.RoleName = userRole.RoleName;
-        }
+            user.FullName = user.FirstName + " " + user.LastName;
         
         return response.Data;
     }

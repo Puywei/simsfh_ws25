@@ -1,0 +1,71 @@
+﻿@using sims_web_app.Data.Model
+@using MudBlazor
+@using sims_web_app.Services
+@inject ISnackbar Snackbar
+@attribute [Authorize]
+@using Microsoft.AspNetCore.Authorization
+
+<MudDialog>
+    <DialogContent>
+        <MudTextField @bind-Value="_incident.Summary" Label="Subject" Required="true" />
+        <MudTextField @bind-Value="_incident.Severity" Label="Severity" Required="true" />
+        <MudTextField @bind-Value="_incident.AssignedPerson" Label="Assigned Person" />
+        <MudTextField @bind-Value="_incident.Status" Label="Status" />
+        <MudTextField @bind-Value="_incident.Description" Label="Description" />
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton Color="Color.Default" OnClick="Cancel">Abbrechen</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Save">Speichern</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private sims_web_app.Data.Model.Incident _incident = new();
+
+    [CascadingParameter] IMudDialogInstance? MudDialog { get; set; }
+
+    [Parameter] public sims_web_app.Data.Model.Incident IncidentToEdit { get; set; } = new();
+
+    protected override void OnInitialized()
+    {
+        // Kopie erstellen, damit Original nicht sofort überschrieben wird
+        _incident = new sims_web_app.Data.Model.Incident
+        {
+            Id = IncidentToEdit.Id,
+            Summary = IncidentToEdit.Summary,
+            Severity = IncidentToEdit.Severity,
+            AssignedPerson = IncidentToEdit.AssignedPerson,
+            Status = IncidentToEdit.Status,
+            Description = IncidentToEdit.Description,
+            CreateDate = IncidentToEdit.CreateDate,
+            ChangeDate = IncidentToEdit.ChangeDate,
+            UUId = IncidentToEdit.UUId,
+        };
+    }
+
+    private void Cancel() => MudDialog?.Cancel();
+
+    private async Task Save()
+    {
+        try
+        {
+            bool isUpdated = await BackendApiHandler.UpdateIncident(_incident, _incident.Id);
+            MudDialog.Close(DialogResult.Ok(_incident));
+
+            if (isUpdated)
+            {
+                Snackbar.Add($"Incident {_incident.Summary} erfolgreich aktualisiert!", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add($"Error by changing the the incident {_incident.Summary}!", Severity.Error);
+            }
+            MudDialog?.Close(DialogResult.Ok(_incident));
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add($"Error by updateing the the incident {_incident.Summary}!", Severity.Error);
+        }
+    }
+}

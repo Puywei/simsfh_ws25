@@ -20,7 +20,7 @@ public static class BackendApiHandler
     }
     
 
-    public static async Task<Incident?> CreateIncident(Incident incident)
+    public static async Task<Incident> CreateIncident(Incident incident)
     {
         (RestRequest request,RestClient client) = RestRequestHelper("/Incidents", Method.Post);
         incident.Comments = new List<IncidentComment>();
@@ -47,21 +47,23 @@ public static class BackendApiHandler
         return response.Data;
     }
     
-    public static async Task<RestResponse> DeleteIncident(int id)
+    public static async Task<bool> DeleteIncident(string id)
     {
         (RestRequest request,RestClient client) = RestRequestHelper($"/Incidents/{id}", Method.Delete);
         RestResponse response = await client.ExecuteAsync(request);
-        
-        return response;
+
+        return response.StatusCode == HttpStatusCode.NoContent
+        || response.StatusCode == HttpStatusCode.OK;
     }
 
-    public static async Task<RestResponse> UpdateIncident(Incident incident, string incidentId)
+    public static async Task<bool> UpdateIncident(Incident incident, string incidentId)
     {
         (RestRequest request,RestClient client) = RestRequestHelper($"/Incidents/{incidentId}", Method.Put);
         request.AddJsonBody(incident);
         RestResponse response = await client.ExecuteAsync(request);
-        
-        return response;
+
+        return response.StatusCode == HttpStatusCode.NoContent
+       || response.StatusCode == HttpStatusCode.OK;
     }
     // ******************  Customer  *********************
     
@@ -91,7 +93,14 @@ public static class BackendApiHandler
         (RestRequest request,RestClient client) = RestRequestHelper("/Customers", Method.Get);
         RestResponse<List<Customer>> response = await client.ExecuteAsync<List<Customer>>(request);
 
-        return response.Data.ToList();
+        if (response.Data != null)
+        {
+            return response.Data.ToList();
+        }
+        else
+        {
+            return  new List<Customer>();
+        }
     }
     
     public static async Task<Customer> GetCustomerById(string id)

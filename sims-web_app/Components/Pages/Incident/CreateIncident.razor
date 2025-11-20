@@ -7,6 +7,7 @@
 @using sims_web_app.Data.Model
 @using sims_web_app.Services
 @inject NavigationManager NavManager
+@inject AuthApiHandler AuthApiHandler
 
 <PageTitle>New Ticket</PageTitle>
 
@@ -16,7 +17,11 @@
     <MudTextField @bind-Value="newIncident.Summary" Label="Subject" Variant="Variant.Outlined"></MudTextField>
     <MudTextField @bind-Value="newIncident.CustomerId" Label="Customer ID" Variant="Variant.Outlined"></MudTextField>
 
-    <MudSelect @bind-Value="newIncident.AssignedPerson" Label="Assigned Person" FullWidth="true" Variant="Variant.Outlined" Clearable>
+    <MudSelect T="int?" Placeholder="choose a person" FullWidth="true" @bind-Value="newIncident.AssignedPerson" Class="mt-3">
+        @foreach (var user in users)
+        {
+            <MudSelectItem Value="@user.uid">@($"{user.FirstName} {user.LastName}")</MudSelectItem>
+        }
     </MudSelect>
     <MudGrid>
         <MudItem xs="12">
@@ -43,10 +48,16 @@
     private string errorMessage = string.Empty;
     private MudForm form;
     private Data.Model.Incident newIncident = new Data.Model.Incident();
+    private List<User> users = new List<User>();
+
+    protected override async void OnInitialized()
+    {
+        users = await AuthApiHandler.GetAllUsers();
+    }
 
     private async Task SubmitIncident()
     {
+        newIncident.AssignedPersonName = users.Find(u => u.uid == newIncident.AssignedPerson).FullName;
         await BackendApiHandler.CreateIncident(newIncident);
-        NavManager.NavigateTo("/Incident/Overview"); 
     }
 }

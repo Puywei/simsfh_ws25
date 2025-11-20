@@ -13,8 +13,9 @@ public class Incident
     public DateTime? ClosedDate { get; set; }
     public IncidentStatus? Status { get; set; }
     public IncidentType? IncidentType { get; set; }
-    public string? AssignedPerson { get; set; }
+    public int? AssignedPerson { get; set; }
+    public string? AssignedPersonName { get; set; }
     public IncidentSeverity? Severity { get; set; }
-    public string CustomerId { get; set; }
+    public string? CustomerId { get; set; }
     public Guid UUId { get; set; }
 }
