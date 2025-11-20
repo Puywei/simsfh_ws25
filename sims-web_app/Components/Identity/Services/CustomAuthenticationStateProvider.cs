@@ -39,7 +39,6 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
     {
         var handler = new JwtSecurityTokenHandler();
         var jwt = handler.ReadJwtToken(token);
-        //test
         var claims = jwt.Claims
                .Select(c => c.Type switch
                {
@@ -55,8 +54,7 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
                              ClaimTypes.Name,  
                              ClaimTypes.Role   
                          );
-        //test end
-        //var identity = new ClaimsIdentity(jwt.Claims, "jwt");
+
         var user = new ClaimsPrincipal(identity);
 
         var state = new AuthenticationState(user);

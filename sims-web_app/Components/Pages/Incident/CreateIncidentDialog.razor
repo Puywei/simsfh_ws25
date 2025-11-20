@@ -1,0 +1,64 @@
+﻿@attribute [Authorize]
+@using Microsoft.AspNetCore.Authorization
+@using sims_web_app.Components.Identity.Contracts
+@using sims_web_app.Components.Identity.Services
+@using sims_web_app.Data.Model
+@using MudBlazor
+@using sims_web_app.Services
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <DialogContent>
+        <MudTextField @bind-Value="_incident.Summary" Label="Subject" Required="true" />
+        <MudTextField @bind-Value="_incident.Severity" Label="Severity" Required="true" />
+        
+        <MudTextField @bind-Value="_incident.AssignedPerson" Label="Assigned Person" />
+        <MudTextField @bind-Value="_incident.Status" Label="Stasus" />
+        <MudTextField @bind-Value="_incident.Description" Label="Description" Lines="10" />
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton Color="Color.Default" OnClick="Cancel">Abbrechen</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Save">Speichern</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private sims_web_app.Data.Model.Incident _incident = new();
+
+    [CascadingParameter] IMudDialogInstance? MudDialog { get; set; }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private async void Save()
+    {
+        // bool isCreated = await BackendApiHandler.CreateIncident(_incident);
+        // MudDialog.Close(DialogResult.Ok(_incident));
+
+        // if (isCreated)
+        // {
+        //     Snackbar.Add($"Incident {_incident.Summary} created successfully!", Severity.Success);
+        // }
+        // else
+        // {
+        //     Snackbar.Add($"Error by creating the Incident!", Severity.Error);
+        // }
+
+
+        // Call API
+        var createdIncident = await BackendApiHandler.CreateIncident(_incident);
+
+        // Close dialog and pass back the created incident (or original if null)
+        MudDialog?.Close(DialogResult.Ok(createdIncident ?? _incident));
+
+        if (createdIncident is not null)
+        {
+            Snackbar.Add($"Incident {createdIncident.Summary} created successfully!", Severity.Success);
+        }
+        else
+        {
+            Snackbar.Add("Error creating the incident!", Severity.Error);
+        }
+
+    }
+}
