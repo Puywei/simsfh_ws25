@@ -6,6 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <RootNamespace>sims_web_app</RootNamespace>
         <AssemblyName>`$(AssemblyName.Replace(' ', '_'))</AssemblyName>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
 

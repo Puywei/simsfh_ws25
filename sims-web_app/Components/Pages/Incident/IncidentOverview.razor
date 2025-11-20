@@ -12,67 +12,176 @@
 
 <PageTitle>Incidents Overview</PageTitle>
 
-<MudText Typo="Typo.h3" GutterBottom="true">Incidents Overview</MudText>
-<MudText Typo="Typo.body1" Class="mb-8">Security Incidents</MudText>
+<MudPaper Class="pa-6" Elevation="2">
+    <MudStack Spacing="2">
+        <MudText Typo="Typo.h4" Color="Color.Primary">Incidents Overview</MudText>
+        <MudText Typo="Typo.body2" Color="Color.Default">Security Incidents</MudText>
 
-<NavLink href="/Incident/Create"><MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary">Create new Ticket</MudButton></NavLink>
+        @if (!isDone)
+        {
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+            <MudText Typo="Typo.body1">Daten werden geladen...</MudText>
+        }
+        else
+        {
+            
+            <MudDataGrid Items="_incidents">
+                <ToolBarContent>
+                    <MudSpacer />
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenCreateIncidentDialog"
+                               StartIcon="@Icons.Material.Filled.Add">
+                        New Incident
+                    </MudButton>
+                </ToolBarContent>
 
-<MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium" />
+                <Columns>
+                    <!-- CompanyName klickbar -->
+                    <PropertyColumn Property="x => x.Id" Title="Id" />
+                    <PropertyColumn Property="x => x.Summary" Title="Subject" />
+                    <PropertyColumn Property="x => x.Severity" Title="Severity" />
+                    <PropertyColumn Property="x => x.AssignedPerson" Title="Assigned Person" />
+                    <PropertyColumn Property="x => x.Status" Title="Status" />
+                    <PropertyColumn Property="x => x.CreateDate" Title="CreateDate" />
 
-@if (_incidents == null)
-{
-    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
-}
-else
-{
-    <MudTable Items="_incidents" Hover="true" SortLabel="Sort By" Elevation="0" AllowUnsorted="false">
-        <HeaderContent>
-            <MudTh></MudTh>
-            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Data.Model.Incident, object>(x => x.Id)">Incident ID</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<Data.Model.Incident, object>(x => x.Summary)">Subject</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<Data.Model.Incident, object>(x => x.Severity)">Severity</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<Data.Model.Incident, object>(x => x.AssignedPersonName!)">Assigned Person</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<Data.Model.Incident, object>(x => x.Status)">Status</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<Data.Model.Incident, object>(x => x.CreateDate)">created Date</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<Data.Model.Incident, object>(x => x.Id)">Time to Resolution</MudTableSortLabel></MudTh>
-        </HeaderContent>
-        <RowTemplate>
-         @*   <MudTd DataLabel="Enabled"><MudCheckBox T="bool" Checked="@context.selected" ValueChanged="@(e => UpdateRecord(context, e))"></MudCheckBox></MudTd> *@
-         <MudTd DataLabel="Incident ID">
-             <MudLink Href="@($"/Incident/{context.Id}")">@context.Id</MudLink>
-         </MudTd>
-            <MudTd DataLabel="summary">@context.Summary</MudTd>
-            <MudTd DataLabel="author">@context.Severity</MudTd>
-            <MudTd DataLabel="assigned_person">@context.AssignedPersonName</MudTd>
-            <MudTd DataLabel="assigned_person">@context.Status</MudTd>
-            <MudTd DataLabel="assigned_person">@context.CreateDate</MudTd>
-            <MudTd DataLabel="assigned_person">@context.Id</MudTd>
-        </RowTemplate>
-        <PagerContent>
-            <MudTablePager PageSizeOptions="new int[] { 50, 100 }" />
-        </PagerContent>
-    </MudTable>
+                    <!-- Aktionen -->
+                    <TemplateColumn Title="Aktionen">
+                        <CellTemplate Context="x">
+                            @if (x.Item.Id == "No Data Found")
+                            {
+                                
+                            }
+                            else
+                            {
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                               Color="Color.Primary"
+                                               OnClick="async () => await OpenEditIncidentDialog(x.Item)"/>
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                               Color="Color.Error"
+                                               OnClick="async () => await ConfirmDeleteIncident(x.Item.Id, x.Item.Summary)"/>
+                            }
+                        </CellTemplate>
+                    </TemplateColumn>
+                </Columns>
 
-}
+                 <PagerContent>
+                    <MudDataGridPager/>
+                </PagerContent>
+                </MudDataGrid>
+        }
+    </MudStack>
+</MudPaper>
 
 @code {
-
-    public bool Basic_CheckBox1 { get; set; } = true;
-
+    private bool isDone = false;
     private List<Data.Model.Incident> _incidents = new List<Data.Model.Incident>();
-
+    private string _searchString = "";
 
     protected override async Task OnInitializedAsync()
     {
-        LoadData();
-        StateHasChanged();
+      try
+      {
+        _incidents = await BackendApiHandler.GetAllIncidents();
+        if (_incidents is null)
+            _incidents = new List<Data.Model.Incident>()
+            {
+                new Data.Model.Incident { Id = "No Data Found", Summary = "No Data Found" }
+            };
+
+      }
+      catch (Exception e)
+      {
+        Console.WriteLine(e);
+      }
+      isDone = true;
     }
-    
     private async Task LoadData()
     {
-        _incidents = await BackendApiHandler.GetAllIncidents();   
+        _incidents = await BackendApiHandler.GetAllIncidents();
+        if (_incidents is null)
+            _incidents = new List<Data.Model.Incident>()
+            {
+                new Data.Model.Incident { Id = "No Data Found", Summary = "No Data Found" }
+            };
         await InvokeAsync(StateHasChanged);
     }
-}
 
+    private async Task ConfirmDeleteIncident(string id, string incidentSubject)
+    {
+        var parameters = new DialogParameters
+        {
+            { nameof(DeleteIncidentDialog.ContentText), $"Do you really want to delete the incident {incidentSubject}? This process cannot be undone." },
+            { nameof(DeleteIncidentDialog.ButtonText), "Delete" },
+            { nameof(DeleteIncidentDialog.Color), Color.Error }
+        };
 
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var dialog = DialogService.Show<DeleteIncidentDialog>("Delete", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            DeleteIncident(id, incidentSubject);
+        }
+    }
+
+    private async Task DeleteIncident(string id, string incidentSubject)
+    {
+        try
+        {
+            bool isDeleted = await BackendApiHandler.DeleteIncident(id);
+
+            if (isDeleted)
+            {
+                Snackbar.Add($"Incident {incidentSubject} wurde erfolgreich gelöscht.", Severity.Success);
+                _incidents = await BackendApiHandler.GetAllIncidents();
+                StateHasChanged();
+            }
+            else
+            {
+                Snackbar.Add($"Incident mit ID {incidentSubject} konnte nicht gelöscht.", Severity.Error);
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    private async Task OpenCreateIncidentDialog()
+    {
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = DialogService.Show<CreateIncidentDialog>("Create New Incident", options);
+
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+
+            await LoadData();
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task OpenEditIncidentDialog(sims_web_app.Data.Model.Incident incident)
+    {
+        var parameters = new DialogParameters
+        {
+            { nameof(EditIncidentDialog.IncidentToEdit), incident }
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+
+        var dialog = DialogService.Show<EditIncidentDialog>("Incidents bearbeiten", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await LoadData();
+            StateHasChanged();
+        }
+    }
+
+       }

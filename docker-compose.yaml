@@ -41,7 +41,7 @@ services:
 
     #Container für NoSQL EventLogging API
     redis:
-        image: redis:latest
+        image: redis:8.4.0-bookworm
         container_name: redis
         ports:
         - "6379:6379"
@@ -59,10 +59,61 @@ services:
         - redis
         networks:
         - sims-net
+        
+    #Container für BackendAPI
+    backendapi:
+        build:
+            context: ./BackendAPI
+            dockerfile: Dockerfile
+        image: backendapi
+        ports:
+        - "5001:5001"
+        environment:
+            ASPNETCORE_HTTP_PORTS: "5001"
+            REDIS_CONNECTION: "redis:6379,password=SecurePassword,abortConnect=false"
+            MSSQL_CONNECTION: "Data Source=mssql;User ID=sa;Password=eZW6FZ7zswB8Dzy@L9L9cAQBUt*@*jda;Database=SIMSData;TrustServerCertificate=true"
+        depends_on:
+        - mssql
+        networks:
+        - sims-net
 
+    mssql:
+        image: mcr.microsoft.com/mssql/server:2025-RC1-ubuntu-24.04
+        container_name: mssql
+        environment:
+            ACCEPT_EULA: "Y"
+            MSSQL_SA_PASSWORD: "eZW6FZ7zswB8Dzy@L9L9cAQBUt*@*jda"
+            MSSQL_PID: "Developer"
+        ports:
+        - "1433:1433"
+        volumes:
+        - mssql-data:/var/opt/mssql
+        networks:
+        - sims-net
+        
+    #Container für Web-App
+    sims-web-app:
+        build:
+            context: ./sims-web_app
+            dockerfile: Dockerfile
+        container_name: sims-web-app
+        ports:
+        - "8080:8080"
+        - "8082:8081"
+        environment:
+            APP_UID: "${APP_UID:-1000}"
+            DOTNET_RUNNING_IN_CONTAINER: "true"
+            DOTNET_USE_POLLING_FILE_WATCHER: "true"
+        restart: unless-stopped
+        working_dir: /app
+        networks:
+        - sims-net
+    
+    
 networks:
   sims-net:
     driver: bridge
     
 volumes:
     postgres-data:
+    mssql-data:

@@ -47,21 +47,23 @@ public static class BackendApiHandler
         return response.Data;
     }
     
-    public static async Task<bool> DeleteIncident(int id)
+    public static async Task<bool> DeleteIncident(string id)
     {
         (RestRequest request,RestClient client) = RestRequestHelper($"/Incidents/{id}", Method.Delete);
         RestResponse response = await client.ExecuteAsync(request);
-        
-        return response.IsSuccessful;
+
+        return response.StatusCode == HttpStatusCode.NoContent
+        || response.StatusCode == HttpStatusCode.OK;
     }
 
-    public static async Task<RestResponse> UpdateIncident(Incident incident, string incidentId)
+    public static async Task<bool> UpdateIncident(Incident incident, string incidentId)
     {
         (RestRequest request,RestClient client) = RestRequestHelper($"/Incidents/{incidentId}", Method.Put);
         request.AddJsonBody(incident);
         RestResponse response = await client.ExecuteAsync(request);
-        
-        return response;
+
+        return response.StatusCode == HttpStatusCode.NoContent
+       || response.StatusCode == HttpStatusCode.OK;
     }
     // ******************  Customer  *********************
     
