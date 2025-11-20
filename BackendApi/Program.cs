@@ -3,6 +3,7 @@ using BackendApi.Data.Database;
 using BackendApi.Data.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using sims.Services;
 using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,13 +21,12 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddDbContext<MsSqlDbContext>(options =>
     options.UseSqlServer(Environment.GetEnvironmentVariable("MSSQL_CONNECTION")));
 
-builder.Services.AddSingleton<IConnectionMultiplexer>(provider =>
+builder.Services.AddHttpClient("EventLogger", client =>
 {
-    string? redisConnectionString = Environment.GetEnvironmentVariable("REDIS_CONNECTION");
-    return ConnectionMultiplexer.Connect(redisConnectionString);
+    client.BaseAddress = new Uri(Environment.GetEnvironmentVariable("REDIS_CONNECTION"));
 });
+builder.Services.AddScoped<IEventLogger, EventLogger>();
 
-builder.Services.AddScoped<IRedisLogService, RedisLogService>();
 
 var app = builder.Build();
 
@@ -41,7 +41,6 @@ using (var scope = app.Services.CreateScope())
     app.UseSwagger();
     app.UseSwaggerUI();
 
-app.UseMiddleware<RedisLoggingMiddleware>();
 app.MapControllers();
 
 

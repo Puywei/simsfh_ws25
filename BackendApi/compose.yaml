@@ -5,16 +5,15 @@
       dockerfile: ./Dockerfile
     image: backendapi
     ports:
-      - "5001:8080"
+      - "5001:5001"
     environment:
-      ASPNETCORE_HTTP_PORTS: "8080"
+      ASPNETCORE_HTTP_PORTS: "5001"
       REDIS_CONNECTION: "redis:6379,password=SecurePassword,abortConnect=false"
       MSSQL_CONNECTION: "Data Source=mssql;User ID=sa;Password=eZW6FZ7zswB8Dzy@L9L9cAQBUt*@*jda;Database=SIMSData;TrustServerCertificate=true"
     depends_on:
       - mssql
     links:
       - mssql
-      - redis
 
   mssql:
     image: mcr.microsoft.com/mssql/server:2025-latest
@@ -27,15 +26,6 @@
       - "1433:1433"
     volumes:
       - mssql-data:/var/opt/mssql
-  
-  redis:
-    image: redis:latest
-    container_name: redis
-    command: /bin/sh -c "redis-server --requirepass SecurePassword"
-    volumes:
-      - redis-data:/var/lib/redis/data
-
 
 volumes:
   mssql-data:
-  redis-data:
