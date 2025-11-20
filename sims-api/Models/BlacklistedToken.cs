@@ -1,4 +1,6 @@
-﻿namespace sims.Models
+﻿using System;
+
+namespace sims.Models
 {
     public class BlacklistedToken
     {

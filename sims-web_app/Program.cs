@@ -21,7 +21,7 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddHttpClient<AuthService>(options =>
 {
-    options.BaseAddress = new Uri("http://localhost:5000/api/");
+    options.BaseAddress = new Uri("http://user-api:8080/api/");
 });
 
 

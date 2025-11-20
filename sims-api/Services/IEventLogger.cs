@@ -1,4 +1,6 @@
-﻿namespace sims.Services
+﻿using System.Threading.Tasks;
+
+namespace sims.Services
 {
     public interface IEventLogger
     {
