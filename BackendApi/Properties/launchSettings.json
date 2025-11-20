@@ -5,7 +5,7 @@
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "REDIS_CONNECTION": "localhost:6379,password=SecurePassword",
+        "REDIS_CONNECTION": "http://localhost:8081/",
         "MSSQL_CONNECTION": "Data Source=localhost;User ID=sa;Password=eZW6FZ7zswB8Dzy@L9L9cAQBUt*@*jda;Database=SIMSData;TrustServerCertificate=true"
       },
       "applicationUrl": "https://localhost:51930;http://localhost:51931"
