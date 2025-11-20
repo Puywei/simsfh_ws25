@@ -15,16 +15,30 @@ namespace sims_nosql_api.Services
             _db = _connection.GetDatabase();
         }
 
-        // Log speichern
-        public async Task SaveLogAsync(LogEntry log)
+        // neu hinzugefügt:  Log-ID generieren (INCR)
+        private async Task<int> GenerateNewLogIdAsync()
         {
-            string key = $"log:{log.LogId}";
+            return (int)await _db.StringIncrementAsync("log:id_counter");
+        }
+
+        // Log speichern - Client logId wird ignoriert falls der client eine sendet
+        public async Task<int> SaveLogAsync(LogEntry log)
+        {
+            // Schritt 1: immer eine neue ID erzeugen
+            int newId = await GenerateNewLogIdAsync();
+            log.LogId = newId;
+
+            // Schritt 2: Log speichern
+            string key = $"log:{newId}";
             string json = JsonSerializer.Serialize(log);
 
             await _db.StringSetAsync(key, json);
+
+            // Schritt 3: neue ID zurückgeben
+            return newId;
         }
 
-        // Einzelnes Log abrufen
+        //  Log abrufen
         public async Task<LogEntry?> GetLogAsync(int logId)
         {
             string key = $"log:{logId}";

@@ -4,6 +4,7 @@
 @using sims_web_app.Components.Identity.Contracts
 @using sims_web_app.Components.Identity.Services
 @using sims_web_app.Services
+@inject AuthApiHandler AuthApiHandler  
 
 <PageTitle>INC</PageTitle>
 
@@ -48,7 +49,7 @@ else
                 <MudDivider />
             </MudItem>
             <MudItem xs="12">
-                <MudSelect T="string" @bind-Value="_incident.AssignedPerson" Label="Assigned Person" FullWidth="true" Variant="Variant.Outlined" Clearable>
+                <MudSelect T="string" @bind-Value="_incident.AssignedPersonName" Label="Assigned Person" FullWidth="true" Variant="Variant.Outlined" Clearable>
                     <MudSelectItem Value='"John Doe"'>John Doe</MudSelectItem>
                     <MudSelectItem Value='"Jane Smith"'>Jane Smith</MudSelectItem>
                 </MudSelect>
@@ -80,12 +81,15 @@ else
     private bool isDone = false;
 
     private Data.Model.Incident? _incident;
+    private string _assignedPerson;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
             _incident = await BackendApiHandler.GetIncidentById(Id);
+            _assignedPerson =  AuthApiHandler.GetAllUsers().Result.Find(u => u.uid == _incident.AssignedPerson).Email;
+
         }
         catch (Exception ex)
         {

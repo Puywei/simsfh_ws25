@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 18
-VisualStudioVersion = 18.0.11205.157 d18.0
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sims-api", "sims-api\sims-api.csproj", "{4D30FA33-FA09-46AA-9B01-3CEB55619E02}"
 EndProject
@@ -12,11 +12,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackendApi.Tests", "BackendApi.Tests\BackendApi.Tests.csproj", "{50141AF4-0D2D-48E4-9927-E44D6322BD2C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2BF23F42-DE2A-4621-ACAA-DF93CAD1F2B0}"
-	ProjectSection(SolutionItems) = preProject
-		compose.yaml = compose.yaml
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sims-web_app", "sims-web_app\sims-web_app.csproj", "{B673A830-ADC7-4579-B0A6-003148C77607}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sims-nosql-api.Tests", "sims-nosql-api.Tests\sims-nosql-api.Tests.csproj", "{8BBB98D3-AC61-4549-8D56-5C1B0E44D15E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -88,6 +87,18 @@ Global
 		{B673A830-ADC7-4579-B0A6-003148C77607}.Release|x64.Build.0 = Release|Any CPU
 		{B673A830-ADC7-4579-B0A6-003148C77607}.Release|x86.ActiveCfg = Release|Any CPU
 		{B673A830-ADC7-4579-B0A6-003148C77607}.Release|x86.Build.0 = Release|Any CPU
+		{8BBB98D3-AC61-4549-8D56-5C1B0E44D15E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BBB98D3-AC61-4549-8D56-5C1B0E44D15E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BBB98D3-AC61-4549-8D56-5C1B0E44D15E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8BBB98D3-AC61-4549-8D56-5C1B0E44D15E}.Debug|x64.Build.0 = Debug|Any CPU
+		{8BBB98D3-AC61-4549-8D56-5C1B0E44D15E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8BBB98D3-AC61-4549-8D56-5C1B0E44D15E}.Debug|x86.Build.0 = Debug|Any CPU
+		{8BBB98D3-AC61-4549-8D56-5C1B0E44D15E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BBB98D3-AC61-4549-8D56-5C1B0E44D15E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BBB98D3-AC61-4549-8D56-5C1B0E44D15E}.Release|x64.ActiveCfg = Release|Any CPU
+		{8BBB98D3-AC61-4549-8D56-5C1B0E44D15E}.Release|x64.Build.0 = Release|Any CPU
+		{8BBB98D3-AC61-4549-8D56-5C1B0E44D15E}.Release|x86.ActiveCfg = Release|Any CPU
+		{8BBB98D3-AC61-4549-8D56-5C1B0E44D15E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

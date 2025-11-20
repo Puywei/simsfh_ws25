@@ -20,7 +20,7 @@ public static class BackendApiHandler
     }
     
 
-    public static async Task<Incident?> CreateIncident(Incident incident)
+    public static async Task<Incident> CreateIncident(Incident incident)
     {
         (RestRequest request,RestClient client) = RestRequestHelper("/Incidents", Method.Post);
         incident.Comments = new List<IncidentComment>();
@@ -93,7 +93,14 @@ public static class BackendApiHandler
         (RestRequest request,RestClient client) = RestRequestHelper("/Customers", Method.Get);
         RestResponse<List<Customer>> response = await client.ExecuteAsync<List<Customer>>(request);
 
-        return response.Data.ToList();
+        if (response.Data != null)
+        {
+            return response.Data.ToList();
+        }
+        else
+        {
+            return  new List<Customer>();
+        }
     }
     
     public static async Task<Customer> GetCustomerById(string id)

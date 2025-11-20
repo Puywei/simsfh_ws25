@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace sims.Models.DTOs
+namespace sims.Models
 {
     public class LoginRequest
     {

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
 using sims.Data;
 using sims.Helpers;
-using sims.Models.DTOs;
+using sims.Models;
 using sims.Services;
 
 

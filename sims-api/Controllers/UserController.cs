@@ -5,7 +5,6 @@ using System.Security.Claims;
 using sims.Data;
 using sims.Models;
 using sims.Services;
-using sims.Models.DTOs;
 using sims.Helpers;
 
 namespace sims.Controllers
