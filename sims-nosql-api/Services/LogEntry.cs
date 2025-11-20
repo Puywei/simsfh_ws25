@@ -4,9 +4,8 @@ namespace sims_nosql_api.Services
 {
     public class LogEntry
     {
-        // logId muss > 0 sein
-        [Range(1, int.MaxValue, ErrorMessage = "logId muss größer als 0 sein.")]
-        public int LogId { get; set; }
+        // neu: logId wird automatisch durch Redis INCR vergeben - nicht mehr vom Client
+        public int? LogId { get; set; }
 
         // timestamp muss gültig & vorhanden sein
         [Required(ErrorMessage = "timestamp ist erforderlich.")]
@@ -22,3 +21,4 @@ namespace sims_nosql_api.Services
         public int Severity { get; set; }
     }
 }
+
