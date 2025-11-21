@@ -70,7 +70,6 @@ services:
         - "5001:5001"
         environment:
             ASPNETCORE_HTTP_PORTS: "5001"
-            REDIS_CONNECTION: "redis:6379,password=SecurePassword,abortConnect=false"
             MSSQL_CONNECTION: "Data Source=mssql;User ID=sa;Password=eZW6FZ7zswB8Dzy@L9L9cAQBUt*@*jda;Database=SIMSData;TrustServerCertificate=true"
         depends_on:
         - mssql
@@ -98,14 +97,18 @@ services:
             dockerfile: Dockerfile
         container_name: sims-web-app
         ports:
-        - "8080:8080"
-        - "8082:8081"
+        - "8080:8085"
         environment:
+            ASPNETCORE_HTTP_PORTS: "8085"
             APP_UID: "${APP_UID:-1000}"
             DOTNET_RUNNING_IN_CONTAINER: "true"
             DOTNET_USE_POLLING_FILE_WATCHER: "true"
             BackendApiBaseUrl: "http://backendapi:5001/api/v1"
             AuthApiBaseUrl: "http://user-api:8080/api"
+            LogApiBaseUrl: "http://sims-nosql-api:8081/api"
+            JWT_KEY: "noneofyourgoddamnbusinessthishastobesogoddamnverylongjesuschristandmariaandjoseph"
+            JWT_ISSUER: "sims-api"
+            JWT_AUDIENCE: "sims-api"
         restart: unless-stopped
         working_dir: /app
         networks:
