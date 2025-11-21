@@ -27,8 +27,9 @@ services:
             dockerfile: Dockerfile
         restart: unless-stopped
         ports:
-        - "5000:8080"
+        - "5000:5000"
         environment:
+        - ASPNETCORE_HTTP_PORTS=5000
         - ASPNETCORE_ENVIRONMENT=Development
         - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=userapi;Username=postgres;Password=postgres
         - Jwt__Key=noneofyourgoddamnbusinessthishastobesogoddamnverylongjesuschristandmariaandjoseph
@@ -105,8 +106,8 @@ services:
             DOTNET_RUNNING_IN_CONTAINER: "true"
             DOTNET_USE_POLLING_FILE_WATCHER: "true"
             BackendApiBaseUrl: "http://backendapi:5001/api/v1"
-            AuthApiBaseUrl: "http://user-api:8080/api"
-            LogApiBaseUrl: "http://sims-nosql-api:8081/api"
+            AuthApiBaseUrl: "http://user-api:5000/api"
+            LogApiBaseUrl: "http://sims-nosql-api:8080/api"
             JWT_KEY: "noneofyourgoddamnbusinessthishastobesogoddamnverylongjesuschristandmariaandjoseph"
             JWT_ISSUER: "sims-api"
             JWT_AUDIENCE: "sims-api"
