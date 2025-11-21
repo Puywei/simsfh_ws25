@@ -2,52 +2,52 @@
 @attribute [Authorize(Roles = "Admin")]
 @using Microsoft.AspNetCore.Authorization
 @using sims_web_app.Data.Model
-@inject HttpClient Http
+@using sims_web_app.Services
+@inject LogApiHandler LogApiHandler
 
 <PageTitle>Log Overview</PageTitle>
 
 <MudPaper Class="pa-4" Elevation="3">
     <MudText Typo="Typo.h5" Class="mb-4">Log Overview</MudText>
-
-    <MudTable Items="pagedLogs" Elevation="0" Hover="true" Bordered="true">
-        <HeaderContent>
-            <MudTh>Timestamp</MudTh>
-            <MudTh>Method</MudTh>
-            <MudTh>Path</MudTh>
-            <MudTh>User</MudTh>
-            <MudTh>Body</MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd DataLabel="Timestamp">@context.Timestamp.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")</MudTd>
-            <MudTd DataLabel="Method">@context.Method</MudTd>
-            <MudTd DataLabel="Path">@context.Path</MudTd>
-            <MudTd DataLabel="User">@context.User</MudTd>
-            <MudTd DataLabel="Body">@context.Body</MudTd>
-        </RowTemplate>
-    </MudTable>
-
-    <MudTablePager PageSizeOptions="new int[]{5,10,20}" PageSize="pageSize" PageIndex="pageIndex"
-                   OnPageChanged="OnPageChanged" Class="mt-4"/>
+@if (!isDone)
+{
+    <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+    <MudText Typo="Typo.body1">Daten werden geladen...</MudText>
+}
+    else
+    {
+        <MudDataGrid Items="logs">
+            <ToolBarContent>
+            </ToolBarContent>
+            <Columns>
+                <PropertyColumn Property="l => l.LogId" Title="Log Id"/>
+                <PropertyColumn Property="l => l.Timestamp" Title="Timestamp"/>
+                <PropertyColumn Property="l => l.Message" Title="Message"/>
+                <PropertyColumn Property="l => l.Severity" Title="Severity"/>
+            </Columns>
+        </MudDataGrid>
+    }
+    
 </MudPaper>
 
 @code {
     private List<LogEntry> logs = new();
-    private List<LogEntry> pagedLogs = new();
-    private int pageSize = 10;
-    private int pageIndex = 0;
+    bool isDone = false;
+
 
     protected override async Task OnInitializedAsync()
     {
         await LoadLogsAsync();
-        UpdatePagedLogs();
+        isDone = true;
     }
 
     private async Task LoadLogsAsync()
     {
         try
         {
-            // ruft die letzten 50 Logs von der API
-            logs = (await Http.GetFromJsonAsync<List<LogEntry>>("http://localhost:5001/api/logs?count=50")) ?? new List<LogEntry>();
+            logs = await LogApiHandler.GetAllLogs();
+            
+            await InvokeAsync(StateHasChanged);
         }
         catch (Exception ex)
         {
@@ -55,14 +55,4 @@
         }
     }
 
-    private void UpdatePagedLogs()
-    {
-        pagedLogs = logs.Skip(pageIndex * pageSize).Take(pageSize).ToList();
-    }
-
-    private void OnPageChanged(int index)
-    {
-        pageIndex = index;
-        UpdatePagedLogs();
-    }
 }

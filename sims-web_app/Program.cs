@@ -43,6 +43,7 @@ builder.Services.AddScoped<ICustomSessionService, CustomSessionService>();
 
 builder.Services.AddScoped<AuthApiHandler>();
 builder.Services.AddScoped<BackendApiHandler>();
+builder.Services.AddScoped<LogApiHandler>();
 
 
 // ----------------- Build -----------------
