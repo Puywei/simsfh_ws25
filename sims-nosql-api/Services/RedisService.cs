@@ -60,26 +60,27 @@ namespace sims_nosql_api.Services
 
             foreach (var key in keys)
             {
-                // Counter ignorieren
-                if (key.ToString() == "log:id_counter")
-                    continue;
-
                 var value = await _db.StringGetAsync(key);
 
-                if (value.HasValue)
+                if (!value.HasValue)
+                    continue;
+
+                string str = value.ToString().Trim();
+
+                // Nur gültige JSON-Objekte akzeptieren (beginnen mit '{')
+                if (!str.StartsWith("{"))
+                    continue;
+
+                try
                 {
-                    try
-                    {
-                        var log = JsonSerializer.Deserialize<LogEntry>(value!);
-                        if (log != null)
-                            list.Add(log);
-                    }
-                    catch
-                    {
-                        // Falls irgendein anderer “komischer” Key existiert
-                        // wird übersprungen statt Fehler zu werfen
-                        continue;
-                    }
+                    var log = JsonSerializer.Deserialize<LogEntry>(str);
+                    if (log != null)
+                        list.Add(log);
+                }
+                catch
+                {
+                    // falls es trotzdem nicht lesbar ist -> ignorieren
+                    continue;
                 }
             }
 
