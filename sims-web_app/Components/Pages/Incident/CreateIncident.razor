@@ -1,13 +1,12 @@
 ﻿@page "/Incident/create"
 @attribute [Authorize]
 @using Microsoft.AspNetCore.Authorization
-@using sims_web_app.Components.Identity.Contracts
-@using sims_web_app.Components.Identity.Services
 @using sims_web_app.Data.Model.Enum
 @using sims_web_app.Data.Model
 @using sims_web_app.Services
 @inject NavigationManager NavManager
 @inject AuthApiHandler AuthApiHandler
+@inject BackendApiHandler BackendApiHandler
 
 <PageTitle>New Ticket</PageTitle>
 

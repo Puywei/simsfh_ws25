@@ -7,7 +7,13 @@
 @using MudBlazor
 @using sims_web_app.Services
 @inject ISnackbar Snackbar
+<<<<<<< HEAD
 @inject AuthApiHandler AuthApiHandler
+=======
+@attribute [Authorize]
+@using Microsoft.AspNetCore.Authorization
+@inject BackendApiHandler BackendApiHandler
+>>>>>>> WebApp-JWT_implementation
 
 <MudDialog>
     <DialogContent>

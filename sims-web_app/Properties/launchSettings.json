@@ -8,8 +8,14 @@
       "applicationUrl": "http://localhost:5008;http://localhost:8080",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
+<<<<<<< HEAD
         "BackendApiBaseUrl": "http://backendapi:5001/api/v1",
         "AuthApiBaseUrl": "http://user-api:5000/api"
+=======
+        "BackendApiBaseUrl" : "http://localhost:5001/api/v1",
+        "AuthApiBaseUrl": "http://localhost:5000/api",
+        "JWT_KEY": "noneofyourgoddamnbusinessthishastobesogoddamnverylongjesuschristandmariaandjoseph"
+>>>>>>> WebApp-JWT_implementation
       }
     },
     "https": {
