@@ -431,9 +431,11 @@ curl -X POST http://localhost:5000/api/auth/logout \
 
 **Beispiel-Request (GET /api/users/getAll):**
 ```bash
-curl -X GET http://localhost:5000/api/users/getAll \
-  -H "Authorization: Bearer <admin-token>"
+curl -X GET http://user-api:5000/api/users/getAll \
+  -H "Authorization: Bearer <token>"
 ```
+
+**Hinweis:** Bei diversen APIs ist auch die Admin-Rolle vorausgesetzt, die im Token beinhaltet ist.
 
 **Beispiel-Response (GET /api/users/getAll):**
 ```json
@@ -457,7 +459,7 @@ curl -X GET http://localhost:5000/api/users/getAll \
 
 **Beispiel-Request (GET /api/users/getCurrent):**
 ```bash
-curl -X GET http://localhost:5000/api/users/getCurrent \
+curl -X GET http://user-api:5000/api/users/getCurrent \
   -H "Authorization: Bearer <token>"
 ```
 
@@ -472,7 +474,7 @@ curl -X GET http://localhost:5000/api/users/getCurrent \
 
 **Validierungsregeln:**
 - `email`: Muss eindeutig sein, gültiges E-Mail-Format
-- `password`: Wird mit BCrypt gehasht gespeichert
+- `password`: Wird durch BCrypt mit Salt gehasht gespeichert
 - `roleId`: Muss eine gültige Rolle referenzieren (1 = Admin, 2 = User)
 
 ### sims-nosql-api (`http://localhost:8081/api`)

@@ -17,8 +17,7 @@ namespace sims.Services
         public async Task LogEventAsync(string message,int severity = 1)
         {
             var eventPayload = new
-            {
-                logId = 5, 
+            { 
                 timestamp = DateTime.UtcNow.ToString("o"),
                 message,
                 severity
