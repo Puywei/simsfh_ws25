@@ -39,7 +39,8 @@
                     <PropertyColumn Property="x => x.Id" Title="Id" />
                     <PropertyColumn Property="x => x.Summary" Title="Subject" />
                     <PropertyColumn Property="x => x.Severity" Title="Severity" />
-                    <PropertyColumn Property="x => x.AssignedPerson" Title="Assigned Person" />
+                    <PropertyColumn Property="x => x.CustomerName" Title="Customer" />
+                    <PropertyColumn Property="x => x.AssignedPersonName" Title="Assigned Person" />
                     <PropertyColumn Property="x => x.Status" Title="Status" />
                     <PropertyColumn Property="x => x.CreateDate" Title="CreateDate" />
 
@@ -75,19 +76,15 @@
     private bool isDone = false;
     private List<Data.Model.Incident> _incidents = new List<Data.Model.Incident>();
     private string _searchString = "";
+    private List<Data.Model.User> _users = new List<Data.Model.User>();
+    private List<Data.Model.Customer> _customers = new List<Data.Model.Customer>();
 
     protected override async Task OnInitializedAsync()
     {
-      try
-      {
-        _incidents = await BackendApiHandler.GetAllIncidents();
-        if (_incidents is null)
-            _incidents = new List<Data.Model.Incident>()
-            {
-                new Data.Model.Incident { Id = "No Data Found", Summary = "No Data Found" }
-            };
-
-      }
+        try
+        {
+            await LoadData();
+        }
       catch (Exception e)
       {
         Console.WriteLine(e);
@@ -102,6 +99,14 @@
             {
                 new Data.Model.Incident { Id = "No Data Found", Summary = "No Data Found" }
             };
+        _users = await AuthApiHandler.GetAllUsers();
+        _customers = await BackendApiHandler.GetAllCustomer();
+
+        foreach (var inc in _incidents)
+        {
+            inc.AssignedPersonName = _users.FirstOrDefault(u => u.uid == inc.AssignedPerson).FullName;
+            inc.CustomerName = _customers.FirstOrDefault(u => u.Id == inc.CustomerId).CompanyName;
+        }
         await InvokeAsync(StateHasChanged);
     }
 

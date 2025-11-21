@@ -24,7 +24,7 @@ services:
     user-api:
         build: 
             context: ./sims-api
-            dockerfile: dockerfile
+            dockerfile: Dockerfile
         restart: unless-stopped
         ports:
         - "5000:8080"
@@ -63,7 +63,7 @@ services:
     #Container für BackendAPI
     backendapi:
         build:
-            context: ./BackendAPI
+            context: ./BackendApi
             dockerfile: Dockerfile
         image: backendapi
         ports:
@@ -104,6 +104,8 @@ services:
             APP_UID: "${APP_UID:-1000}"
             DOTNET_RUNNING_IN_CONTAINER: "true"
             DOTNET_USE_POLLING_FILE_WATCHER: "true"
+            BackendApiBaseUrl: "http://backendapi:5001/api/v1"
+            AuthApiBaseUrl: "http://user-api:8080/api"
         restart: unless-stopped
         working_dir: /app
         networks:

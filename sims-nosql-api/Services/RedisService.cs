@@ -62,11 +62,25 @@ namespace sims_nosql_api.Services
             {
                 var value = await _db.StringGetAsync(key);
 
-                if (value.HasValue)
+                if (!value.HasValue)
+                    continue;
+
+                string str = value.ToString().Trim();
+
+                // Nur gültige JSON-Objekte akzeptieren (beginnen mit '{')
+                if (!str.StartsWith("{"))
+                    continue;
+
+                try
                 {
-                    var log = JsonSerializer.Deserialize<LogEntry>(value!);
+                    var log = JsonSerializer.Deserialize<LogEntry>(str);
                     if (log != null)
                         list.Add(log);
+                }
+                catch
+                {
+                    // falls es trotzdem nicht lesbar ist -> ignorieren
+                    continue;
                 }
             }
 

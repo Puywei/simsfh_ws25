@@ -1,4 +1,4 @@
-﻿version: '3.8'
+﻿
 
 services:
   redis:
@@ -20,6 +20,8 @@ services:
       - redis
     networks:
       - sims-net
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
 
 networks:
   sims-net:
