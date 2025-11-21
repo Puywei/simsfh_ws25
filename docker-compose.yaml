@@ -71,6 +71,7 @@ services:
         environment:
             ASPNETCORE_HTTP_PORTS: "5001"
             MSSQL_CONNECTION: "Data Source=mssql;User ID=sa;Password=eZW6FZ7zswB8Dzy@L9L9cAQBUt*@*jda;Database=SIMSData;TrustServerCertificate=true"
+            REDIS_CONNECTION: "http://redis:6379"
         depends_on:
         - mssql
         networks:
