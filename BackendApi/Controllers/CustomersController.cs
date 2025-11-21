@@ -3,6 +3,7 @@ using BackendApi.Data.Model.Customer;
 using BackendApi.Data.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using sims.Services;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace BackendApi.Controllers;
@@ -12,10 +13,12 @@ namespace BackendApi.Controllers;
 public class CustomersController : ControllerBase
 {
     private readonly MsSqlDbContext _dbContext;
+    private readonly IEventLogger _eventLogger;
 
-    public CustomersController(MsSqlDbContext dbContext)
+    public CustomersController(MsSqlDbContext dbContext, IEventLogger eventLogger)
     {
         _dbContext = dbContext;
+        _eventLogger = eventLogger;
     }
     
     [HttpGet]
@@ -27,6 +30,10 @@ public class CustomersController : ControllerBase
     public async Task<IActionResult> GetCustomers()
     {
         List<Customer> customers = await _dbContext.Customers.ToListAsync();
+        await _eventLogger.LogEventAsync(
+            $"GET Call from {this.HttpContext.Connection.RemoteIpAddress}: to GetCustomers",
+            severity: 1
+        );
         return Ok(customers);
     }
     

@@ -1,6 +1,4 @@
-﻿
-
-namespace sims_web_app.Data.Model;
+﻿namespace sims_web_app.Data.Model;
 
 
 
