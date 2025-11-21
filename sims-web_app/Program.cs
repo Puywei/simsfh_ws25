@@ -17,15 +17,15 @@ builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-<<<<<<< HEAD
+
 builder.Services.AddHttpClient<AuthService>(options =>
 {
     options.BaseAddress = new Uri("http://user-api:8080/api/");
 });
-=======
+
 //Authentication
 builder.Services.AddAuthorization();
->>>>>>> WebApp-JWT_implementation
+
 
 //The cookie authentication is never used, but it is required to prevent a runtime error
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
