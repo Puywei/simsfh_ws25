@@ -71,9 +71,9 @@ public class BackendApiHandler
             var validationParams = new TokenValidationParameters
             {
                 ValidateIssuer = true,
-                ValidIssuer = "sims-api",
+                ValidIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER"),
                 ValidateAudience = true,
-                ValidAudience = "sims-api",
+                ValidAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE"),
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY"))),
                 ValidateLifetime = true,

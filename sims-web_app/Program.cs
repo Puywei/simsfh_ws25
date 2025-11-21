@@ -4,11 +4,8 @@ using sims_web_app.Services;
 using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
-using sims_web_app.Data.Model;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
 
 builder.Services.AddMudServices();
 

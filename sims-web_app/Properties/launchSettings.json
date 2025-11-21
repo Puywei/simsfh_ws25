@@ -10,7 +10,9 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "BackendApiBaseUrl" : "http://localhost:5001/api/v1",
         "AuthApiBaseUrl": "http://localhost:5000/api",
-        "JWT_KEY": "noneofyourgoddamnbusinessthishastobesogoddamnverylongjesuschristandmariaandjoseph"
+        "JWT_KEY": "noneofyourgoddamnbusinessthishastobesogoddamnverylongjesuschristandmariaandjoseph",
+        "JWT_ISSUER": "sims-api",
+        "JWT_AUDIENCE": "sims-api"
       }
     },
     "https": {

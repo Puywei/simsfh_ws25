@@ -46,10 +46,8 @@ namespace sims_web_app.Services
 
         public async Task LogoutAsync()
         {
-            //Update the Blazor Server State for the user to an anonymous user
             CurrentUser = new();
-
-            //Remove the JWT from the browser session
+            
             string authToken = await _sessionService.GetItemAsStringAsync(AuthTokenName);
 
             if (!string.IsNullOrEmpty(authToken))
@@ -74,7 +72,6 @@ namespace sims_web_app.Services
             {
                await _protectedLocalStorage.DeleteAsync("token");
                
-               Console.WriteLine("FIX: Token has been modified, handle appropriately.");
             }
 
             if (tokenBrowserResult.Success)
@@ -84,7 +81,7 @@ namespace sims_web_app.Services
                 tokenHandler.ValidateToken(tokenBrowserResult.Value, new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY"))), // key _ plsfix
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY"))),
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     ValidateLifetime = true,
@@ -105,26 +102,17 @@ namespace sims_web_app.Services
 
         public async Task Login(ClaimsPrincipal user)
         {
-            //Update the Blazor Server State for the user
             CurrentUser = user;
-
-            //Build a JWT for the user
+            
             var result = await _httpClient.PostAsJsonAsync("auth/login", user);
             if (result.IsSuccessStatusCode)
             {
                 var content = await result.Content.ReadAsStringAsync();
                 var token = JsonConvert.DeserializeObject<JwtSecurityToken>(content);
                 var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-
-                //Write a JWT to the browser session
+                
                 await _sessionService.SetItemAsStringAsync(AuthTokenName, jwt);
             }
-            else
-            {
-            }
-            
         }
     }
-
-
 }

@@ -3,9 +3,6 @@ using Microsoft.AspNetCore.Components.Authorization;
 
 namespace sims_web_app.Services
 {
-    /// <summary>
-    /// Updates the Blazor backend authentication state when the user changes.
-    /// </summary>
     public class CustomAuthStateProvider : AuthenticationStateProvider
     {
         private AuthenticationState authenticationState;
@@ -21,9 +18,7 @@ namespace sims_web_app.Services
 
                 if (!String.IsNullOrEmpty(role))
                 {
-                    /*
-                     *  Herausfinden, warum die API von Philipp die `CLaimTypes.Role` nicht als ganze URL sondern abgekürzt einträgt.
-                     */
+
                     ((ClaimsIdentity) newUser.Identity).AddClaim(new Claim(ClaimTypes.Role, role)); 
                 }
                 
@@ -33,7 +28,6 @@ namespace sims_web_app.Services
                     Task.FromResult(new AuthenticationState(newUser)));
             };
         }
-
         public override Task<AuthenticationState> GetAuthenticationStateAsync() =>
             Task.FromResult(authenticationState);
     }
