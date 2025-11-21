@@ -7,4 +7,7 @@ public class AuthResponseUser
     public string Email { get; set; }
     public int RoleId { get; set; }
     public string Password { get; set; }
+    
+    public string token { get; set; }
+    // public string role { get; set; }
 }

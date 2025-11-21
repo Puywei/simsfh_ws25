@@ -1,10 +1,6 @@
 ﻿@page "/logoverview"
 @attribute [Authorize(Roles = "Admin")]
 @using Microsoft.AspNetCore.Authorization
-@using sims_web_app.Components.Identity.Contracts
-@using sims_web_app.Components.Identity.Services
-@using MudBlazor
-@using System.Net.Http.Json
 @using sims_web_app.Data.Model
 @inject HttpClient Http
 

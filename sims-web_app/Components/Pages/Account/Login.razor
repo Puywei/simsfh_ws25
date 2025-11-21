@@ -1,32 +1,20 @@
-﻿@page "/Account/Login"
-@using Microsoft.AspNetCore.Components.Authorization
-@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
-@using sims_web_app.Components.Identity.Services
-@using sims_web_app.Components.Identity.Contracts
-@using sims_web_app.Data.Model
-@using MudBlazor
-@inject AuthService AuthService
-@inject NavigationManager NavigationManager
-@inject ProtectedLocalStorage SessionStorage
-@inject AuthenticationStateProvider AuthenticationStateProvider
-@inject TokenProvider TokenProvider
-
+﻿@page "/login"
 
 <MudPaper>
-    <MudForm @ref="form" Model="@authRequest" OnValidSubmit="HandleValidSubmit" Class="new-blog-form">
-    <div style="display:flex; justify-content:center;">
-          <div style="transform: translateX(-110px) translateY(10px);">
-            <MudText Typo="Typo.h6" Class="mb-4">Login</MudText>
-          </div>
-    </div>
-        <MudTextField @bind-Value="authRequest!.email"
+    <MudForm @ref="form" Model="@loginModel" Class="new-blog-form">
+        <div style="display:flex; justify-content:center;">
+            <div style="transform: translateX(-110px) translateY(10px);">
+                <MudText Typo="Typo.h6" Class="mb-4">Login</MudText>
+            </div>
+        </div>
+        <MudTextField @bind-Value="loginModel.Email"
                       Style="width: 280px;"
                       Label="Email Address"
                       Variant="Variant.Outlined"
                       Required="true"
                       FullWidth="true"
                       Class=" align-center mb-3" />
-        <MudTextField @bind-Value="authRequest!.Password"
+        <MudTextField @bind-Value="loginModel.Password"
                       Style="width: 280px;"
                       Label="Password"
                       Variant="Variant.Outlined"
@@ -34,55 +22,12 @@
                       Required="true"
                       FullWidth="true"
                       Class=" align-center mb-3" />
-       <div style="display:flex; justify-content:center;">
+        <div style="display:flex; justify-content:center;">
             <div style="transform: translateX(80px) translateY(0px);">
-        <MudStack Direction="Row" Spacing="2" >
-            <MudButton Variant="Variant.Filled" Style="width: 120px;" Color="Color.Primary"  OnClick="@SubmitForm">Login</MudButton>
-        </MudStack>
+                <MudStack Direction="Row" Spacing="2" >
+                    <MudButton Variant="Variant.Filled" Style="width: 120px;" Color="Color.Primary" OnClick="HandleLogin">Login</MudButton>
+                </MudStack>
             </div>
-       </div>
+        </div>
     </MudForm>
 </MudPaper>
-
-
-@code {
-    [CascadingParameter]
-    private Task<AuthenticationState>? AuthStateTask { get; set; }
-    private bool isAuthenticated; 
-    
-    private AuthRequest? authRequest = new AuthRequest();
-    private MudForm? form;
-    
-    protected override async Task OnInitializedAsync()
-    {
-
-    }
-
-    private async Task SubmitForm()
-    {
-        if (form is not null)
-        {
-            await form.Validate();
-            if (form.IsValid)
-            {
-                await HandleValidSubmit();
-            }
-        }
-    }
-
-    private async Task HandleValidSubmit()
-    {
-        if (authRequest is null)
-            return;
-
-        var authResponse = await AuthService.Login(authRequest);
-        if (authResponse != null)
-        {
-            await SessionStorage.SetAsync("token", authResponse.Token);
-            ((CustomAuthenticationStateProvider)AuthenticationStateProvider)
-                .AuthenticateUser(authResponse.Token!);
-            TokenProvider.SetToken(authResponse.Token);
-            NavigationManager.NavigateTo("/");
-        }
-    }
-}

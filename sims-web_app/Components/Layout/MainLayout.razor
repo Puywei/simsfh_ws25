@@ -1,4 +1,5 @@
-﻿@inherits LayoutComponentBase
+﻿@using sims_web_app.Services
+@inherits LayoutComponentBase
 
 <MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode"/>
 <MudPopoverProvider/>
@@ -32,6 +33,28 @@
     private bool _isDarkMode = true;
     private MudTheme? _theme = null;
 
+    
+    [Inject] private IAuthService AuthService { get; set; }
+    [Inject] private NavigationManager NavigationManager { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !AuthService.IsLoggedIn)
+        {
+            var url = NavigationManager.ToAbsoluteUri(NavigationManager.Uri).ToString();
+            if (url.Contains("/login"))
+            {
+                return;
+            }
+
+            var restoredFromState = await AuthService.GetStateFromTokenAsync();
+            if (restoredFromState)
+            {
+                NavigationManager.Refresh();
+            }
+        }
+    }
+    
     protected override void OnInitialized()
     {
         base.OnInitialized();

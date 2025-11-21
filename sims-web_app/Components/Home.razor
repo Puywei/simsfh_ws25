@@ -1,14 +1,12 @@
 ﻿@page "/"
 @attribute [Authorize]
-@using Blazored.LocalStorage
 @using Blazored.SessionStorage
 @using Microsoft.AspNetCore.Authorization
-@using sims_web_app.Components.Identity.Services
-@inject ILocalStorageService LocalStorage
+@using sims_web_app.Services
 @inject ISessionStorageService SessionStorage
 @inject NavigationManager Nav
 @inject ISnackbar Snackbar
-@inject AuthService AuthService
+@inject AuthApiService AuthApiService
 
 
 <PageTitle>SIMS Home</PageTitle>
