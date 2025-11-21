@@ -99,20 +99,6 @@ namespace sims_web_app.Services
 
             return result;
         }
-
-        public async Task Login(ClaimsPrincipal user)
-        {
-            CurrentUser = user;
-            
-            var result = await _httpClient.PostAsJsonAsync("auth/login", user);
-            if (result.IsSuccessStatusCode)
-            {
-                var content = await result.Content.ReadAsStringAsync();
-                var token = JsonConvert.DeserializeObject<JwtSecurityToken>(content);
-                var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-                
-                await _sessionService.SetItemAsStringAsync(AuthTokenName, jwt);
-            }
-        }
+        
     }
 }

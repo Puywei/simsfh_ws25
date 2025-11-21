@@ -14,12 +14,6 @@ builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-
-builder.Services.AddHttpClient<AuthService>(options =>
-{
-    options.BaseAddress = new Uri("http://user-api:8080/api/");
-});
-
 //Authentication
 builder.Services.AddAuthorization();
 

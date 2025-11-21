@@ -19,39 +19,34 @@ public class CustomerEndpointsTest
         public CustomerEndpointsTests(WebApplicationFactory<Program> factory)
         {
             Environment.SetEnvironmentVariable("TESTING", "true");
-
+            
             _factory = factory.WithWebHostBuilder(builder =>
             {
                 builder.ConfigureServices(services =>
                 {
-                    var descriptor =
-                        services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<MsSqlDbContext>));
-                    if (descriptor != null)
-                        services.Remove(descriptor);
-
-                    services.AddDbContext<MsSqlDbContext>(options => { options.UseInMemoryDatabase("TestDb"); });
-
-                    var sp = services.BuildServiceProvider();
-                    using var scope = sp.CreateScope();
-                    var db = scope.ServiceProvider.GetRequiredService<MsSqlDbContext>();
-                    db.Database.EnsureDeleted();
-                    db.Database.EnsureCreated();
-
-                    db.Customers.AddRange(
-                        new Customer
-                        {
-                            Id = "C-1000", CompanyName = "Customer KG", Email = "customer@kg.at", UUId = Guid.NewGuid()
-                        },
-                        new Customer
-                        {
-                            Id = "C-1001", CompanyName = "Customer GmbH", Email = "customer@gmbh.at",
-                            UUId = Guid.NewGuid()
-                        }
-                    );
-                    db.SaveChanges();
+                    var descriptors = services
+                        .Where(d => d.ServiceType == typeof(DbContextOptions<MsSqlDbContext>) ||
+                                    d.ImplementationType == typeof(MsSqlDbContext))
+                        .ToList();
+                    foreach (var d in descriptors)
+                        services.Remove(d);
+                    
+                    services.AddDbContext<MsSqlDbContext>(options =>
+                        options.UseInMemoryDatabase(Guid.NewGuid().ToString()));
                 });
             });
+            
+            using var scope = _factory.Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<MsSqlDbContext>();
+            db.Database.EnsureCreated();
+
+            db.Customers.AddRange(
+                new Customer { Id = "C-1000", CompanyName = "Customer KG", Email = "customer@kg.at", UUId = Guid.NewGuid() },
+                new Customer { Id = "C-1001", CompanyName = "Customer GmbH", Email = "customer@gmbh.at", UUId = Guid.NewGuid() }
+            );
+            db.SaveChanges();
         }
+
 
         [Fact]
         public async Task GetAllCustomers_ReturnsOk()

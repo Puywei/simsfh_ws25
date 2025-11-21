@@ -31,33 +31,7 @@ public class BackendApiHandler
     
     private async Task<bool> GetIsUserValid()
     {
-        /*
-        string GenerateToken(string email)
-        {
-            var key = Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY"));
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new[]
-                {
-                    // new Claim(ClaimTypes.NameIdentifier, user.Uid.ToString()),
-                    new Claim(ClaimTypes.Name, email),
-                    // new Claim(ClaimTypes.Role, user.Role.RoleName)
-                }),
-                Expires = DateTime.UtcNow.AddSeconds(5),
-                Issuer = "sims-api",
-                Audience = "sims-api",
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            
-            return tokenHandler.WriteToken(token);
-        }
-
-        string token = GenerateToken("admin@admin.com");
-        */
-        
+      
         var result = await _protectedLocalStorage.GetAsync<string>("token");
         if (string.IsNullOrWhiteSpace(result.Value))
             return false;

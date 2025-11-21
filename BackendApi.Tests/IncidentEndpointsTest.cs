@@ -82,10 +82,11 @@ public class IncidentEndpointsTests : IClassFixture<WebApplicationFactory<Progra
     {
         var _client = _factory.CreateClient();
 
-        var customer = new Customer { CompanyName = "Test Company", Email = "test@test.at", Id = "C-0004" };
+        var customer = new Customer { CompanyName = "Test Company", Email = "test@test.at", Id = "C-0007" };
 
         var newIncident = new Incident
         {
+            Id = "INC-1111",
             Summary = "API Test Incident",
             Description = "Created via integration test",
             AssignedPerson = 2,
@@ -114,6 +115,7 @@ public class IncidentEndpointsTests : IClassFixture<WebApplicationFactory<Progra
 
         var newIncident = new Incident
         {
+            Id = "INC-1111",
             Summary = "Incident to be deleted",
             Description = "This will be deleted in test",
             CustomerId = customer.Id,
@@ -143,6 +145,7 @@ public class IncidentEndpointsTests : IClassFixture<WebApplicationFactory<Progra
 
         var newIncident = new Incident
         {
+            Id = "INC-1111",
             Summary = "Original Summary",
             Description = "Original Description",
             CustomerId = customer.Id,
@@ -158,6 +161,7 @@ public class IncidentEndpointsTests : IClassFixture<WebApplicationFactory<Progra
 
         var updatedIncident = new Incident
         {
+            Id = createdIncident.Id,
             Summary = "Updated Summary",
             Description = "Updated Description",
             AssignedPerson = 2,

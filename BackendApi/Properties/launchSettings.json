@@ -16,7 +16,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Testing",
         "TESTING": "true",
-        "REDIS_CONNECTION": "localhost:6379"
+        "REDIS_CONNECTION": "http://localhost:8081/"
       },
       "applicationUrl": "http://localhost:5005"
     }

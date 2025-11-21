@@ -18,14 +18,31 @@ builder.Services.AddSwaggerGen(c =>
     c.EnableAnnotations();
 });
 
-builder.Services.AddDbContext<MsSqlDbContext>(options =>
-    options.UseSqlServer(Environment.GetEnvironmentVariable("MSSQL_CONNECTION")));
 
-builder.Services.AddHttpClient("EventLogger", client =>
+var isTesting = Environment.GetEnvironmentVariable("TESTING") == "true";
+
+builder.Services.AddDbContext<MsSqlDbContext>(options =>
 {
-    client.BaseAddress = new Uri(Environment.GetEnvironmentVariable("REDIS_CONNECTION"));
+    if (isTesting)
+    {
+        options.UseInMemoryDatabase("TestDb");
+    }
+    else
+    {
+        options.UseSqlServer(Environment.GetEnvironmentVariable("MSSQL_CONNECTION"));
+    }
 });
-builder.Services.AddScoped<IEventLogger, EventLogger>();
+
+if (!isTesting)
+{
+    builder.Services.AddHttpClient("EventLogger", client =>
+    {
+        client.BaseAddress = new Uri(Environment.GetEnvironmentVariable("REDIS_CONNECTION"));
+    });
+    builder.Services.AddScoped<IEventLogger, EventLogger>();
+}
+
+
 
 
 var app = builder.Build();
@@ -34,7 +51,10 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<MsSqlDbContext>();
+    if (!isTesting)
+    {
         db.Database.Migrate();
+    }
 }
 
 
