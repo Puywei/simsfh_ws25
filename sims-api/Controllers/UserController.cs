@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 using sims.Data;
+using sims.Helpers;
 using sims.Models;
 using sims.Services;
-using sims.Helpers;
+using System.Security.Claims;
 
 namespace sims.Controllers
 {
@@ -157,15 +158,18 @@ namespace sims.Controllers
 
         //  Get own user endpoint
         [HttpGet("getCurrent")]
-                 [Authorize]
-                 public IActionResult GetMe()
-                 {
-                     var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                     var email = User.Identity?.Name;
-                     var role = User.FindFirst(ClaimTypes.Role)?.Value;
-         
-                     return Ok(new { userId, email, role });
-                 }
+        [Authorize]
+        public async Task<IActionResult> GetMe()
+        {
+            var FullName = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var Email = User.Identity?.Name;
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+            Console.WriteLine(Email + FullName + role);
+            var user = await _db.Users.Include(u => u.Role)
+                                    .FirstOrDefaultAsync(u => u.Email == Email);
+            FullName = user.Firstname + " " + user.Lastname;
+            return Ok(new { Email, FullName, role });
+         }
         //  Get all users endpoint
         [HttpGet("getAllUsers")]
         [Authorize]

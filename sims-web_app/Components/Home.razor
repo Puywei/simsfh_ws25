@@ -2,25 +2,28 @@
 @attribute [Authorize]
 @using Blazored.SessionStorage
 @using Microsoft.AspNetCore.Authorization
+@using sims_web_app.Services
+@using sims_web_app.Data.Model
 @inject ISessionStorageService SessionStorage
 @inject NavigationManager Nav
 @inject ISnackbar Snackbar
+@inject AuthApiHandler AuthApiHandler
+
 
 
 <PageTitle>SIMS Home</PageTitle>
 
 <MudText Typo="Typo.h3" GutterBottom="true">SIMS HOME</MudText>
-<MudText Typo="Typo.h3" GutterBottom="true">Welcome @FullName</MudText>
+<MudText Typo="Typo.h2" GutterBottom="true">Welcome @FullName</MudText>
 
 @code {
     private string FullName = "";
 
     protected override async Task OnInitializedAsync()
     {
-        var firstname = await SessionStorage.GetItemAsync<string>("firstname");
-        var lastname = await SessionStorage.GetItemAsync<string>("lastname");
+        UserDTO usr = await AuthApiHandler.GetCurrentUser();
 
-        FullName = $"{firstname} {lastname}";
+        FullName = usr.fullName;
     }
    
 }

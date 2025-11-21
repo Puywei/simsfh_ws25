@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using RestSharp;
@@ -122,6 +123,19 @@ public class AuthApiHandler
         }
         return [];
 
+    }
+
+    public async Task<UserDTO> GetCurrentUser()
+    {
+        string authToken = await GetAccessToken();
+        if (String.IsNullOrEmpty(authToken))
+        {
+            return null;
+        }
+        (RestRequest request, RestClient client) = RestRequestHelper("/Users/getCurrent", Method.Get);
+        request.Authenticator = new JwtAuthenticator(authToken);
+        RestResponse<UserDTO> response = await client.ExecuteAsync<UserDTO>(request);
+        return response.Data;
     }
 
     public async Task<List<UserRole>> GetAllRoles()
