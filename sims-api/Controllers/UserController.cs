@@ -168,7 +168,7 @@ namespace sims.Controllers
                  }
         //  Get all users endpoint
         [HttpGet("getAllUsers")]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _db.Users
@@ -187,7 +187,7 @@ namespace sims.Controllers
         }
         
         [HttpGet("getAllRoles")]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public async Task<IActionResult> GetAllRoles()
         {
             var roles = await _db.Roles

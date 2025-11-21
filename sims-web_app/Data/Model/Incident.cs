@@ -26,5 +26,6 @@ public class Incident
     public string? AssignedPersonName { get; set; }
     public IncidentSeverity? Severity { get; set; }
     public string? CustomerId { get; set; }
+    public string? CustomerName {  get; set; }
     public Guid? UUId { get; set; }
 }
