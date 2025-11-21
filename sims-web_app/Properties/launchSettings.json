@@ -9,7 +9,8 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "BackendApiBaseUrl" : "http://localhost:5001/api/v1",
-        "AuthApiBaseUrl": "http://localhost:5000/api"
+        "AuthApiBaseUrl": "http://localhost:5000/api",
+        "JWT_KEY": "noneofyourgoddamnbusinessthishastobesogoddamnverylongjesuschristandmariaandjoseph"
       }
     },
     "https": {

@@ -1,4 +1,5 @@
-﻿@using sims_web_app.Services
+﻿@using Microsoft.AspNetCore.Identity
+@using sims_web_app.Services
 @inherits LayoutComponentBase
 
 <MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode"/>
@@ -11,7 +12,7 @@
         <MudText Typo="Typo.h5" Class="ml-3">SIMS WoodsSuperDooper Shop</MudText>
         <MudSpacer/>
         <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle"/>
-        <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End"/>
+        <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Inherit" Edge="Edge.End" OnClick="Logout"/>
     </MudAppBar>
     <MudDrawer id="nav-drawer" @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <NavMenu/>
@@ -36,7 +37,25 @@
     
     [Inject] private IAuthService AuthService { get; set; }
     [Inject] private NavigationManager NavigationManager { get; set; }
+    [Inject] private AuthApiHandler AuthApiHandler { get; set; }
+    [Inject] private ISnackbar Snackbar { get; set; }
+    
+    protected async Task Logout()
+    {
+        bool logout = await AuthApiHandler.Logout();
 
+        if (logout)
+        {
+            Snackbar.Add($"Logout was successfully!.", Severity.Success);
+            NavigationManager.NavigateTo("/logout", true);
+            StateHasChanged();
+        }
+        else
+        {
+            Snackbar.Add($"An error occured", Severity.Error);
+        }
+    }
+    
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && !AuthService.IsLoggedIn)

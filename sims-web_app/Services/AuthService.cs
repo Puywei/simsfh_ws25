@@ -57,59 +57,7 @@ namespace sims_web_app.Services
                 await _sessionService.RemoveItemAsync(AuthTokenName);
             }
         }
-
-
-
-        /// <summary>
-        /// If the user somehow loses their server session, this method will attempt to restore the state from the JWT in the browser session
-        /// </summary>
-        /// <returns>True if the state was restored</returns>
-        /*
-        public async Task<bool> GetStateFromTokenAsync()
-        {
-            bool result = false;
-            string authToken = await _sessionService.GetItemAsStringAsync(AuthTokenName);
-
-            var identity = new ClaimsIdentity();
-
-            if (!string.IsNullOrEmpty(authToken))
-            {
-                try
-                {
-                    //Ensure the JWT is valid
-                    var tokenHandler = new JwtSecurityTokenHandler();
-                    var key = System.Text.Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value);
-
-                    tokenHandler.ValidateToken(authToken, new TokenValidationParameters
-                    {
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(key),
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
-                        ClockSkew = TimeSpan.Zero
-                    }, out SecurityToken validatedToken);
-
-                    var jwtToken = (JwtSecurityToken)validatedToken;
-                    identity = new ClaimsIdentity(jwtToken.Claims, "jwt");
-                    result = true;
-                }
-                catch
-                {
-                    //If the JWT is invalid, remove it from the session
-                    await _sessionService.RemoveItemAsync(AuthTokenName);
-
-                    //This is an anonymous user
-                    identity = new ClaimsIdentity();
-                }
-            }
-
-            var user = new ClaimsPrincipal(identity);
-
-            //Update the Blazor Server State for the user
-            CurrentUser = user;
-            return result;
-        }
-        */
+        
 
         public async Task<bool> GetStateFromTokenAsync()
         {
@@ -136,7 +84,7 @@ namespace sims_web_app.Services
                 tokenHandler.ValidateToken(tokenBrowserResult.Value, new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("noneofyourgoddamnbusinessthishastobesogoddamnverylongjesuschristandmariaandjoseph")), // key _ plsfix
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY"))), // key _ plsfix
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     ValidateLifetime = true,

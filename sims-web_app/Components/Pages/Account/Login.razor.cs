@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.JSInterop;
 using MudBlazor;
 
 namespace sims_web_app.Components.Pages.Account
@@ -10,9 +11,8 @@ namespace sims_web_app.Components.Pages.Account
     {
         [Inject] private NavigationManager NavigationManager { get; set; }
         [Inject] private IAuthService AuthService { get; set; }
-        [Inject] private IAuthDataService AuthDataService { get; set; }
-        
         [Inject] private AuthApiHandler AuthApiHandler { get; set; }
+        [Inject] private ISnackbar Snackbar { get; set; }
         
 
         protected SignInModel loginModel = new();
@@ -23,8 +23,9 @@ namespace sims_web_app.Components.Pages.Account
         public string errorMessage { get; set; }
         protected InputText? inputTextFocus;
         string returnUrl;
-        private MudForm? form;
 
+        private bool isLoadingLogin = false;
+        
         protected override void OnInitialized()
         {
             passwordType = "password";
@@ -74,9 +75,22 @@ namespace sims_web_app.Components.Pages.Account
 
         protected async Task HandleLogin()
         {
-            var loginResult = await AuthApiHandler.Login(loginModel.Email, loginModel.Password);
+            this.isLoadingLogin = true;
             
+            var loginResult = await AuthApiHandler.Login(loginModel.Email, loginModel.Password);
 
+            if (loginResult)
+            {
+                Snackbar.Add($"Login with {loginModel.Email} was successfully!.", Severity.Success);
+                NavigationManager.NavigateTo("/", true);
+                StateHasChanged();
+            }
+            else
+            {
+                Snackbar.Add($"Login with {loginModel.Email} failed.", Severity.Error);
+            }
+            
+            this.isLoadingLogin = false;
         }
     }
 }

@@ -17,12 +17,6 @@ builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddHttpClient<AuthApiService>(options =>
-{
-    options.BaseAddress = new Uri("http://localhost:5000/api/");
-});
-
-
 //Authentication
 builder.Services.AddAuthorization();
 
@@ -39,12 +33,12 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 builder.Services.AddCascadingAuthenticationState();
 
-builder.Services.AddScoped<IAuthDataService, AuthDataService>();
 builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddScoped<ICustomSessionService, CustomSessionService>();
 
 
 builder.Services.AddScoped<AuthApiHandler>();
+builder.Services.AddScoped<BackendApiHandler>();
 
 
 // ----------------- Build -----------------

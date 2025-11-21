@@ -1,33 +1,40 @@
 ﻿@page "/login"
 
 <MudPaper>
-    <MudForm @ref="form" Model="@loginModel" Class="new-blog-form">
-        <div style="display:flex; justify-content:center;">
-            <div style="transform: translateX(-110px) translateY(10px);">
-                <MudText Typo="Typo.h6" Class="mb-4">Login</MudText>
+    @if (!this.isLoadingLogin)
+    {
+        <EditForm Model="@loginModel" OnValidSubmit="HandleLogin" Class="new-blog-form">
+            <div style="display:flex; justify-content:center;">
+                <div style="transform: translateX(-110px) translateY(10px);">
+                    <MudText Typo="Typo.h6" Class="mb-4">Login</MudText>
+                </div>
             </div>
-        </div>
-        <MudTextField @bind-Value="loginModel.Email"
-                      Style="width: 280px;"
-                      Label="Email Address"
-                      Variant="Variant.Outlined"
-                      Required="true"
-                      FullWidth="true"
-                      Class=" align-center mb-3" />
-        <MudTextField @bind-Value="loginModel.Password"
-                      Style="width: 280px;"
-                      Label="Password"
-                      Variant="Variant.Outlined"
-                      InputType="InputType.Password"
-                      Required="true"
-                      FullWidth="true"
-                      Class=" align-center mb-3" />
-        <div style="display:flex; justify-content:center;">
-            <div style="transform: translateX(80px) translateY(0px);">
-                <MudStack Direction="Row" Spacing="2" >
-                    <MudButton Variant="Variant.Filled" Style="width: 120px;" Color="Color.Primary" OnClick="HandleLogin">Login</MudButton>
-                </MudStack>
+            <MudTextField @bind-Value="loginModel.Email"
+                          Style="width: 280px;"
+                          Label="Email Address"
+                          Variant="Variant.Outlined"
+                          Required="true"
+                          FullWidth="true"
+                          Class=" align-center mb-3"/>
+            <MudTextField @bind-Value="loginModel.Password"
+                          Style="width: 280px;"
+                          Label="Password"
+                          Variant="Variant.Outlined"
+                          InputType="InputType.Password"
+                          Required="true"
+                          FullWidth="true"
+                          Class=" align-center mb-3"/>
+            <div style="display:flex; justify-content:center;">
+                <div style="transform: translateX(80px) translateY(0px);">
+                    <MudStack Direction="Row" Spacing="2">
+                        <MudButton Variant="Variant.Filled" ButtonType="ButtonType.Submit" Style="width: 120px;" Color="Color.Primary">Login</MudButton>
+                    </MudStack>
+                </div>
             </div>
-        </div>
-    </MudForm>
+        </EditForm>           
+    }
+    else
+    {
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+    }
 </MudPaper>

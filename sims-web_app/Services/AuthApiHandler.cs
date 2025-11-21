@@ -12,17 +12,12 @@ namespace sims_web_app.Services;
 
 public class AuthApiHandler
 {
-    const string AuthTokenName = "auth_token";
     private static readonly string baseUrl = Environment.GetEnvironmentVariable("AuthApiBaseUrl");
-    private readonly ICustomSessionService _sessionService;
     private readonly ProtectedBrowserStorage _protectedLocalStorage;
-    private readonly HttpClient _httpClient;
 
-    public AuthApiHandler(ICustomSessionService sessionService, ProtectedLocalStorage protectedLocalStorage, HttpClient httpClient)
+    public AuthApiHandler(ProtectedLocalStorage protectedLocalStorage)
     {
-        _sessionService = sessionService;
         _protectedLocalStorage = protectedLocalStorage;
-        _httpClient = httpClient;
     }
 
     // ****************** Incident *********************
@@ -34,10 +29,25 @@ public class AuthApiHandler
         return (request, client);
     }
 
+    private async Task<string> GetAccessToken()
+    {
+        ProtectedBrowserStorageResult<string> jsonToken = await _protectedLocalStorage.GetAsync<string>("token");
+
+        if (jsonToken.Value == null)
+            return "";
+
+        return jsonToken.Value;
+    }
+
     public async Task<List<User>> GetAllUsers()
     {
-        // FIX: ProtectedLocalStorage statt SessionService verwenden um `token` aus localStorage auszulesen.
-        string authToken = await _sessionService.GetItemAsStringAsync(AuthTokenName);
+        string authToken = await GetAccessToken();
+
+        if (String.IsNullOrEmpty(authToken))
+        {
+            return null;
+        }
+        
         (RestRequest request, RestClient client) = RestRequestHelper("/Users/getAllUsers", Method.Get);
         request.Authenticator = new JwtAuthenticator(authToken);
         RestResponse<List<User>> response = await client.ExecuteAsync<List<User>>(request);
@@ -50,7 +60,12 @@ public class AuthApiHandler
 
     public async Task<List<UserRole>> GetAllRoles()
     {
-        string authToken = await _sessionService.GetItemAsStringAsync(AuthTokenName);
+        string authToken = await GetAccessToken();
+
+        if (String.IsNullOrEmpty(authToken))
+        {
+            return null;
+        }
         (RestRequest request, RestClient client) = RestRequestHelper("/Users/getAllRoles", Method.Get);
         request.Authenticator = new JwtAuthenticator(authToken);
         RestResponse<List<UserRole>> response = await client.ExecuteAsync<List<UserRole>>(request);
@@ -60,7 +75,13 @@ public class AuthApiHandler
 
     public async Task<bool> CreateUser(User user)
     {
-        string authToken = await _sessionService.GetItemAsStringAsync(AuthTokenName);
+        string authToken = await GetAccessToken();
+
+        if (String.IsNullOrEmpty(authToken))
+        {
+            return false;
+        }
+        
         (RestRequest request, RestClient client) = RestRequestHelper("/Users/create", Method.Post);
         request.Authenticator = new JwtAuthenticator(authToken);
         request.AddJsonBody(user);
@@ -71,7 +92,12 @@ public class AuthApiHandler
 
     public async Task<bool> ModifyUser(AuthResponseUser user, int userId)
     {
-        string authToken = await _sessionService.GetItemAsStringAsync(AuthTokenName);
+        string authToken = await GetAccessToken();
+
+        if (String.IsNullOrEmpty(authToken))
+        {
+            return false;
+        }
         (RestRequest request, RestClient client) = RestRequestHelper($"/Users/modify?uid={userId}", Method.Put);
         request.Authenticator = new JwtAuthenticator(authToken);
         request.AddJsonBody(user);
@@ -82,7 +108,12 @@ public class AuthApiHandler
 
     public async Task<bool> DeleteUser(int userId)
     {
-        string authToken = await _sessionService.GetItemAsStringAsync(AuthTokenName);
+        string authToken = await GetAccessToken();
+
+        if (String.IsNullOrEmpty(authToken))
+        {
+            return false;
+        }
         (RestRequest request, RestClient client) = RestRequestHelper($"/Users/delete?uid={userId}", Method.Delete);
         request.Authenticator = new JwtAuthenticator(authToken);
         RestResponse response = await client.ExecuteAsync(request);
@@ -126,29 +157,36 @@ public class AuthApiHandler
             await _protectedLocalStorage.SetAsync("token", jsonContent.token);
 
             return true;
-
-            /*
-            var roles = await GetAllRoles();
-
-            string roleName = roles.Find(r => r.RoleId == jsonContent.RoleId).RoleName;
-
-
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.GivenName, jsonContent.FirstName),
-                new Claim(ClaimTypes.Name, jsonContent.LastName),
-                new Claim(ClaimTypes.Email, jsonContent.Email),
-                new Claim(ClaimTypes.Role, roleName)
-            };
-            var identity = new ClaimsIdentity(claims, "jwt");
-            var principal = new ClaimsPrincipal(identity);
-            return principal;
-            */
-
+            
         }
         else
         {
             return false;
         }
+    }
+
+    public async Task<bool> Logout()
+    {
+        try
+        {
+            var jsonToken = await _protectedLocalStorage.GetAsync<string>("token");
+            
+            RestClient restClient = new RestClient(baseUrl);
+            RestRequest request = new RestRequest("auth/logout", Method.Post);
+            request.Authenticator = new JwtAuthenticator(jsonToken.Value);
+            RestResponse response = await restClient.ExecuteAsync(request);
+            
+            
+            
+            
+            await _protectedLocalStorage.DeleteAsync("token");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        
+        return true;
     }
 }
