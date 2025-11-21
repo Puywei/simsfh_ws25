@@ -10,8 +10,17 @@
 <PageTitle>SIMS Home</PageTitle>
 
 <MudText Typo="Typo.h3" GutterBottom="true">SIMS HOME</MudText>
+<MudText Typo="Typo.h3" GutterBottom="true">Welcome @FullName</MudText>
 
 @code {
-    
+    private string FullName = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var firstname = await SessionStorage.GetItemAsync<string>("firstname");
+        var lastname = await SessionStorage.GetItemAsync<string>("lastname");
+
+        FullName = $"{firstname} {lastname}";
+    }
    
 }
