@@ -160,28 +160,17 @@ namespace sims.Controllers
                  [Authorize]
                  public IActionResult GetMe()
                  {
-                     var actingUser = UserContextHelper.GetActingUserInfo(User);
-                     
                      var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                      var email = User.Identity?.Name;
                      var role = User.FindFirst(ClaimTypes.Role)?.Value;
-
-                     _eventLogger.LogEventAsync(
-                         $"Acting User:{actingUser.Email} - Requested current user token info",
-                         severity: 1
-                     );
          
                      return Ok(new { userId, email, role });
-                     
-                     
                  }
         //  Get all users endpoint
         [HttpGet("getAllUsers")]
         [Authorize]
         public async Task<IActionResult> GetAllUsers()
         {
-            var actingUser = UserContextHelper.GetActingUserInfo(User);
-            
             var users = await _db.Users
                 .Include(u => u.Role)
                 .Select(u => new
@@ -193,11 +182,6 @@ namespace sims.Controllers
                     role = u.Role.RoleName
                 })
                 .ToListAsync();
-            
-            await _eventLogger.LogEventAsync(
-                $"Acting User:{actingUser.Email} - Requested All Users list",
-                severity: 3
-            );
 
             return Ok(users);
         }
@@ -206,8 +190,6 @@ namespace sims.Controllers
         [Authorize]
         public async Task<IActionResult> GetAllRoles()
         {
-            var actingUser = UserContextHelper.GetActingUserInfo(User);
-            
             var roles = await _db.Roles
                 .Select(r => new
                 {
@@ -215,11 +197,6 @@ namespace sims.Controllers
                     RoleName = r.RoleName
                 })
                 .ToListAsync();
-            
-            await _eventLogger.LogEventAsync(
-                $"Acting User:{actingUser.Email} - Listed all Roles",
-                severity: 3
-            );
 
             return Ok(roles);
         }
