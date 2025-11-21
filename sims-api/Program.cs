@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using sims.Helpers;
 using sims.Services;
 
 namespace sims;
@@ -82,9 +83,29 @@ public class Program
                 };
                 options.Events = new JwtBearerEvents
                 {
+                    OnChallenge = async context =>
+                    {
+                        var logger = context.HttpContext.RequestServices.GetRequiredService<IEventLogger>();
+                        await logger.LogEventAsync(
+                            $"Authorization challenge: Invalid or missing token for {context.HttpContext.Request.Path}",
+                            severity: 2
+                        );
+                    },
+                    
+                    OnForbidden = async context =>
+                    {
+                        var logger = context.HttpContext.RequestServices.GetRequiredService<IEventLogger>();
+                        var actingUser = UserContextHelper.GetActingUserInfo(context.HttpContext.User);
+
+                        await logger.LogEventAsync(
+                            $"Authorization failed: User '{actingUser.Email}' (Role='{actingUser.Role}') attempted to access {context.HttpContext.Request.Path} without required role.",
+                            severity: 3
+                        );
+                    },
                     OnMessageReceived = async context =>
                     {
                         var db = context.HttpContext.RequestServices.GetRequiredService<UserDbContext>();
+                        var logger = context.HttpContext.RequestServices.GetRequiredService<IEventLogger>();
                         var token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
 
                         if (!string.IsNullOrEmpty(token))
@@ -92,6 +113,10 @@ public class Program
                             var isBlacklisted = await db.BlacklistedTokens.AnyAsync(b => b.Token == token);
                             if (isBlacklisted)
                             {
+                                await logger.LogEventAsync(
+                                    $"Blacklisted token used for {context.HttpContext.Request.Path}",
+                                    severity: 3
+                                );
                                 context.Fail("Token is blacklisted.");
                             }
                         }
