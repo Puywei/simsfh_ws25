@@ -2,6 +2,8 @@
 
 Ein umfassendes Service Incident Management System (SIMS) zur Verwaltung von Incidents, Kunden und Benutzern mit einer modernen Microservices-Architektur.
 
+![.NET](https://badgen.net/badge/.NET/9.0/512BD4) ![.NET](https://badgen.net/badge/.NET/8.0/512BD4) ![Blazor](https://badgen.net/badge/Blazor/Server/512BD4) ![MudBlazor](https://badgen.net/badge/MudBlazor/8.x/00BCD4) ![Entity Framework](https://badgen.net/badge/EF%20Core/9.0/512BD4) ![PostgreSQL](https://badgen.net/badge/PostgreSQL/16/336791) ![SQL Server](https://badgen.net/badge/SQL%20Server/2025/CC2927) ![Redis](https://badgen.net/badge/Redis/8.4/DC382D) ![Docker](https://badgen.net/badge/Docker/Compose/2496ED) ![JWT](https://badgen.net/badge/JWT/Bearer/000000) ![BCrypt](https://badgen.net/badge/BCrypt/Password%20Hashing/000000)
+
 ## 📋 Inhaltsverzeichnis
 
 - [Übersicht](#übersicht)
@@ -14,7 +16,6 @@ Ein umfassendes Service Incident Management System (SIMS) zur Verwaltung von Inc
 - [Docker Deployment](#docker-deployment)
 - [Features](#features)
 - [Security Features](#security-features)
-- [Aktuelle ToDos](#aktuelle-todos)
 
 ## 🎯 Übersicht
 
@@ -181,6 +182,8 @@ simsfh_ws25/
 ```
 
 ## 🛠️ Technologien
+
+![.NET](https://badgen.net/badge/.NET/9.0/512BD4) ![.NET](https://badgen.net/badge/.NET/8.0/512BD4) ![Blazor](https://badgen.net/badge/Blazor/Server/512BD4) ![MudBlazor](https://badgen.net/badge/MudBlazor/8.x/00BCD4) ![Entity Framework](https://badgen.net/badge/EF%20Core/9.0/512BD4) ![PostgreSQL](https://badgen.net/badge/PostgreSQL/16/336791) ![SQL Server](https://badgen.net/badge/SQL%20Server/2025/CC2927) ![Redis](https://badgen.net/badge/Redis/8.4/DC382D) ![Docker](https://badgen.net/badge/Docker/Compose/2496ED) ![JWT](https://badgen.net/badge/JWT/Bearer/000000) ![BCrypt](https://badgen.net/badge/BCrypt/Password%20Hashing/000000)
 
 ### Frontend
 - **.NET 9.0** - Blazor Server
