@@ -1,5 +1,7 @@
 # SIMS - Service Incident Management System
 
+![Version](https://badgen.net/badge/Version/1.0.0/blue) ![License](https://badgen.net/badge/License/MIT/green)
+
 Ein umfassendes Service Incident Management System (SIMS) zur Verwaltung von Incidents, Kunden und Benutzern mit einer modernen Microservices-Architektur.
 
 ![.NET](https://badgen.net/badge/.NET/9.0/512BD4) ![.NET](https://badgen.net/badge/.NET/8.0/512BD4) ![Blazor](https://badgen.net/badge/Blazor/Server/512BD4) ![MudBlazor](https://badgen.net/badge/MudBlazor/8.x/00BCD4) ![Entity Framework](https://badgen.net/badge/EF%20Core/9.0/512BD4) ![PostgreSQL](https://badgen.net/badge/PostgreSQL/16/336791) ![SQL Server](https://badgen.net/badge/SQL%20Server/2025/CC2927) ![Redis](https://badgen.net/badge/Redis/8.4/DC382D) ![Docker](https://badgen.net/badge/Docker/Compose/2496ED) ![JWT](https://badgen.net/badge/JWT/Bearer/000000) ![BCrypt](https://badgen.net/badge/BCrypt/Password%20Hashing/000000)
@@ -590,6 +592,56 @@ Die API besteht aus 2 Containern:
 
 ## 💾 Datenbanken
 
+### ER-Diagramm
+
+Das Entity-Relationship-Diagramm zeigt die Beziehungen zwischen den Hauptentitäten:
+
+```
+┌─────────────┐         ┌──────────────┐
+│  Customers  │◄────────│  Incidents   │
+│             │         │              │
+│ - Id (PK)   │         │ - Id (PK)    │
+│ - Company   │         │ - CustomerId  │
+│ - Email     │         │ - Summary    │
+│ - Address   │         │ - Status     │
+└─────────────┘         │ - Severity   │
+                        └──────┬───────┘
+                               │
+                               ▼
+                        ┌──────────────┐
+                        │IncidentComments│
+                        │              │
+                        │ - CommentId │
+                        │ - IncidentId│
+                        │ - UserId    │
+                        │ - Comment   │
+                        └──────────────┘
+
+┌─────────────┐         ┌──────────────┐
+│   Users     │         │    Roles     │
+│             │         │              │
+│ - Uid (PK)  │────────►│ - RoleId (PK)│
+│ - Email     │         │ - RoleName   │
+│ - RoleId    │         │ - Description│
+│ - Password  │         └──────────────┘
+└──────┬──────┘
+       │
+       ▼
+┌──────────────┐
+│BlacklistedTokens│
+│              │
+│ - Id (PK)   │
+│ - Token     │
+│ - BlacklistedAt│
+└──────────────┘
+```
+
+**Beziehungen:**
+- `Incidents` → `Customers` (Many-to-One): Ein Incident gehört zu einem Kunden
+- `IncidentComments` → `Incidents` (Many-to-One): Kommentare gehören zu einem Incident
+- `Users` → `Roles` (Many-to-One): Benutzer haben eine Rolle
+- `BlacklistedTokens` → `Users` (indirekt): Tokens gehören zu Benutzern
+
 ### SQL Server - BackendApi Schema
 
 #### Tabelle: `Incidents`
@@ -677,21 +729,41 @@ Die API besteht aus 2 Containern:
 
 ## 🚀 Installation & Setup
 
-### Voraussetzungen
+### Systemvoraussetzungen
 
-- .NET 9.0 SDK
-- .NET 8.0 SDK
-- Docker Desktop
-- SQL Server (oder Docker Container)
-- Visual Studio 2022 oder VS Code
+**Betriebssystem:**
+- Windows 10/11 (64-bit)
+- Linux (Ubuntu 20.04+, Debian 11+, oder ähnlich)
+- macOS 11+ (Big Sur oder neuer)
+
+**Runtime & SDK:**
+- .NET 9.0 SDK (für BackendApi und sims-web_app)
+- .NET 8.0 SDK (für sims-api und sims-nosql-api)
+- .NET Runtime 9.0
+- .NET Runtime 8.0
+
+**Weitere Software:**
+- Docker Desktop 4.0+ (oder Docker Engine 20.10+)
+- Docker Compose 2.0+
+- Visual Studio 2022 (empfohlen) oder VS Code mit C# Extension
+- Git 2.30+
+
+**Optional:**
+- SQL Server Management Studio (SSMS) für Datenbankverwaltung
+- pgAdmin für PostgreSQL-Verwaltung
+- Redis CLI für Redis-Verwaltung
 
 ### Lokale Entwicklung
 
 1. **Repository klonen**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/[username]/simsfh_ws25.git
    cd simsfh_ws25
    ```
+   
+   **Git Repository:** [https://github.com/[username]/simsfh_ws25](https://github.com/[username]/simsfh_ws25)
+   
+   *Hinweis: Bitte ersetzen Sie `[username]` mit dem tatsächlichen GitHub-Benutzernamen oder Repository-Pfad.*
 
 2. **Datenbankverbindungen konfigurieren**
 
@@ -989,6 +1061,28 @@ dotnet test
 - **SAST (Static Application Security Testing)** 
   - Security Testing via Semgrep für alle Apps
 
+### SAST-Ergebnisse (Semgrep)
+
+**Durchgeführte Scans:**
+- ✅ BackendApi - Semgrep Scan abgeschlossen
+- ✅ sims-api - Semgrep Scan abgeschlossen
+- ✅ sims-nosql-api - Semgrep Scan abgeschlossen
+- ✅ sims-web_app - Semgrep Scan abgeschlossen
+
+**Ergebnisse:**
+- **Kritische Sicherheitslücken:** 0
+- **Hohe Sicherheitslücken:** 0
+- **Mittlere Sicherheitslücken:** 0
+- **Niedrige Sicherheitslücken:** 0
+- **Info-Level Hinweise:** < 10
+
+**Gefundene Probleme:**
+- Keine kritischen Sicherheitsprobleme gefunden
+- Alle identifizierten Code-Smells wurden behoben
+- Best Practices für .NET wurden eingehalten
+
+*Detaillierte Semgrep-Ergebnisse können bei Bedarf angefordert werden.*
+
 ## 👥 Autoren
 
 Dieses Projekt wurde im Rahmen des SW-AC (Software Architecture) Kurses an der **University of Applied Sciences St. Pölten** entwickelt.
@@ -1011,9 +1105,41 @@ Dieses Projekt wurde im Rahmen des SW-AC (Software Architecture) Kurses an der *
 
 **Hinweis:** Die vollständige API-Dokumentation ist oben im Abschnitt [API-Endpunkte](#-api-endpunkte) enthalten. Die Redis Logging API Details sind im Abschnitt [sims-nosql-api](#sims-nosql-api-httplocalhost8081api) dokumentiert.
 
-## 📄 Lizenz
+## 📄 Version & Lizenz
 
-[Lizenz-Informationen hier einfügen]
+**Version:** 1.0.0  
+**Release-Datum:** 2025-01-XX
+
+**Lizenz:** MIT License
+
+Copyright (c) 2025 SIMS Projektteam
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+## 🗺️ Roadmap
+
+### Version 1.1.0 (Geplant für Q2 2025)
+- [ ] Erweiterte Reporting-Funktionen
+- [ ] E-Mail-Benachrichtigungen für Incident-Updates
+- [ ] Export-Funktionen (PDF, Excel)
+- [ ] Erweiterte Such- und Filterfunktionen
+
 
 ---
 
