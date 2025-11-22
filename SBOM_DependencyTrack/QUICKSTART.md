@@ -10,7 +10,7 @@ Für detaillierte Informationen siehe [README.md](README.md).
 
 ```bash
 # Im Projekt-Root-Verzeichnis
-docker-compose up -d dependencytrack dependencytrack-frontend dependencytrack-postgres
+docker-compose up -d dependencytrack-postgres dependencytrack dependencytrack-frontend 
 ```
 
 Warte ca. 30-60 Sekunden, bis DependencyTrack vollständig gestartet ist.

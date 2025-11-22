@@ -1,7 +1,8 @@
-# SBOM Generation Script für SIMS-Projekt (PowerShell)
-# Generiert CycloneDX SBOMs für alle .NET-Projekte
+# SBOM Generation Script for SIMS Project (PowerShell)
+# Generates CycloneDX SBOMs for all .NET projects
 
 $ErrorActionPreference = "Stop"
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ProjectRoot = Split-Path -Parent $ScriptDir
@@ -12,22 +13,22 @@ Write-Host "SIMS SBOM Generation Script" -ForegroundColor Cyan
 Write-Host "==========================================" -ForegroundColor Cyan
 Write-Host ""
 
-# Erstelle Output-Verzeichnis
+# Create output directory
 if (-not (Test-Path $SbomOutputDir)) {
     New-Item -ItemType Directory -Path $SbomOutputDir | Out-Null
 }
 
-# Installiere CycloneDX .NET Tool falls nicht vorhanden
-Write-Host "Prüfe CycloneDX .NET Tool..." -ForegroundColor Yellow
+# Install CycloneDX .NET Tool if not present
+Write-Host "Checking CycloneDX .NET Tool..." -ForegroundColor Yellow
 $cyclonedxInstalled = dotnet tool list -g | Select-String "cyclonedx"
 if (-not $cyclonedxInstalled) {
-    Write-Host "Installiere CycloneDX .NET Tool..." -ForegroundColor Yellow
+    Write-Host "Installing CycloneDX .NET Tool..." -ForegroundColor Yellow
     dotnet tool install --global CycloneDX
 } else {
-    Write-Host "CycloneDX Tool ist bereits installiert." -ForegroundColor Green
+    Write-Host "CycloneDX Tool is already installed." -ForegroundColor Green
 }
 
-# Projekte definieren
+# Define projects
 $Projects = @(
     "BackendApi\BackendApi.csproj",
     "sims-api\sims-api.csproj",
@@ -35,12 +36,12 @@ $Projects = @(
     "sims-web_app\sims-web_app.csproj"
 )
 
-# Generiere SBOM für jedes Projekt
+# Generate SBOM for each project
 foreach ($Project in $Projects) {
     $ProjectPath = Join-Path $ProjectRoot $Project
     
     if (-not (Test-Path $ProjectPath)) {
-        Write-Host "⚠️  Warnung: Projekt nicht gefunden: $ProjectPath" -ForegroundColor Yellow
+        Write-Host "Warning: Project not found: $ProjectPath" -ForegroundColor Yellow
         continue
     }
     
@@ -48,35 +49,40 @@ foreach ($Project in $Projects) {
     $OutputFile = Join-Path $SbomOutputDir "$ProjectName-sbom.json"
     
     Write-Host ""
-    Write-Host "Generiere SBOM für: $ProjectName" -ForegroundColor Cyan
-    Write-Host "  Projekt: $Project"
+    Write-Host "Generating SBOM for: $ProjectName" -ForegroundColor Cyan
+    Write-Host "  Project: $Project"
     Write-Host "  Output: $OutputFile"
     
-    # Wechsle ins Projektverzeichnis
+    # Change to project directory
     $ProjectDir = Split-Path -Parent $ProjectPath
+    $ProjectFileName = [System.IO.Path]::GetFileName($ProjectPath)
+    $OutputDir = Split-Path -Parent $OutputFile
     Push-Location $ProjectDir
     
     try {
-        # Generiere SBOM mit CycloneDX
-        dotnet CycloneDX $Project `
-            --json `
-            --out $OutputFile `
-            --exclude-dev `
-            --exclude-test
+        # Generate SBOM with CycloneDX
+        # Use -o for output directory, -fn for filename, -F Json for format, -ed to exclude dev dependencies
+        # Use only the filename since we're already in the project directory
+        dotnet CycloneDX $ProjectFileName `
+            -o $OutputDir `
+            -fn "$ProjectName-sbom.json" `
+            -F Json `
+            -ed
         
-        if (Test-Path $OutputFile) {
-            Write-Host "  ✅ SBOM erfolgreich generiert: $OutputFile" -ForegroundColor Green
+        $GeneratedFile = Join-Path $OutputDir "$ProjectName-sbom.json"
+        if (Test-Path $GeneratedFile) {
+            Write-Host "  SBOM successfully generated: $GeneratedFile" -ForegroundColor Green
             
-            # Zeige Anzahl der Komponenten (falls jq verfügbar ist)
+            # Show component count
             try {
-                $jsonContent = Get-Content $OutputFile -Raw | ConvertFrom-Json
+                $jsonContent = Get-Content $GeneratedFile -Raw -Encoding UTF8 | ConvertFrom-Json
                 $componentCount = $jsonContent.components.Count
-                Write-Host "  📦 Komponenten gefunden: $componentCount" -ForegroundColor Cyan
+                Write-Host "  Components found: $componentCount" -ForegroundColor Cyan
             } catch {
-                # Ignoriere Fehler beim Parsen
+                # Ignore parsing errors
             }
         } else {
-            Write-Host "  ❌ Fehler beim Generieren der SBOM" -ForegroundColor Red
+            Write-Host "  Error generating SBOM" -ForegroundColor Red
         }
     } finally {
         Pop-Location
@@ -85,14 +91,12 @@ foreach ($Project in $Projects) {
 
 Write-Host ""
 Write-Host "==========================================" -ForegroundColor Cyan
-Write-Host "SBOM Generation abgeschlossen!" -ForegroundColor Green
+Write-Host "SBOM Generation completed!" -ForegroundColor Green
 Write-Host "==========================================" -ForegroundColor Cyan
-Write-Host "Output-Verzeichnis: $SbomOutputDir"
+Write-Host "Output directory: $SbomOutputDir"
 Write-Host ""
-Write-Host "Nächste Schritte:"
-Write-Host "1. Überprüfe die generierten SBOM-Dateien in: $SbomOutputDir"
-Write-Host "2. Lade die SBOMs in DependencyTrack hoch (http://localhost:8082)"
-Write-Host "3. Oder verwende das upload-sbom.ps1 Script für automatischen Upload"
+Write-Host "Next steps:"
+Write-Host "1. Review generated SBOM files in: $SbomOutputDir"
+Write-Host "2. Upload SBOMs to DependencyTrack (http://localhost:8083)"
+Write-Host "3. Or use the upload-sbom.ps1 script for automatic upload"
 Write-Host ""
-
-
