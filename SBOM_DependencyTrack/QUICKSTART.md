@@ -47,24 +47,17 @@ cd SBOM_DependencyTrack
 
 ### 4. SBOMs hochladen
 
-**Linux/macOS (Bash):**
+**Linux/macOS/WSL/Git Bash:**
 ```bash
-export DEPENDENCYTRACK_API_KEY="dein-kopierter-api-key"
+cd SBOM_DependencyTrack
+chmod +x upload-sbom.sh
 ./upload-sbom.sh
 ```
 
-**Windows/Linux/macOS (Python - empfohlen):**
-```bash
-# Python installieren (falls nicht vorhanden)
-# Dann:
-pip install requests
-python upload-sbom.py
-```
-
-**Hinweis:** Das Python-Script hat den API-Key bereits eingebaut. Falls Sie einen anderen verwenden möchten:
+**Hinweis:** Das Script hat den API-Key bereits eingebaut. Falls Sie einen anderen verwenden möchten:
 ```bash
 export DEPENDENCYTRACK_API_KEY="dein-api-key"
-python upload-sbom.py
+./upload-sbom.sh
 ```
 
 ### 5. Ergebnisse ansehen

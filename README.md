@@ -1360,21 +1360,14 @@ Die generierten SBOM-Dateien werden im Verzeichnis `SBOM_DependencyTrack/outputs
 
 Nach der Generierung können die SBOMs automatisch in DependencyTrack hochgeladen werden:
 
-**Linux/macOS (Bash):**
+**Linux/macOS/WSL/Git Bash:**
 ```bash
 cd SBOM_DependencyTrack
-export DEPENDENCYTRACK_API_KEY="dein-api-key"
+chmod +x upload-sbom.sh
 ./upload-sbom.sh
 ```
 
-**Windows/Linux/macOS (Python - empfohlen):**
-```bash
-cd SBOM_DependencyTrack
-pip install requests
-python upload-sbom.py
-```
-
-**Hinweis:** Das Python-Script hat den API-Key bereits eingebaut. Falls Sie einen anderen verwenden möchten, setzen Sie die Umgebungsvariable `DEPENDENCYTRACK_API_KEY`.
+**Hinweis:** Das Script hat den API-Key bereits eingebaut. Falls Sie einen anderen verwenden möchten, setzen Sie die Umgebungsvariable `DEPENDENCYTRACK_API_KEY`.
 
 **API Key erstellen:**
 1. Öffne DependencyTrack Web-UI: **http://localhost:8083**
