@@ -820,7 +820,7 @@ classDiagram
     LogApiHandler --> RedisController : calls
 ```
 
-## Legende
+#### Legende
 
 - **Models**: Datenmodelle (Incident, Customer, User, etc.)
 - **Controllers**: API-Controller für HTTP-Endpunkte
@@ -830,8 +830,8 @@ classDiagram
 
 
 Das Klassendiagramm ist in separaten Dateien verfügbar:
-- **Mermaid-Datei**: `Doku/ClassDiagram.mmd` (für Tools)
-- **Markdown-Datei**: `Doku/ClassDiagram.md` (für GitHub/Viewer)
+- **Mermaid-Datei**: `Doku/ClassDiagram.mmd`
+- **Markdown-Datei**: `Doku/ClassDiagram.md`
 
 Das Diagramm zeigt die wichtigsten Klassen, ihre Attribute, Methoden und Beziehungen im SIMS-System.
 
@@ -840,51 +840,81 @@ Das Diagramm zeigt die wichtigsten Klassen, ihre Attribute, Methoden und Beziehu
 
 Das Entity-Relationship-Diagramm zeigt die Beziehungen zwischen den Hauptentitäten:
 
-```
-┌─────────────┐         ┌──────────────┐
-│  Customers  │◄────────│  Incidents   │
-│             │         │              │
-│ - Id (PK)   │         │ - Id (PK)    │
-│ - Company   │         │ - CustomerId  │
-│ - Email     │         │ - Summary    │
-│ - Address   │         │ - Status     │
-└─────────────┘         │ - Severity   │
-                        └──────┬───────┘
-                               │
-                               ▼
-                        ┌──────────────┐
-                        │IncidentComments│
-                        │              │
-                        │ - CommentId │
-                        │ - IncidentId│
-                        │ - UserId    │
-                        │ - Comment   │
-                        └──────────────┘
-
-┌─────────────┐         ┌──────────────┐
-│   Users     │         │    Roles     │
-│             │         │              │
-│ - Uid (PK)  │────────►│ - RoleId (PK)│
-│ - Email     │         │ - RoleName   │
-│ - RoleId    │         │ - Description│
-│ - Password  │         └──────────────┘
-└──────┬──────┘
-       │
-       ▼
-┌──────────────┐
-│BlacklistedTokens│
-│              │
-│ - Id (PK)   │
-│ - Token     │
-│ - BlacklistedAt│
-└──────────────┘
+```mermaid
+erDiagram
+    Customers {
+        string Id PK
+        Guid UUId
+        string CompanyName
+        string Email
+        string PhoneNumber
+        string Address
+        string City
+        string State
+        string ZipCode
+        string Country
+        bool Active
+        DateTime CreateDate
+        DateTime ChangeDate
+    }
+    
+    Incidents {
+        string Id PK
+        Guid UUId
+        string Summary
+        string Description
+        DateTime CreateDate
+        DateTime ChangeDate
+        DateTime ClosedDate
+        IncidentStatus Status
+        IncidentType IncidentType
+        IncidentSeverity Severity
+        string AssignedPerson
+        string CustomerId FK
+    }
+    
+    IncidentComments {
+        Guid CommentId PK
+        string IncidentId FK
+        Guid UserId
+        string UserName
+        string Comment
+        DateTime CreateDate
+        int CommentOrder
+    }
+    
+    Users {
+        int Uid PK
+        string Firstname
+        string Lastname
+        string Email
+        string PasswordHash
+        int RoleId FK
+    }
+    
+    Roles {
+        int RoleId PK
+        string RoleName
+        string Description
+    }
+    
+    BlacklistedTokens {
+        int Id PK
+        string Token
+        DateTime BlacklistedAt
+    }
+    
+    Customers ||--o{ Incidents : "has"
+    Incidents ||--o{ IncidentComments : "has"
+    Roles ||--o{ Users : "has"
+    Users ||--o{ BlacklistedTokens : "has"
 ```
 
 **Beziehungen:**
-- `Incidents` → `Customers` (Many-to-One): Ein Incident gehört zu einem Kunden
-- `IncidentComments` → `Incidents` (Many-to-One): Kommentare gehören zu einem Incident
-- `Users` → `Roles` (Many-to-One): Benutzer haben eine Rolle
-- `BlacklistedTokens` → `Users` (indirekt): Tokens gehören zu Benutzern
+- `Customers` → `Incidents` (One-to-Many): Ein Kunde kann mehrere Incidents haben
+- `Incidents` → `IncidentComments` (One-to-Many): Ein Incident kann mehrere Kommentare haben
+- `Roles` → `Users` (One-to-Many): Eine Rolle kann mehreren Benutzern zugeordnet sein
+- `Users` → `BlacklistedTokens` (One-to-Many): Ein Benutzer kann mehrere blacklisted Tokens haben
 
 ### SQL Server - BackendApi Schema
 
