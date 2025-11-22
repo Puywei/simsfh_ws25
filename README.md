@@ -39,7 +39,7 @@ Die Systemarchitektur ist in der Datei `Flipcharts/Schema.drawio` bzw. `Flipchar
 ```
 ┌─────────────┐
 │  Frontend   │ (Blazor Web App - MudBlazor)
-│  (Port 80)  │
+│  (Port 8080)│
 └──────┬──────┘
        │
        ▼
@@ -77,8 +77,7 @@ simsfh_ws25/
 ├── BackendApi/                     # Incident & Customer Management API
 │   ├── Controllers/
 │   │   ├── IncidentsController.cs  # Incident CRUD Endpoints
-│   │   ├── CustomersController.cs   # Customer CRUD Endpoints
-│   │   └── LogsController.cs        # Log Retrieval Endpoints
+│   │   └── CustomersController.cs   # Customer CRUD Endpoints
 │   ├── Data/
 │   │   ├── Database/
 │   │   │   └── MsSqlDbContext.cs    # Entity Framework Context
@@ -88,9 +87,10 @@ simsfh_ws25/
 │   │   │   ├── Incident/           # Incident & IncidentComment Models
 │   │   │   └── LogData/            # LogEntry Models
 │   │   └── Services/
-│   │       └── GenerateIdService.cs # ID Generation Logic
+│   │       ├── EventLogger.cs      # Event Logging Service
+│   │       ├── GenerateIdService.cs # ID Generation Logic
+│   │       └── IEventLogger.cs     # Event Logger Interface
 │   ├── Migrations/                  # Entity Framework Migrations
-│   ├── RedisLoggingMiddleware.cs   # Middleware für Redis Logging
 │   ├── compose.yaml                # Docker Compose für BackendApi + SQL Server + Redis
 │   ├── Dockerfile
 │   └── Program.cs
@@ -98,19 +98,28 @@ simsfh_ws25/
 ├── sims-api/                        # User Management API
 │   ├── Controllers/
 │   │   ├── AuthController.cs       # Authentication Endpoints
-│   │   └── UsersController.cs      # User CRUD Endpoints
+│   │   └── UserController.cs       # User CRUD Endpoints (UsersController)
 │   ├── Data/
 │   │   └── UserDbContext.cs        # PostgreSQL EF Context
+│   ├── Helpers/
+│   │   ├── CheckIfRoleExists.cs    # Role Validation Helper
+│   │   ├── JwtTokenService.cs      # JWT Token Generation & Validation
+│   │   ├── TokenBlacklistService.cs # Token Blacklist Management
+│   │   └── UserContextHelper.cs    # User Context Helper
 │   ├── Models/
 │   │   ├── User.cs                 # User Model
 │   │   ├── Role.cs                 # Role Model
-│   │   └── BlacklistedToken.cs     # Token Blacklist Model
+│   │   ├── BlacklistedToken.cs     # Token Blacklist Model
+│   │   ├── CreateUserRequest.cs    # User Creation Request Model
+│   │   ├── LoginRequest.cs         # Login Request Model
+│   │   └── ModifyUserRequest.cs    # User Modification Request Model
 │   ├── Services/
 │   │   ├── EventLogger.cs          # Event Logging Service
-│   │   └── IEventLogger.cs        # Event Logger Interface
+│   │   └── IEventLogger.cs         # Event Logger Interface
 │   ├── Migrations/                  # Entity Framework Migrations
 │   ├── docker-compose.yaml         # PostgreSQL + User API Setup
 │   ├── Dockerfile
+│   ├── sims.http                    # HTTP Request Test File
 │   └── Program.cs
 │
 ├── sims-nosql-api/                  # Redis Logging API
@@ -118,38 +127,56 @@ simsfh_ws25/
 │   │   └── RedisController.cs      # Redis Log Endpoints
 │   ├── Database/
 │   │   └── RedisConnection.cs      # Redis Connection Management
+│   ├── Pages/                       # Razor Pages (Index, Error, Privacy)
 │   ├── Services/
 │   │   ├── LogEntry.cs             # Log Entry Model
 │   │   └── RedisService.cs         # Redis Business Logic
+│   ├── wwwroot/                     # Static Files (CSS, JS, Bootstrap, jQuery)
 │   ├── docker-compose.yaml         # Redis + NoSQL API Setup
 │   ├── Dockerfile
 │   └── Program.cs
 │
 ├── sims-web_app/                    # Blazor Frontend
 │   ├── Components/
-│   │   ├── Identity/               # Authentication Components
-│   │   ├── Layout/                 # Layout Components
+│   │   ├── Identity/               # Authentication Components & Contracts
+│   │   ├── Layout/                 # Layout Components (MainLayout, NavMenu, CheckAuthorization)
 │   │   └── Pages/                  # Page Components
-│   │       ├── Account/            # Login Pages
-│   │       ├── Customer/           # Customer Management Pages
-│   │       ├── Incident/           # Incident Management Pages
+│   │       ├── Account/            # Login/Logout Pages
+│   │       ├── Customer/           # Customer Management Pages (Overview, Dialogs)
+│   │       ├── Incident/           # Incident Management Pages (Overview, Detail, Dialogs)
 │   │       ├── LogPage/            # Log Overview Pages
-│   │       └── User/               # User Management Pages
+│   │       └── User/               # User Management Pages (Overview, Dialogs)
 │   ├── Data/
-│   │   └── Model/                  # Frontend Models
+│   │   └── Model/                  # Frontend Models (DTOs, Enums, Service Responses)
 │   ├── Services/
 │   │   ├── AuthApiHandler.cs       # Authentication API Handler
-│   │   └── BackendApiHandler.cs    # Backend API Handler
+│   │   ├── AuthService.cs          # Authentication Service
+│   │   ├── BackendApiHandler.cs    # Backend API Handler
+│   │   ├── CustomAuthStateProvider.cs # Custom Authentication State Provider
+│   │   ├── CustomSessionService.cs # Custom Session Management
+│   │   ├── IAuthService.cs         # Authentication Service Interface
+│   │   ├── ICustomSessionService.cs # Session Service Interface
+│   │   └── LogApiHandler.cs        # Log API Handler
+│   ├── Docker-compose.yaml         # Docker Compose für Frontend
+│   ├── Dockerfile
 │   └── Program.cs
 │
-├── BackendApi.Tests/                # Unit Tests
+├── BackendApi.Tests/                # Unit Tests für BackendApi
 │   ├── CustomerEndpointsTest.cs
 │   └── IncidentEndpointsTest.cs
 │
+├── sims-nosql-api.Tests/            # Unit Tests für sims-nosql-api
+│   └── UnitTest1.cs
+│
 ├── Flipcharts/
+│   ├── Archiv/                      # Archivierte Flipcharts
+│   │   ├── Schema.drawio
+│   │   ├── Schema.png
+│   │   └── [Weitere Archivdateien]
 │   ├── Schema.drawio               # Systemarchitektur Diagramm
 │   └── Schema.png                  # Systemarchitektur Bild
 │
+├── docker-compose.yaml              # Zentrales Docker Compose für alle Services
 └── sims.sln                        # Visual Studio Solution
 ```
 
@@ -293,37 +320,7 @@ Die BackendApi ist die Haupt-API für das Incident Management System. Sie verwal
 
 **Hinweis:** Die Kunden-ID wird automatisch generiert (Format: CUST-0001, CUST-0002, ...).
 
-#### Logs API
-
-| Methode | Endpunkt | Beschreibung | Response Codes |
-|---------|----------|--------------|----------------|
-| GET | `/api/v1/logs` | Logs abrufen (optional: `?count=50`) | 200 OK |
-| GET | `/api/v1/logs/{id}` | Log nach ID abrufen | 200 OK, 404 Not Found |
-
-**Beispiel-Request (GET /api/v1/logs?count=10):**
-```bash
-curl -X GET "http://localhost:5001/api/v1/logs?count=10"
-```
-
-**Beispiel-Response:**
-```json
-[
-  {
-    "id": "log-001",
-    "timestamp": "2025-02-07T12:00:00",
-    "message": "API request received",
-    "severity": 1
-  },
-  {
-    "id": "log-002",
-    "timestamp": "2025-02-07T12:01:00",
-    "message": "Database connection established",
-    "severity": 1
-  }
-]
-```
-
-**Hinweis:** Die Logs werden aus Redis abgerufen. Die BackendApi verwendet automatisches Logging via Middleware.
+**Hinweis:** Die BackendApi verwendet automatisches Logging via EventLogger Service, der Logs an die sims-nosql-api sendet. Logs können direkt über die sims-nosql-api abgerufen werden (siehe [sims-nosql-api](#sims-nosql-api-httplocalhost8081api)).
 
 ### sims-api (`http://localhost:5000/api`)
 
@@ -483,7 +480,7 @@ curl -X GET http://user-api:5000/api/users/getCurrent \
 
 Die sims-nosql-api ist eine spezialisierte API für das Logging von Systemereignissen in Redis. Sie bietet eine einfache RESTful Schnittstelle zum Speichern und Abrufen von Log-Einträgen.
 
-**API-Basis-URL:** `http://localhost:8081`
+**API-Basis-URL:** `http://localhost:8081` (extern) / `http://localhost:8080` (intern im Docker-Netzwerk)
 
 | Methode | Endpunkt | Beschreibung |
 |---------|----------|--------------|
@@ -578,7 +575,7 @@ curl -X GET http://localhost:8081/api/Redis/logs
 **Architektur:**
 Die API besteht aus 2 Containern:
 - **Redis**: NoSQL-Datenbank zum Speichern der Logs
-- **sims-nosql-api**: Web-API zum Verarbeiten der Log-Daten
+- **sims-nosql-api**: Web-API zum Verarbeiten der Log-Daten (mit Razor Pages für UI)
 
 **Features:**
 - ✅ Log Einträge speichern
@@ -786,12 +783,12 @@ Die API besteht aus 2 Containern:
    ```
    API verfügbar unter: `http://localhost:8081`
 
-   **Terminal 4 - Frontend:**
-   ```bash
-   cd sims-web_app
-   dotnet run
-   ```
-   Frontend verfügbar unter: `http://localhost:5000` oder `https://localhost:5001`
+**Terminal 4 - Frontend:**
+```bash
+cd sims-web_app
+dotnet run
+```
+Frontend verfügbar unter: `http://localhost:8080` (oder gemäß launchSettings.json)
 
 ## 🐳 Docker Deployment
 
@@ -845,11 +842,27 @@ Dies startet:
 - **NoSQL API Container** (Port 8081)
 
 **Netzwerk:**
-- Alle Container nutzen das `sims-network` Docker-Netzwerk
+- Alle Container nutzen das `sims-net` Docker-Netzwerk (bei zentralem docker-compose.yaml)
 
 ### Vollständiges Setup (Alle Services)
 
-Für ein vollständiges Setup müssen alle drei Docker Compose Dateien gestartet werden:
+**Empfohlen:** Verwenden Sie das zentrale Docker Compose im Root-Verzeichnis:
+
+```bash
+# Im Root-Verzeichnis (simsfh_ws25/)
+docker-compose up -d
+```
+
+Dies startet alle Services in einem gemeinsamen Docker-Netzwerk (`sims-net`):
+- **PostgreSQL** (Port 5432) - User & Role Datenbank
+- **user-api** (Port 5000) - User Management API
+- **Redis** (Port 6379) - NoSQL Logging Datenbank
+- **sims-nosql-api** (Port 8081) - Redis Logging API
+- **mssql** (Port 1433) - SQL Server für Incidents & Customers
+- **backendapi** (Port 5001) - Incident & Customer Management API
+- **sims-web-app** (Port 8080) - Blazor Frontend
+
+**Alternative:** Einzelne Services können auch separat gestartet werden:
 
 ```bash
 # Terminal 1: BackendApi
@@ -863,9 +876,13 @@ docker-compose up -d
 # Terminal 3: sims-nosql-api
 cd sims-nosql-api
 docker-compose up -d
+
+# Terminal 4: Frontend
+cd sims-web_app
+docker-compose up -d
 ```
 
-**Hinweis:** Ein zentrales Docker Compose für alle Container ist in Planung (siehe ToDos).
+**Hinweis:** Das zentrale Docker Compose ist bereits implementiert und wird für die Produktion empfohlen.
 
 ## ✨ Features
 
@@ -960,8 +977,11 @@ dotnet test
 ```
 
 **Test Coverage:**
-- Customer Endpoints Tests
-- Incident Endpoints Tests
+- **BackendApi.Tests:**
+  - Customer Endpoints Tests
+  - Incident Endpoints Tests
+- **sims-nosql-api.Tests:**
+  - Unit Tests für Redis Service
 
 ## 👥 Autoren
 
@@ -987,12 +1007,11 @@ Dieses Projekt wurde im Rahmen des SW-AC (Software Architecture) Kurses an der *
 - ⏳ **UserApi Anpassungen** - RoleId, Create/Update Thema
 - ⏳ **UserApi testen** - Test-Suite für User API
 - ⏳ **SA User für DB Zugriff anpassen** - SQL Server SA User Konfiguration
-- ⏳ **Docker Compose für alle Container machen** - Zentrales Docker Compose Setup
 - ⏳ **BOM + Check via Container von Gerald** - Bill of Materials und Security Checks
 
 ## 📝 Weitere Informationen
 
-- **Architektur-Diagramm**: Siehe `Flipcharts/Schema.drawio` oder `Flipcharts/Schema.png`
+- **Architektur-Diagramm**: Siehe `Flipcharts/Schema.drawio` oder `Flipcharts/Schema.png` (Archivierte Versionen in `Flipcharts/Archiv/`)
 - **Swagger/OpenAPI Dokumentation** (interaktiv): 
   - BackendApi: `http://localhost:5001/swagger`
   - sims-api: `http://localhost:5000/swagger` (nur Development)
