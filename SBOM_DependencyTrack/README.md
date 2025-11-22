@@ -10,7 +10,8 @@ Dieses Verzeichnis enthält Scripts zur automatischen Generierung von Software B
 ## Übersicht
 
 - **generate-sbom.sh / generate-sbom.ps1**: Generiert CycloneDX SBOMs für alle .NET-Projekte
-- **upload-sbom.sh / upload-sbom.ps1**: Lädt generierte SBOMs in DependencyTrack hoch
+- **upload-sbom.sh**: Lädt generierte SBOMs in DependencyTrack hoch (Bash)
+- **upload-sbom.py**: Lädt generierte SBOMs in DependencyTrack hoch (Python - empfohlen)
 
 ## Voraussetzungen
 
@@ -51,7 +52,7 @@ dotnet tool install --global CycloneDX
 
 ```bash
 # 1. SBOMs generieren
-cd scripts
+cd SBOM_DependencyTrack
 chmod +x generate-sbom.sh upload-sbom.sh
 ./generate-sbom.sh
 
@@ -60,24 +61,36 @@ export DEPENDENCYTRACK_API_KEY="dein-api-key"
 ./upload-sbom.sh
 ```
 
-### Windows (PowerShell)
+### Windows (PowerShell für Generation, Python für Upload)
 
 ```powershell
 # 1. SBOMs generieren
-cd scripts
+cd SBOM_DependencyTrack
 .\generate-sbom.ps1
 
-# 2. SBOMs in DependencyTrack hochladen
-$env:DEPENDENCYTRACK_API_KEY = "dein-api-key"
-.\upload-sbom.ps1
+# 2. SBOMs in DependencyTrack hochladen (Python - empfohlen)
+pip install requests
+python upload-sbom.py
+```
+
+**Alternative: Bash (Git Bash oder WSL)**
+```bash
+# 1. SBOMs generieren
+cd SBOM_DependencyTrack
+chmod +x generate-sbom.sh upload-sbom.sh
+./generate-sbom.sh
+
+# 2. SBOMs hochladen
+export DEPENDENCYTRACK_API_KEY="dein-api-key"
+./upload-sbom.sh
 ```
 
 ## Output
 
-Die generierten SBOM-Dateien werden im Verzeichnis `sbom-output/` gespeichert:
+Die generierten SBOM-Dateien werden im Verzeichnis `outputs/` gespeichert:
 
 ```
-sbom-output/
+SBOM_DependencyTrack/outputs/
 ├── BackendApi-sbom.json
 ├── sims-api-sbom.json
 ├── sims-nosql-api-sbom.json

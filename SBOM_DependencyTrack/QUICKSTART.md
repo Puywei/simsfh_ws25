@@ -34,29 +34,37 @@ Warte ca. 30-60 Sekunden, bis DependencyTrack vollständig gestartet ist.
 
 **Linux/macOS:**
 ```bash
-cd scripts
+cd SBOM_DependencyTrack
 chmod +x generate-sbom.sh
 ./generate-sbom.sh
 ```
 
 **Windows:**
 ```powershell
-cd scripts
+cd SBOM_DependencyTrack
 .\generate-sbom.ps1
 ```
 
 ### 4. SBOMs hochladen
 
-**Linux/macOS:**
+**Linux/macOS (Bash):**
 ```bash
 export DEPENDENCYTRACK_API_KEY="dein-kopierter-api-key"
 ./upload-sbom.sh
 ```
 
-**Windows:**
-```powershell
-$env:DEPENDENCYTRACK_API_KEY = "dein-kopierter-api-key"
-.\upload-sbom.ps1
+**Windows/Linux/macOS (Python - empfohlen):**
+```bash
+# Python installieren (falls nicht vorhanden)
+# Dann:
+pip install requests
+python upload-sbom.py
+```
+
+**Hinweis:** Das Python-Script hat den API-Key bereits eingebaut. Falls Sie einen anderen verwenden möchten:
+```bash
+export DEPENDENCYTRACK_API_KEY="dein-api-key"
+python upload-sbom.py
 ```
 
 ### 5. Ergebnisse ansehen

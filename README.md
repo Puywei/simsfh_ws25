@@ -1343,34 +1343,38 @@ SBOMs können für alle .NET-Projekte automatisch generiert werden:
 
 **Linux/macOS:**
 ```bash
-cd scripts
+cd SBOM_DependencyTrack
 chmod +x generate-sbom.sh
 ./generate-sbom.sh
 ```
 
 **Windows (PowerShell):**
 ```powershell
-cd scripts
+cd SBOM_DependencyTrack
 .\generate-sbom.ps1
 ```
 
-Die generierten SBOM-Dateien werden im Verzeichnis `sbom-output/` gespeichert.
+Die generierten SBOM-Dateien werden im Verzeichnis `SBOM_DependencyTrack/outputs/` gespeichert.
 
 ### SBOM Upload zu DependencyTrack
 
 Nach der Generierung können die SBOMs automatisch in DependencyTrack hochgeladen werden:
 
-**Linux/macOS:**
+**Linux/macOS (Bash):**
 ```bash
+cd SBOM_DependencyTrack
 export DEPENDENCYTRACK_API_KEY="dein-api-key"
 ./upload-sbom.sh
 ```
 
-**Windows (PowerShell):**
-```powershell
-$env:DEPENDENCYTRACK_API_KEY = "dein-api-key"
-.\upload-sbom.ps1
+**Windows/Linux/macOS (Python - empfohlen):**
+```bash
+cd SBOM_DependencyTrack
+pip install requests
+python upload-sbom.py
 ```
+
+**Hinweis:** Das Python-Script hat den API-Key bereits eingebaut. Falls Sie einen anderen verwenden möchten, setzen Sie die Umgebungsvariable `DEPENDENCYTRACK_API_KEY`.
 
 **API Key erstellen:**
 1. Öffne DependencyTrack Web-UI: **http://localhost:8083**
@@ -1379,7 +1383,7 @@ $env:DEPENDENCYTRACK_API_KEY = "dein-api-key"
 
 ### Weitere Informationen
 
-Detaillierte Anleitung zur Verwendung der SBOM-Scripts finden Sie in [`scripts/README.md`](scripts/README.md).
+Detaillierte Anleitung zur Verwendung der SBOM-Scripts finden Sie in [`SBOM_DependencyTrack/README.md`](SBOM_DependencyTrack/README.md).
 
 ## 🧪 Testing
 
