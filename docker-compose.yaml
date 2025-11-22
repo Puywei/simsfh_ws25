@@ -158,6 +158,19 @@ services:
         - sims-net
         volumes:
         - dependencytrack-uploads:/data
+
+    dependencytrack-frontend:
+        image: dependencytrack/frontend:latest
+        container_name: dependencytrack-frontend
+        restart: unless-stopped
+        ports:
+        - "8083:80"
+        environment:
+            - API_BASE_URL=http://dependencytrack:8080
+        depends_on:
+        - dependencytrack
+        networks:
+        - sims-net
     
     
 networks:

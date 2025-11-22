@@ -2,6 +2,11 @@
 
 Dieses Verzeichnis enthält Scripts zur automatischen Generierung von Software Bill of Materials (SBOM) und zum Upload in DependencyTrack.
 
+## 📖 Welche Datei soll ich lesen?
+
+- **QUICKSTART.md** ⭐ - **Start hier!** Schnelle Schritt-für-Schritt Anleitung für den ersten Durchlauf
+- **README.md** (diese Datei) - Vollständige Dokumentation und Referenz
+
 ## Übersicht
 
 - **generate-sbom.sh / generate-sbom.ps1**: Generiert CycloneDX SBOMs für alle .NET-Projekte
@@ -13,10 +18,12 @@ Dieses Verzeichnis enthält Scripts zur automatischen Generierung von Software B
 
 ```bash
 # Im Projekt-Root-Verzeichnis
-docker-compose up -d dependencytrack dependencytrack-postgres
+docker-compose up -d dependencytrack dependencytrack-frontend dependencytrack-postgres
 ```
 
-DependencyTrack ist dann verfügbar unter: http://localhost:8082
+**Zugriff:**
+- **Web-UI:** http://localhost:8083 (für Login und Verwaltung)
+- **API:** http://localhost:8082 (für API-Zugriff)
 
 **Standard-Credentials:**
 - Username: `admin`
@@ -24,7 +31,7 @@ DependencyTrack ist dann verfügbar unter: http://localhost:8082
 
 ### 2. API Key erstellen
 
-1. Öffne DependencyTrack: http://localhost:8082
+1. Öffne DependencyTrack Web-UI: **http://localhost:8083**
 2. Logge dich ein (Standard: admin/admin)
 3. Gehe zu: **Administration > Access Management > Teams > Automation**
 4. Erstelle einen neuen API Key
@@ -116,7 +123,7 @@ Für regelmäßige SBOM-Generierung kann ein Cron-Job (Linux) oder Scheduled Tas
 docker ps | grep dependencytrack
 
 # Starte Container falls nötig
-docker-compose up -d dependencytrack dependencytrack-postgres
+docker-compose up -d dependencytrack dependencytrack-frontend dependencytrack-postgres
 
 # Prüfe Logs
 docker logs dependencytrack

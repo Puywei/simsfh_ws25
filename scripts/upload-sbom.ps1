@@ -31,7 +31,7 @@ if ([string]::IsNullOrEmpty($DependencyTrackApiKey)) {
     Write-Host "  `$env:DEPENDENCYTRACK_API_KEY='dein-api-key'" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "Oder erstelle einen API Key in DependencyTrack:"
-    Write-Host "  1. Öffne: $DependencyTrackUrl"
+    Write-Host "  1. Öffne: http://localhost:8083 (Web-UI)"
     Write-Host "  2. Gehe zu: Administration > Access Management > Teams > Automation"
     Write-Host "  3. Erstelle einen neuen API Key"
     Write-Host ""

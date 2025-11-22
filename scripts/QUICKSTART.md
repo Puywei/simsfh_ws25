@@ -1,4 +1,8 @@
-# SBOM & DependencyTrack - Quick Start Guide
+# SBOM & DependencyTrack - Quick Start Guide ⭐
+
+**Diese Datei ist die Hauptanleitung für den ersten Durchlauf!**
+
+Für detaillierte Informationen siehe [README.md](README.md).
 
 ## Schnellstart
 
@@ -6,14 +10,14 @@
 
 ```bash
 # Im Projekt-Root-Verzeichnis
-docker-compose up -d dependencytrack dependencytrack-postgres
+docker-compose up -d dependencytrack dependencytrack-frontend dependencytrack-postgres
 ```
 
 Warte ca. 30-60 Sekunden, bis DependencyTrack vollständig gestartet ist.
 
 ### 2. DependencyTrack initialisieren
 
-1. Öffne http://localhost:8082
+1. Öffne **http://localhost:8083** (Web-UI)
 2. Logge dich ein mit:
    - Username: `admin`
    - Password: `admin`
@@ -21,6 +25,10 @@ Warte ca. 30-60 Sekunden, bis DependencyTrack vollständig gestartet ist.
 4. Gehe zu: **Administration > Access Management > Teams > Automation**
 5. Klicke auf **Create API Key**
 6. Kopiere den API Key (wird nur einmal angezeigt!)
+
+**Hinweis:** 
+- Web-UI: http://localhost:8083
+- API: http://localhost:8082
 
 ### 3. SBOMs generieren
 
@@ -53,7 +61,7 @@ $env:DEPENDENCYTRACK_API_KEY = "dein-kopierter-api-key"
 
 ### 5. Ergebnisse ansehen
 
-Öffne DependencyTrack: http://localhost:8082
+Öffne DependencyTrack Web-UI: **http://localhost:8083**
 
 Du solltest jetzt folgende Projekte sehen:
 - SIMS-BackendApi
@@ -78,7 +86,7 @@ docker logs dependencytrack
 docker ps | grep dependencytrack-postgres
 
 # Starte neu
-docker-compose restart dependencytrack
+docker-compose restart dependencytrack dependencytrack-frontend
 ```
 
 ### API Key funktioniert nicht

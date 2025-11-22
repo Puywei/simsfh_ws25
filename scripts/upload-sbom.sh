@@ -33,7 +33,7 @@ if [ -z "$DEPENDENCYTRACK_API_KEY" ]; then
     echo "  export DEPENDENCYTRACK_API_KEY='dein-api-key'"
     echo ""
     echo "Oder erstelle einen API Key in DependencyTrack:"
-    echo "  1. Öffne: $DEPENDENCYTRACK_URL"
+    echo "  1. Öffne: http://localhost:8083 (Web-UI)"
     echo "  2. Gehe zu: Administration > Access Management > Teams > Automation"
     echo "  3. Erstelle einen neuen API Key"
     echo ""

@@ -1210,7 +1210,8 @@ Dies startet alle Services in einem gemeinsamen Docker-Netzwerk (`sims-net`):
 - **mssql** (Port 1433) - SQL Server für Incidents & Customers
 - **backendapi** (Port 5001) - Incident & Customer Management API
 - **sims-web-app** (Port 8080) - Blazor Frontend
-- **dependencytrack** (Port 8082) - DependencyTrack für SBOM & Vulnerability Management
+- **dependencytrack** (Port 8082) - DependencyTrack API Server
+- **dependencytrack-frontend** (Port 8083) - DependencyTrack Web-UI
 - **dependencytrack-postgres** (Port 5433) - PostgreSQL für DependencyTrack
 
 **Alternative:** Einzelne Services können auch separat gestartet werden:
@@ -1328,11 +1329,12 @@ Das Projekt unterstützt die automatische Generierung von Software Bill of Mater
 DependencyTrack ist bereits im `docker-compose.yaml` konfiguriert und kann mit folgendem Befehl gestartet werden:
 
 ```bash
-docker-compose up -d dependencytrack dependencytrack-postgres
+docker-compose up -d dependencytrack dependencytrack-frontend dependencytrack-postgres
 ```
 
 **Zugriff:**
-- DependencyTrack Web UI: http://localhost:8082
+- **DependencyTrack Web UI:** http://localhost:8083 (für Login und Verwaltung)
+- **DependencyTrack API:** http://localhost:8082 (für API-Zugriff)
 - Standard-Credentials beim ersten Start: `admin` / `admin` (wird beim ersten Login geändert)
 
 ### SBOM Generierung
@@ -1371,7 +1373,7 @@ $env:DEPENDENCYTRACK_API_KEY = "dein-api-key"
 ```
 
 **API Key erstellen:**
-1. Öffne DependencyTrack: http://localhost:8082
+1. Öffne DependencyTrack Web-UI: **http://localhost:8083**
 2. Gehe zu: **Administration > Access Management > Teams > Automation**
 3. Erstelle einen neuen API Key
 
