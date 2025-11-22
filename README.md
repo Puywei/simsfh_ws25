@@ -592,6 +592,16 @@ Die API besteht aus 2 Containern:
 
 ## 💾 Datenbanken
 
+### Klassendiagramm
+
+Das Klassendiagramm ist in separaten Dateien verfügbar:
+- **Mermaid-Datei**: `Flipcharts/ClassDiagram.mmd` (für Tools)
+- **Markdown-Datei**: `Flipcharts/ClassDiagram.md` (für GitHub/Viewer)
+
+Das Diagramm zeigt die wichtigsten Klassen, ihre Attribute, Methoden und Beziehungen im SIMS-System.
+
+**Hinweis:** Um das Diagramm als Bild (PNG/SVG) zu exportieren, verwenden Sie den [Mermaid Live Editor](https://mermaid.live/) oder die Mermaid CLI.
+
 ### ER-Diagramm
 
 Das Entity-Relationship-Diagramm zeigt die Beziehungen zwischen den Hauptentitäten:
