@@ -35,7 +35,7 @@ SIMS ist ein vollständiges Incident Management System, das aus mehreren Microse
 
 ## 🏗️ Systemarchitektur
 
-Die Systemarchitektur ist in der Datei `Flipcharts/Schema.drawio` bzw. `Flipcharts/Schema.png` dokumentiert.
+Die Systemarchitektur ist in der Datei `Doku/Schema.drawio` bzw. `Doku/Schema.png` dokumentiert.
 
 ### Architektur-Übersicht
 
@@ -171,13 +171,15 @@ simsfh_ws25/
 ├── sims-nosql-api.Tests/            # Unit Tests für sims-nosql-api
 │   └── UnitTest1.cs
 │
-├── Flipcharts/
-│   ├── Archiv/                      # Archivierte Flipcharts
+├── Doku/
+│   ├── Archiv/                      # Archivierte Doku
 │   │   ├── Schema.drawio
 │   │   ├── Schema.png
 │   │   └── [Weitere Archivdateien]
 │   ├── Schema.drawio               # Systemarchitektur Diagramm
-│   └── Schema.png                  # Systemarchitektur Bild
+│   ├── Schema.drawio               # Systemarchitektur Bild
+│   ├── ClassDiagram.md             # Klassendiagramm Erklärung
+│   └── ClassDiagram.mmd            # Klassendiagramm Bild
 │
 ├── docker-compose.yaml              # Zentrales Docker Compose für alle Services
 └── sims.sln                        # Visual Studio Solution
@@ -595,8 +597,8 @@ Die API besteht aus 2 Containern:
 ### Klassendiagramm
 
 Das Klassendiagramm ist in separaten Dateien verfügbar:
-- **Mermaid-Datei**: `Flipcharts/ClassDiagram.mmd` (für Tools)
-- **Markdown-Datei**: `Flipcharts/ClassDiagram.md` (für GitHub/Viewer)
+- **Mermaid-Datei**: `Doku/ClassDiagram.mmd` (für Tools)
+- **Markdown-Datei**: `Doku/ClassDiagram.md` (für GitHub/Viewer)
 
 Das Diagramm zeigt die wichtigsten Klassen, ihre Attribute, Methoden und Beziehungen im SIMS-System.
 
@@ -1106,7 +1108,7 @@ Dieses Projekt wurde im Rahmen des SW-AC (Software Architecture) Kurses an der *
 
 ## 📝 Weitere Informationen
 
-- **Architektur-Diagramm**: Siehe `Flipcharts/Schema.drawio` oder `Flipcharts/Schema.png` (Archivierte Versionen in `Flipcharts/Archiv/`)
+- **Architektur-Diagramm**: Siehe `Doku/Schema.drawio` oder `Doku/Schema.png` (Archivierte Versionen in `Doku/Archiv/`)
 - **Swagger/OpenAPI Dokumentation** (interaktiv): 
   - BackendApi: `http://localhost:5001/swagger`
   - sims-api: `http://localhost:5000/swagger` (nur Development)
