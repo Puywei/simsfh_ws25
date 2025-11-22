@@ -115,6 +115,49 @@ services:
         working_dir: /app
         networks:
         - sims-net
+
+    #Container für DependencyTrack (SBOM & Vulnerability Management)
+    dependencytrack-postgres:
+        image: postgres:16.11
+        container_name: dependencytrack-postgres
+        restart: unless-stopped
+        ports:
+        - "5433:5432"
+        environment:
+            POSTGRES_DB: dependencytrack
+            POSTGRES_USER: dependencytrack
+            POSTGRES_PASSWORD: dependencytrack
+        volumes:
+        - dependencytrack-data:/var/lib/postgresql/data
+        networks:
+        - sims-net
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U dependencytrack -d dependencytrack"]
+            interval: 5s
+            timeout: 5s
+            retries: 10
+
+    dependencytrack:
+        image: dependencytrack/apiserver:latest
+        container_name: dependencytrack
+        restart: unless-stopped
+        ports:
+        - "8082:8080"
+        environment:
+            ALPINE_DATABASE_MODE: external
+            ALPINE_DATABASE_URL: jdbc:postgresql://dependencytrack-postgres:5432/dependencytrack
+            ALPINE_DATABASE_DRIVER: org.postgresql.Driver
+            ALPINE_DATABASE_USERNAME: dependencytrack
+            ALPINE_DATABASE_PASSWORD: dependencytrack
+            ALPINE_DATABASE_POOL_ENABLED: "true"
+            ALPINE_DATABASE_POOL_MAX_SIZE: 20
+        depends_on:
+            dependencytrack-postgres:
+                condition: service_healthy
+        networks:
+        - sims-net
+        volumes:
+        - dependencytrack-uploads:/data
     
     
 networks:
@@ -124,3 +167,5 @@ networks:
 volumes:
     postgres-data:
     mssql-data:
+    dependencytrack-data:
+    dependencytrack-uploads:
