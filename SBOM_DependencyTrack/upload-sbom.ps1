@@ -1,59 +1,48 @@
-# SBOM Upload Script für DependencyTrack (PowerShell)
-# Lädt alle generierten SBOMs in DependencyTrack hoch
+# SBOM Upload Script for DependencyTrack (PowerShell)
+# Uploads all generated SBOMs to DependencyTrack
 
 $ErrorActionPreference = "Stop"
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ProjectRoot = Split-Path -Parent $ScriptDir
-$SbomOutputDir = Join-Path $ProjectRoot "sbom-output"
+$SbomOutputDir = Join-Path $ScriptDir "outputs"
 
-# DependencyTrack Konfiguration
+# DependencyTrack Configuration
 $DependencyTrackUrl = if ($env:DEPENDENCYTRACK_URL) { $env:DEPENDENCYTRACK_URL } else { "http://localhost:8082" }
-$DependencyTrackApiKey = $env:DEPENDENCYTRACK_API_KEY
+$DependencyTrackWebUrl = if ($env:DEPENDENCYTRACK_WEB_URL) { $env:DEPENDENCYTRACK_WEB_URL } else { "http://localhost:8083" }
+
+# API Key - can be overridden by environment variable
+$DependencyTrackApiKey = if ($env:DEPENDENCYTRACK_API_KEY) { 
+    $env:DEPENDENCYTRACK_API_KEY 
+} else { 
+    "odt_31eGzZ3i_nMTGh2qK3evWtTXZET6zNX2vysEcnYAb"
+}
 
 Write-Host "==========================================" -ForegroundColor Cyan
-Write-Host "SIMS SBOM Upload zu DependencyTrack" -ForegroundColor Cyan
+Write-Host "SIMS SBOM Upload to DependencyTrack" -ForegroundColor Cyan
 Write-Host "==========================================" -ForegroundColor Cyan
 Write-Host ""
 
-# Prüfe ob SBOM-Verzeichnis existiert
+# Check if SBOM directory exists
 if (-not (Test-Path $SbomOutputDir)) {
-    Write-Host "❌ SBOM-Output-Verzeichnis nicht gefunden: $SbomOutputDir" -ForegroundColor Red
-    Write-Host "Bitte führe zuerst generate-sbom.ps1 aus." -ForegroundColor Yellow
+    Write-Host "Error: SBOM output directory not found: $SbomOutputDir" -ForegroundColor Red
+    Write-Host "Please run generate-sbom.ps1 first." -ForegroundColor Yellow
     exit 1
 }
 
-# Prüfe ob API Key gesetzt ist
-if ([string]::IsNullOrEmpty($DependencyTrackApiKey)) {
-    Write-Host "⚠️  Warnung: DEPENDENCYTRACK_API_KEY nicht gesetzt." -ForegroundColor Yellow
-    Write-Host ""
-    Write-Host "Bitte setze die Umgebungsvariable:"
-    Write-Host "  `$env:DEPENDENCYTRACK_API_KEY='dein-api-key'" -ForegroundColor Cyan
-    Write-Host ""
-    Write-Host "Oder erstelle einen API Key in DependencyTrack:"
-    Write-Host "  1. Öffne: http://localhost:8083 (Web-UI)"
-    Write-Host "  2. Gehe zu: Administration > Access Management > Teams > Automation"
-    Write-Host "  3. Erstelle einen neuen API Key"
-    Write-Host ""
-    $continue = Read-Host "Möchtest du trotzdem fortfahren? (j/n)"
-    if ($continue -ne "j" -and $continue -ne "J" -and $continue -ne "y" -and $continue -ne "Y") {
-        exit 1
-    }
-}
-
-# Prüfe ob DependencyTrack erreichbar ist
-Write-Host "Prüfe DependencyTrack Verbindung..." -ForegroundColor Yellow
+# Check if DependencyTrack is reachable
+Write-Host "Checking DependencyTrack connection..." -ForegroundColor Yellow
 try {
     $response = Invoke-WebRequest -Uri "$DependencyTrackUrl/api/version" -Method Get -UseBasicParsing -ErrorAction Stop
-    Write-Host "✅ DependencyTrack ist erreichbar" -ForegroundColor Green
+    Write-Host "DependencyTrack is reachable" -ForegroundColor Green
 } catch {
-    Write-Host "❌ DependencyTrack ist nicht erreichbar unter: $DependencyTrackUrl" -ForegroundColor Red
-    Write-Host "Bitte stelle sicher, dass DependencyTrack läuft:"
-    Write-Host "  docker-compose up -d dependencytrack" -ForegroundColor Cyan
+    Write-Host "Error: DependencyTrack is not reachable at: $DependencyTrackUrl" -ForegroundColor Red
+    Write-Host "Please make sure DependencyTrack is running:"
+    Write-Host "  docker-compose up -d dependencytrack dependencytrack-frontend dependencytrack-postgres" -ForegroundColor Cyan
     exit 1
 }
 
-# Projekte und ihre DependencyTrack Projekt-Namen
+# Project mapping
 $ProjectMapping = @{
     "BackendApi" = "SIMS-BackendApi"
     "sims-api" = "SIMS-UserApi"
@@ -61,8 +50,14 @@ $ProjectMapping = @{
     "sims-web_app" = "SIMS-WebApp"
 }
 
-# Lade SBOMs hoch
+# Upload SBOMs
 $sbomFiles = Get-ChildItem -Path $SbomOutputDir -Filter "*-sbom.json"
+
+if ($sbomFiles.Count -eq 0) {
+    Write-Host "No SBOM files found in: $SbomOutputDir" -ForegroundColor Yellow
+    Write-Host "Please run generate-sbom.ps1 first." -ForegroundColor Yellow
+    exit 1
+}
 
 foreach ($SbomFile in $sbomFiles) {
     $Filename = $SbomFile.Name
@@ -70,11 +65,11 @@ foreach ($SbomFile in $sbomFiles) {
     $DtProjectName = if ($ProjectMapping.ContainsKey($ProjectName)) { $ProjectMapping[$ProjectName] } else { $ProjectName }
     
     Write-Host ""
-    Write-Host "Lade SBOM hoch: $Filename" -ForegroundColor Cyan
-    Write-Host "  Projekt: $ProjectName -> $DtProjectName"
+    Write-Host "Uploading SBOM: $Filename" -ForegroundColor Cyan
+    Write-Host "  Project: $ProjectName -> $DtProjectName"
     
     if (-not [string]::IsNullOrEmpty($DependencyTrackApiKey)) {
-        # Prüfe ob Projekt existiert
+        # Check if project exists
         try {
             $projectLookupUrl = "$DependencyTrackUrl/api/v1/project/lookup?name=$DtProjectName&version=1.0.0"
             $projectResponse = Invoke-RestMethod -Uri $projectLookupUrl `
@@ -88,7 +83,7 @@ foreach ($SbomFile in $sbomFiles) {
         }
         
         if ([string]::IsNullOrEmpty($projectUuid)) {
-            Write-Host "  Erstelle Projekt in DependencyTrack..." -ForegroundColor Yellow
+            Write-Host "  Creating project in DependencyTrack..." -ForegroundColor Yellow
             $projectBody = @{
                 name = $DtProjectName
                 version = "1.0.0"
@@ -106,14 +101,14 @@ foreach ($SbomFile in $sbomFiles) {
                     -Body $projectBody
                 $projectUuid = $createResponse.uuid
             } catch {
-                Write-Host "  ⚠️  Fehler beim Erstellen des Projekts: $_" -ForegroundColor Yellow
+                Write-Host "  Warning: Error creating project: $_" -ForegroundColor Yellow
                 continue
             }
         }
         
-        # Lade SBOM hoch
-        Write-Host "  Lade SBOM hoch..." -ForegroundColor Yellow
-        $sbomContent = Get-Content $SbomFile.FullName -Raw
+        # Upload SBOM
+        Write-Host "  Uploading SBOM..." -ForegroundColor Yellow
+        $sbomContent = Get-Content $SbomFile.FullName -Raw -Encoding UTF8
         $uploadBody = @{
             project = $projectUuid
             bom = ($sbomContent | ConvertFrom-Json)
@@ -129,22 +124,22 @@ foreach ($SbomFile in $sbomFiles) {
                 -Body $uploadBody
             
             if ($uploadResponse.token) {
-                Write-Host "  ✅ SBOM erfolgreich hochgeladen (Token: $($uploadResponse.token))" -ForegroundColor Green
+                Write-Host "  SBOM successfully uploaded (Token: $($uploadResponse.token))" -ForegroundColor Green
             } else {
-                Write-Host "  ⚠️  Upload-Response: $($uploadResponse | ConvertTo-Json)" -ForegroundColor Yellow
+                Write-Host "  Warning: Upload response: $($uploadResponse | ConvertTo-Json)" -ForegroundColor Yellow
             }
         } catch {
-            Write-Host "  ❌ Fehler beim Hochladen: $_" -ForegroundColor Red
+            Write-Host "  Error uploading: $_" -ForegroundColor Red
         }
     } else {
-        Write-Host "  ⚠️  Überspringe Upload (kein API Key)" -ForegroundColor Yellow
+        Write-Host "  Skipping upload (no API key)" -ForegroundColor Yellow
     }
 }
 
 Write-Host ""
 Write-Host "==========================================" -ForegroundColor Cyan
-Write-Host "SBOM Upload abgeschlossen!" -ForegroundColor Green
+Write-Host "SBOM Upload completed!" -ForegroundColor Green
 Write-Host "==========================================" -ForegroundColor Cyan
-Write-Host "DependencyTrack URL: $DependencyTrackUrl"
+Write-Host "DependencyTrack API URL: $DependencyTrackUrl"
+Write-Host "DependencyTrack Web UI: $DependencyTrackWebUrl"
 Write-Host ""
-

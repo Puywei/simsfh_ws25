@@ -1,0 +1,595 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:c28115ce-6bc2-42f1-ac0c-f1e11562e335",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2025-11-22T13:50:35Z",
+    "tools": [
+      {
+        "vendor": "CycloneDX",
+        "name": "CycloneDX module for .NET",
+        "version": "5.5.0.0"
+      }
+    ],
+    "component": {
+      "type": "application",
+      "bom-ref": "sims-nosql-api@0.0.0",
+      "name": "sims-nosql-api",
+      "version": "0.0.0"
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "bom-ref": "pkg:nuget/Microsoft.Extensions.ApiDescription.Server@8.0.0",
+      "authors": [
+        {
+          "name": "Microsoft"
+        }
+      ],
+      "name": "Microsoft.Extensions.ApiDescription.Server",
+      "version": "8.0.0",
+      "description": "MSBuild tasks and targets for build-time Swagger and OpenApi document generation\n\nThis package was built from the source code at https://github.com/dotnet/aspnetcore/tree/3f1acb59718cadf111a0a796681e3d3509bb3381",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "EC7256E04E7F74BC75E8238F17C75BA1185085EF5534060A4353AFE2D415A14A6C682B7B1306A06877D165475F517B1088F3A9E3B5175D746A4D5D5EAC134805"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
+      "purl": "pkg:nuget/Microsoft.Extensions.ApiDescription.Server@8.0.0",
+      "externalReferences": [
+        {
+          "url": "https://asp.net/",
+          "type": "website"
+        },
+        {
+          "url": "https://github.com/dotnet/aspnetcore",
+          "type": "vcs"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:nuget/Microsoft.Extensions.DependencyInjection.Abstractions@8.0.0",
+      "authors": [
+        {
+          "name": "Microsoft"
+        }
+      ],
+      "name": "Microsoft.Extensions.DependencyInjection.Abstractions",
+      "version": "8.0.0",
+      "description": "Abstractions for dependency injection.\n\nCommonly Used Types:\nMicrosoft.Extensions.DependencyInjection.IServiceCollection",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "94BC05ED29755109565D9CDFC901087EE1FA08302DDA393106BC9A0BD7384F0DC2B6C2F123C1BD53FCE06BABDBFA845DC6D22A163C4B0646C5251DCC5AEAC282"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
+      "purl": "pkg:nuget/Microsoft.Extensions.DependencyInjection.Abstractions@8.0.0",
+      "externalReferences": [
+        {
+          "url": "https://dot.net/",
+          "type": "website"
+        },
+        {
+          "url": "https://github.com/dotnet/runtime",
+          "type": "vcs"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:nuget/Microsoft.Extensions.Logging.Abstractions@8.0.0",
+      "authors": [
+        {
+          "name": "Microsoft"
+        }
+      ],
+      "name": "Microsoft.Extensions.Logging.Abstractions",
+      "version": "8.0.0",
+      "description": "Logging abstractions for Microsoft.Extensions.Logging.\n\nCommonly Used Types:\nMicrosoft.Extensions.Logging.ILogger\nMicrosoft.Extensions.Logging.ILoggerFactory\nMicrosoft.Extensions.Logging.ILogger\u003CTCategoryName\u003E\nMicrosoft.Extensions.Logging.LogLevel\nMicrosoft.Extensions.Logging.Logger\u003CT\u003E\nMicrosoft.Extensions.Logging.LoggerMessage\nMicrosoft.Extensions.Logging.Abstractions.NullLogger",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "50A0ADD96D30D90580FB8E02A25CEA0AA15F4D22744279B5ACFE18CC8568B74402AA062D5DB13CC5887A08BFD24E07CBC88B2FC10EE8EEC2C37EDF3BCDA7F8A7"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
+      "purl": "pkg:nuget/Microsoft.Extensions.Logging.Abstractions@8.0.0",
+      "externalReferences": [
+        {
+          "url": "https://dot.net/",
+          "type": "website"
+        },
+        {
+          "url": "https://github.com/dotnet/runtime",
+          "type": "vcs"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:nuget/Microsoft.OpenApi@2.3.0",
+      "authors": [
+        {
+          "name": "Microsoft"
+        }
+      ],
+      "name": "Microsoft.OpenApi",
+      "version": "2.3.0",
+      "description": ".NET models with JSON and YAML writers for OpenAPI specification",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "9E8174D2CBD8993D4D8FFF7259221BD8D1BF851E214268DCBD35ECFF7896C1558671D708E5AB305B18E7922008E777D842CC5976FAC1FD316B3DD4BEDD863D94"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
+      "purl": "pkg:nuget/Microsoft.OpenApi@2.3.0",
+      "externalReferences": [
+        {
+          "url": "https://github.com/Microsoft/OpenAPI.NET",
+          "type": "website"
+        },
+        {
+          "url": "https://github.com/Microsoft/OpenAPI.NET",
+          "type": "vcs"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:nuget/Microsoft.VisualStudio.Azure.Containers.Tools.Targets@1.21.0",
+      "authors": [
+        {
+          "name": "Microsoft"
+        }
+      ],
+      "name": "Microsoft.VisualStudio.Azure.Containers.Tools.Targets",
+      "version": "1.21.0",
+      "description": "Targets files to enable the Visual Studio Tools for Containers.",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "ABF21AE801948897C86C3CC0D1B85082827849E302520B4D4ADFD5FB022794988DB5FEFA510B71BAEF742777D9B2B47A7B195BB6A3B6C9F4949BFA705B2865EB"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "Unknown - See URL",
+            "url": "https://aka.ms/deprecateLicenseUrl"
+          }
+        }
+      ],
+      "copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
+      "purl": "pkg:nuget/Microsoft.VisualStudio.Azure.Containers.Tools.Targets@1.21.0",
+      "externalReferences": [
+        {
+          "url": "https://aka.ms/vscontainertools",
+          "type": "website"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:nuget/Pipelines.Sockets.Unofficial@2.2.8",
+      "authors": [
+        {
+          "name": "Pipelines.Sockets.Unofficial"
+        }
+      ],
+      "name": "Pipelines.Sockets.Unofficial",
+      "version": "2.2.8",
+      "description": "Package Description",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "38CA43D4599A530BAA9C43B4CF69A7D13A9ECE539E4C16AA419EF3BE27481BAEB7FA0F1706ED210EBA0229A9D2E7B663D1A3C57454061C88DDD6D524441274B3"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "copyright": "Marc Gravell 2018",
+      "purl": "pkg:nuget/Pipelines.Sockets.Unofficial@2.2.8",
+      "externalReferences": [
+        {
+          "url": "https://github.com/mgravell/Pipelines.Sockets.Unofficial",
+          "type": "website"
+        },
+        {
+          "url": "https://github.com/mgravell/Pipelines.Sockets.Unofficial",
+          "type": "vcs"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:nuget/StackExchange.Redis@2.9.32",
+      "authors": [
+        {
+          "name": "Stack Exchange, Inc.,Marc Gravell,Nick Craver"
+        }
+      ],
+      "name": "StackExchange.Redis",
+      "version": "2.9.32",
+      "description": "High performance Redis client, incorporating both synchronous and asynchronous usage.",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "F19B3E6F35080493ED3FCE44D9963DC1CBF0C185CF98E9DD5ADEC614E0184073F3F060B5BAB92CF7503097CC7BE51C5AD82ACD3C3C5E09B70BA5CFF9EAB45135"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "copyright": "2014 - 2025 Stack Exchange, Inc.",
+      "purl": "pkg:nuget/StackExchange.Redis@2.9.32",
+      "externalReferences": [
+        {
+          "url": "https://stackexchange.github.io/StackExchange.Redis/",
+          "type": "website"
+        },
+        {
+          "url": "https://github.com/StackExchange/StackExchange.Redis/",
+          "type": "vcs"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:nuget/Swashbuckle.AspNetCore@10.0.0",
+      "authors": [
+        {
+          "name": "domaindrivendev"
+        }
+      ],
+      "name": "Swashbuckle.AspNetCore",
+      "version": "10.0.0",
+      "description": "Swagger tools for documenting APIs built on ASP.NET Core",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "13F21BE9D795B7A5832CEA1D46632AA2ABFAA9292D66966AB9C0C623E973DAAD8E27E3B8586CB84D6394D25F0F198BCAB8ECD89DFA80DFD8CC1ABC4EAC86C885"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:nuget/Swashbuckle.AspNetCore@10.0.0",
+      "externalReferences": [
+        {
+          "url": "https://github.com/domaindrivendev/Swashbuckle.AspNetCore",
+          "type": "website"
+        },
+        {
+          "url": "https://github.com/domaindrivendev/Swashbuckle.AspNetCore.git",
+          "type": "vcs"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:nuget/Swashbuckle.AspNetCore.Swagger@10.0.0",
+      "authors": [
+        {
+          "name": "domaindrivendev"
+        }
+      ],
+      "name": "Swashbuckle.AspNetCore.Swagger",
+      "version": "10.0.0",
+      "description": "Middleware to expose Swagger JSON endpoints from APIs built on ASP.NET Core",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "16C1FC485BFC1F4971BCE3C5BC34CD801C70F5B2D223C5BAFC5BE56E7A1103E39FC4C33A1C4C9674C1DC05B157AEB582124D2BB26D5BC5A57DF7AF229538547B"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "copyright": "Copyright (c) 2016-2025 Richard Morris",
+      "purl": "pkg:nuget/Swashbuckle.AspNetCore.Swagger@10.0.0",
+      "externalReferences": [
+        {
+          "url": "https://github.com/domaindrivendev/Swashbuckle.AspNetCore",
+          "type": "website"
+        },
+        {
+          "url": "https://github.com/domaindrivendev/Swashbuckle.AspNetCore.git",
+          "type": "vcs"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:nuget/Swashbuckle.AspNetCore.SwaggerGen@10.0.0",
+      "authors": [
+        {
+          "name": "domaindrivendev"
+        }
+      ],
+      "name": "Swashbuckle.AspNetCore.SwaggerGen",
+      "version": "10.0.0",
+      "description": "Swagger Generator for APIs built on ASP.NET Core",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "6C9B2195C69BA3CB9DC5D16D5BC36BBA752068B17A727BE1F40D6B7B8BAAFB10D1B41EE0698BACA7613CA162601B0505F949CF90B09BB91B96E584A22AE2B32E"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "copyright": "Copyright (c) 2016-2025 Richard Morris",
+      "purl": "pkg:nuget/Swashbuckle.AspNetCore.SwaggerGen@10.0.0",
+      "externalReferences": [
+        {
+          "url": "https://github.com/domaindrivendev/Swashbuckle.AspNetCore",
+          "type": "website"
+        },
+        {
+          "url": "https://github.com/domaindrivendev/Swashbuckle.AspNetCore.git",
+          "type": "vcs"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:nuget/Swashbuckle.AspNetCore.SwaggerUI@10.0.0",
+      "authors": [
+        {
+          "name": "domaindrivendev"
+        }
+      ],
+      "name": "Swashbuckle.AspNetCore.SwaggerUI",
+      "version": "10.0.0",
+      "description": "Middleware to expose an embedded version of the swagger-ui from an ASP.NET Core application",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "CBE1B87208263580295CAEF8F2D1FAE1FBCB51C28BE441BCD98EFBE3540ED723E822C60CF3484B7980022DF9E5B332FF2FCEC05B1BC9D63BE09D4372A97D9948"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "copyright": "Copyright (c) 2016-2025 Richard Morris",
+      "purl": "pkg:nuget/Swashbuckle.AspNetCore.SwaggerUI@10.0.0",
+      "externalReferences": [
+        {
+          "url": "https://github.com/domaindrivendev/Swashbuckle.AspNetCore",
+          "type": "website"
+        },
+        {
+          "url": "https://github.com/domaindrivendev/Swashbuckle.AspNetCore.git",
+          "type": "vcs"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:nuget/System.IO.Pipelines@5.0.1",
+      "authors": [
+        {
+          "name": "Microsoft"
+        }
+      ],
+      "name": "System.IO.Pipelines",
+      "version": "5.0.1",
+      "description": "Single producer single consumer byte buffer management.\n\nCommonly Used Types:\nSystem.IO.Pipelines.Pipe\nSystem.IO.Pipelines.PipeWriter\nSystem.IO.Pipelines.PipeReader\n \nWhen using NuGet 3.x this package requires at least version 3.4.",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "B5960F39E3A05E0738CA9CFF49F2883FE59CC97D0F2F75F1BB8B37A5C96DE0AC3631393F2B6A176895BC903BCD58581CA6E9E107DE65AFAA4B8A4D4875D61C40"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
+      "purl": "pkg:nuget/System.IO.Pipelines@5.0.1",
+      "externalReferences": [
+        {
+          "url": "https://github.com/dotnet/runtime",
+          "type": "website"
+        },
+        {
+          "url": "git://github.com/dotnet/runtime",
+          "type": "vcs"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:nuget/System.Text.Json@8.0.5",
+      "authors": [
+        {
+          "name": "Microsoft"
+        }
+      ],
+      "name": "System.Text.Json",
+      "version": "8.0.5",
+      "description": "Provides high-performance and low-allocating types that serialize objects to JavaScript Object Notation (JSON) text and deserialize JSON text to objects, with UTF-8 support built-in. Also provides types to read and write JSON text encoded as UTF-8, and to create an in-memory document object model (DOM), that is read-only, for random access of the JSON elements within a structured view of the data.\n\nThe System.Text.Json library is built-in as part of the shared framework in .NET Runtime. The package can be installed when you need to use it in other target frameworks.",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "13589021AE3E81F54C877ABF613CE931CC24CA57BF127AF1063CCC1EB4DC57A6CC223A61E6452207F5D0DCE453B6627430E31E4143C78E71E9B5DD647F680ABF"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
+      "purl": "pkg:nuget/System.Text.Json@8.0.5",
+      "externalReferences": [
+        {
+          "url": "https://dot.net/",
+          "type": "website"
+        },
+        {
+          "url": "https://github.com/dotnet/runtime",
+          "type": "vcs"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "pkg:nuget/Microsoft.Extensions.ApiDescription.Server@8.0.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:nuget/Microsoft.Extensions.DependencyInjection.Abstractions@8.0.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:nuget/Microsoft.Extensions.Logging.Abstractions@8.0.0",
+      "dependsOn": [
+        "pkg:nuget/Microsoft.Extensions.DependencyInjection.Abstractions@8.0.0"
+      ]
+    },
+    {
+      "ref": "pkg:nuget/Microsoft.OpenApi@2.3.0",
+      "dependsOn": [
+        "pkg:nuget/System.Text.Json@8.0.5"
+      ]
+    },
+    {
+      "ref": "pkg:nuget/Microsoft.VisualStudio.Azure.Containers.Tools.Targets@1.21.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:nuget/Pipelines.Sockets.Unofficial@2.2.8",
+      "dependsOn": [
+        "pkg:nuget/System.IO.Pipelines@5.0.1"
+      ]
+    },
+    {
+      "ref": "pkg:nuget/StackExchange.Redis@2.9.32",
+      "dependsOn": [
+        "pkg:nuget/Microsoft.Extensions.Logging.Abstractions@8.0.0",
+        "pkg:nuget/Pipelines.Sockets.Unofficial@2.2.8"
+      ]
+    },
+    {
+      "ref": "pkg:nuget/Swashbuckle.AspNetCore.Swagger@10.0.0",
+      "dependsOn": [
+        "pkg:nuget/Microsoft.OpenApi@2.3.0"
+      ]
+    },
+    {
+      "ref": "pkg:nuget/Swashbuckle.AspNetCore.SwaggerGen@10.0.0",
+      "dependsOn": [
+        "pkg:nuget/Swashbuckle.AspNetCore.Swagger@10.0.0"
+      ]
+    },
+    {
+      "ref": "pkg:nuget/Swashbuckle.AspNetCore.SwaggerUI@10.0.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:nuget/Swashbuckle.AspNetCore@10.0.0",
+      "dependsOn": [
+        "pkg:nuget/Microsoft.Extensions.ApiDescription.Server@8.0.0",
+        "pkg:nuget/Swashbuckle.AspNetCore.Swagger@10.0.0",
+        "pkg:nuget/Swashbuckle.AspNetCore.SwaggerGen@10.0.0",
+        "pkg:nuget/Swashbuckle.AspNetCore.SwaggerUI@10.0.0"
+      ]
+    },
+    {
+      "ref": "pkg:nuget/System.IO.Pipelines@5.0.1",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:nuget/System.Text.Json@8.0.5",
+      "dependsOn": []
+    },
+    {
+      "ref": "sims-nosql-api@0.0.0",
+      "dependsOn": [
+        "pkg:nuget/Microsoft.OpenApi@2.3.0",
+        "pkg:nuget/Microsoft.VisualStudio.Azure.Containers.Tools.Targets@1.21.0",
+        "pkg:nuget/StackExchange.Redis@2.9.32",
+        "pkg:nuget/Swashbuckle.AspNetCore@10.0.0"
+      ]
+    }
+  ]
+}

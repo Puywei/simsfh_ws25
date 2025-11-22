@@ -6,7 +6,7 @@ $ErrorActionPreference = "Stop"
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ProjectRoot = Split-Path -Parent $ScriptDir
-$SbomOutputDir = Join-Path $ProjectRoot "sbom-output"
+$SbomOutputDir = Join-Path $ScriptDir "outputs"
 
 Write-Host "==========================================" -ForegroundColor Cyan
 Write-Host "SIMS SBOM Generation Script" -ForegroundColor Cyan

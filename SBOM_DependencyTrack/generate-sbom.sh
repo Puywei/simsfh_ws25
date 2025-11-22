@@ -7,7 +7,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-SBOM_OUTPUT_DIR="$PROJECT_ROOT/sbom-output"
+SBOM_OUTPUT_DIR="$SCRIPT_DIR/outputs"
 CYCLONEDX_VERSION="3.0.0"
 
 echo "=========================================="
@@ -53,14 +53,16 @@ for PROJECT in "${PROJECTS[@]}"; do
     echo "  Output: $OUTPUT_FILE"
     
     # Wechsle ins Projektverzeichnis
-    cd "$(dirname "$PROJECT_PATH")"
+    PROJECT_DIR="$(dirname "$PROJECT_PATH")"
+    PROJECT_FILE="$(basename "$PROJECT_PATH")"
+    cd "$PROJECT_DIR"
     
     # Generiere SBOM mit CycloneDX
-    dotnet CycloneDX "$PROJECT" \
-        --json \
-        --out "$OUTPUT_FILE" \
-        --exclude-dev \
-        --exclude-test
+    dotnet CycloneDX "$PROJECT_FILE" \
+        -o "$SBOM_OUTPUT_DIR" \
+        -fn "${PROJECT_NAME}-sbom.json" \
+        -F Json \
+        -ed
     
     if [ -f "$OUTPUT_FILE" ]; then
         echo "  ✅ SBOM erfolgreich generiert: $OUTPUT_FILE"
@@ -83,7 +85,7 @@ echo "Output-Verzeichnis: $SBOM_OUTPUT_DIR"
 echo ""
 echo "Nächste Schritte:"
 echo "1. Überprüfe die generierten SBOM-Dateien in: $SBOM_OUTPUT_DIR"
-echo "2. Lade die SBOMs in DependencyTrack hoch (http://localhost:8082)"
+echo "2. Lade die SBOMs in DependencyTrack hoch (http://localhost:8083)"
 echo "3. Oder verwende das upload-sbom.sh Script für automatischen Upload"
 echo ""
 

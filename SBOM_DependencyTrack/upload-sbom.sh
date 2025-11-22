@@ -7,10 +7,11 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-SBOM_OUTPUT_DIR="$PROJECT_ROOT/sbom-output"
+SBOM_OUTPUT_DIR="$SCRIPT_DIR/outputs"
 
 # DependencyTrack Konfiguration
 DEPENDENCYTRACK_URL="${DEPENDENCYTRACK_URL:-http://localhost:8082}"
+DEPENDENCYTRACK_WEB_URL="${DEPENDENCYTRACK_WEB_URL:-http://localhost:8083}"
 DEPENDENCYTRACK_API_KEY="${DEPENDENCYTRACK_API_KEY:-}"
 
 echo "=========================================="
@@ -33,7 +34,7 @@ if [ -z "$DEPENDENCYTRACK_API_KEY" ]; then
     echo "  export DEPENDENCYTRACK_API_KEY='dein-api-key'"
     echo ""
     echo "Oder erstelle einen API Key in DependencyTrack:"
-    echo "  1. Öffne: http://localhost:8083 (Web-UI)"
+    echo "  1. Öffne: $DEPENDENCYTRACK_WEB_URL (Web-UI)"
     echo "  2. Gehe zu: Administration > Access Management > Teams > Automation"
     echo "  3. Erstelle einen neuen API Key"
     echo ""
