@@ -1210,6 +1210,9 @@ Dies startet alle Services in einem gemeinsamen Docker-Netzwerk (`sims-net`):
 - **mssql** (Port 1433) - SQL Server für Incidents & Customers
 - **backendapi** (Port 5001) - Incident & Customer Management API
 - **sims-web-app** (Port 8080) - Blazor Frontend
+- **dependencytrack** (Port 8082) - DependencyTrack API Server
+- **dependencytrack-frontend** (Port 8083) - DependencyTrack Web-UI
+- **dependencytrack-postgres** (Port 5433) - PostgreSQL für DependencyTrack
 
 **Alternative:** Einzelne Services können auch separat gestartet werden:
 
@@ -1316,6 +1319,64 @@ docker-compose up -d
 - ✅ **Redis Logging Middleware** für automatisches Logging
 - ✅ **Entity Framework Migrations**
 - ✅ **Input Validierung** in Controllern
+
+## 📦 SBOM & DependencyTrack
+
+Das Projekt unterstützt die automatische Generierung von Software Bill of Materials (SBOM) und die Integration mit DependencyTrack zur Überwachung von Sicherheitslücken in Abhängigkeiten.
+
+### DependencyTrack Container
+
+DependencyTrack ist bereits im `docker-compose.yaml` konfiguriert und kann mit folgendem Befehl gestartet werden:
+
+```bash
+docker-compose up -d dependencytrack dependencytrack-frontend dependencytrack-postgres
+```
+
+**Zugriff:**
+- **DependencyTrack Web UI:** http://localhost:8083 (für Login und Verwaltung)
+- **DependencyTrack API:** http://localhost:8082 (für API-Zugriff)
+- Standard-Credentials beim ersten Start: `admin` / `admin` (wird beim ersten Login geändert)
+
+### SBOM Generierung
+
+SBOMs können für alle .NET-Projekte automatisch generiert werden:
+
+**Linux/macOS:**
+```bash
+cd SBOM_DependencyTrack
+chmod +x generate-sbom.sh
+./generate-sbom.sh
+```
+
+**Windows (PowerShell):**
+```powershell
+cd SBOM_DependencyTrack
+.\generate-sbom.ps1
+```
+
+Die generierten SBOM-Dateien werden im Verzeichnis `SBOM_DependencyTrack/outputs/` gespeichert.
+
+### SBOM Upload zu DependencyTrack
+
+Nach der Generierung können die SBOMs automatisch in DependencyTrack hochgeladen werden:
+
+**Linux/macOS/WSL/Git Bash:**
+```bash
+cd SBOM_DependencyTrack
+chmod +x upload-sbom.sh
+./upload-sbom.sh
+```
+
+**Hinweis:** Das Script hat den API-Key bereits eingebaut. Falls Sie einen anderen verwenden möchten, setzen Sie die Umgebungsvariable `DEPENDENCYTRACK_API_KEY`.
+
+**API Key erstellen:**
+1. Öffne DependencyTrack Web-UI: **http://localhost:8083**
+2. Gehe zu: **Administration > Access Management > Teams > Automation**
+3. Erstelle einen neuen API Key
+
+### Weitere Informationen
+
+Detaillierte Anleitung zur Verwendung der SBOM-Scripts finden Sie in [`SBOM_DependencyTrack/README.md`](SBOM_DependencyTrack/README.md).
 
 ## 🧪 Testing
 

@@ -1,0 +1,28 @@
+# Dockerfile für SBOM-Generator Container
+# Kann verwendet werden, um SBOMs in einem Container zu generieren
+
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+
+# Installiere CycloneDX Tool
+RUN dotnet tool install --global CycloneDX
+
+# Setze PATH für global installierte Tools
+ENV PATH="${PATH}:/root/.dotnet/tools"
+
+# Arbeitsverzeichnis
+WORKDIR /workspace
+
+# Kopiere Projektdateien
+COPY . .
+
+# Script zum Generieren von SBOMs
+COPY scripts/generate-sbom.sh /usr/local/bin/generate-sbom.sh
+RUN chmod +x /usr/local/bin/generate-sbom.sh
+
+# Output-Verzeichnis
+VOLUME ["/workspace/sbom-output"]
+
+# Standard-Command
+CMD ["/usr/local/bin/generate-sbom.sh"]
+
+
