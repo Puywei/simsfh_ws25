@@ -924,6 +924,7 @@ docker-compose up -d
 - ✅ Incident-Übersicht mit interaktiver Tabelle
 - ✅ Customer Management UI
 - ✅ User Management UI
+- ✅ Log-Übersicht (NoSQL) im Frontend
 - ✅ Authentifizierung und Autorisierung
 - ✅ Benutzerfreundliche Navigation
 
@@ -982,6 +983,8 @@ dotnet test
   - Incident Endpoints Tests
 - **sims-nosql-api.Tests:**
   - Unit Tests für Redis Service
+- **SAST (Static Application Security Testing)** 
+  - Security Testing via Semgrep für alle Apps
 
 ## 👥 Autoren
 
@@ -993,21 +996,6 @@ Dieses Projekt wurde im Rahmen des SW-AC (Software Architecture) Kurses an der *
 - Mühlparzer Philipp
 - Puschnig Margarethe
 - Radler Maximilian
-
-
-## 📝 Aktuelle ToDos
-
-### In Arbeit
-- 🔄 **UI für Logs einbinden (NoSQL)** - Log-Übersicht im Frontend implementieren
-- 🔄 **BackendLogs nach NoSQL senden (final)** - Finalisierung der Log-Integration
-- 🔄 **SAST machen für alle Apps** - Static Application Security Testing via Semgrep (bereits in Arbeit)
-
-### Geplant
-- ⏳ **UI Incident umstellen auf "Neue Form"** - UI-Update für Incident-Formulare
-- ⏳ **UserApi Anpassungen** - RoleId, Create/Update Thema
-- ⏳ **UserApi testen** - Test-Suite für User API
-- ⏳ **SA User für DB Zugriff anpassen** - SQL Server SA User Konfiguration
-- ⏳ **BOM + Check via Container von Gerald** - Bill of Materials und Security Checks
 
 ## 📝 Weitere Informationen
 
