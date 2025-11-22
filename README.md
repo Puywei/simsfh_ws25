@@ -1081,19 +1081,18 @@ dotnet test
 - ✅ sims-nosql-api - Semgrep Scan abgeschlossen
 - ✅ sims-web_app - Semgrep Scan abgeschlossen
 
-**Ergebnisse:**
-- **Kritische Sicherheitslücken:** 0
-- **Hohe Sicherheitslücken:** 0
-- **Mittlere Sicherheitslücken:** 0
-- **Niedrige Sicherheitslücken:** 0
-- **Info-Level Hinweise:** < 10
+**Scan-Zusammenfassung:**
+- **Gesamtanzahl Findings:** 4
+- **True Positives:** 2 (High Severity - Container laufen als Root)
+- **False Positives:** 2 (Medium/High Severity - ReDoS in jQuery Library, SSRF in API Handler)
+- **Betroffene Komponenten:** BackendApi, sims-nosql-api, sims-web_app
 
-**Gefundene Probleme:**
-- Keine kritischen Sicherheitsprobleme gefunden
-- Alle identifizierten Code-Smells wurden behoben
-- Best Practices für .NET wurden eingehalten
+**Handlungsbedarf:**
+- 🔴 **2 High-Severity Issues** in Dockerfiles (Container laufen als Root) - **Behebung erforderlich**
+- ✅ 2 False Positives - Keine Maßnahmen erforderlich
 
-*Detaillierte Semgrep-Ergebnisse können bei Bedarf angefordert werden.*
+**Detaillierte Analyse:**
+Eine vollständige Analyse aller gefundenen Vulnerabilities mit Beschreibungen, Risikobewertungen und empfohlenen Fixes finden Sie in [`SAST_Semgrep/analyse.md`](SAST_Semgrep/analyse.md).
 
 ## 👥 Autoren
 
