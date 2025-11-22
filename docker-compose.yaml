@@ -118,37 +118,37 @@ services:
 
     #Container für DependencyTrack (SBOM & Vulnerability Management)
     dependencytrack-postgres:
-        image: postgres:16.11
+        image: postgres:17-alpine
         container_name: dependencytrack-postgres
         restart: unless-stopped
         ports:
         - "5433:5432"
         environment:
-            POSTGRES_DB: dependencytrack
-            POSTGRES_USER: dependencytrack
-            POSTGRES_PASSWORD: dependencytrack
+            POSTGRES_DB: dtrack
+            POSTGRES_USER: dtrack
+            POSTGRES_PASSWORD: dtrack
         volumes:
         - dependencytrack-data:/var/lib/postgresql/data
         networks:
         - sims-net
         healthcheck:
-            test: ["CMD-SHELL", "pg_isready -U dependencytrack -d dependencytrack"]
+            test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
             interval: 5s
-            timeout: 5s
-            retries: 10
+            timeout: 3s
+            retries: 3
 
     dependencytrack:
-        image: dependencytrack/apiserver:latest
+        image: dependencytrack/apiserver
         container_name: dependencytrack
         restart: unless-stopped
         ports:
         - "8082:8080"
         environment:
             ALPINE_DATABASE_MODE: external
-            ALPINE_DATABASE_URL: jdbc:postgresql://dependencytrack-postgres:5432/dependencytrack
+            ALPINE_DATABASE_URL: jdbc:postgresql://dependencytrack-postgres:5432/dtrack
             ALPINE_DATABASE_DRIVER: org.postgresql.Driver
-            ALPINE_DATABASE_USERNAME: dependencytrack
-            ALPINE_DATABASE_PASSWORD: dependencytrack
+            ALPINE_DATABASE_USERNAME: dtrack
+            ALPINE_DATABASE_PASSWORD: dtrack
             ALPINE_DATABASE_POOL_ENABLED: "true"
             ALPINE_DATABASE_POOL_MAX_SIZE: 20
         depends_on:
@@ -158,17 +158,23 @@ services:
         - sims-net
         volumes:
         - dependencytrack-uploads:/data
+        healthcheck:
+            test: ["CMD-SHELL", "wget -t 1 -T 3 --no-proxy -q -O /dev/null http://127.0.0.1:8080$${CONTEXT}health || exit 1"]
+            interval: 30s
+            start_period: 60s
+            timeout: 3s
 
     dependencytrack-frontend:
-        image: dependencytrack/frontend:latest
+        image: dependencytrack/frontend
         container_name: dependencytrack-frontend
         restart: unless-stopped
         ports:
-        - "8083:80"
+        - "8083:8080"
         environment:
-            - API_BASE_URL=http://dependencytrack:8080
+            - API_BASE_URL=http://localhost:8082
         depends_on:
-        - dependencytrack
+            dependencytrack:
+                condition: service_healthy
         networks:
         - sims-net
     

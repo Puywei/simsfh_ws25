@@ -95,3 +95,4 @@ Write-Host "2. Lade die SBOMs in DependencyTrack hoch (http://localhost:8082)"
 Write-Host "3. Oder verwende das upload-sbom.ps1 Script für automatischen Upload"
 Write-Host ""
 
+

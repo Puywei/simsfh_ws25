@@ -87,3 +87,4 @@ echo "2. Lade die SBOMs in DependencyTrack hoch (http://localhost:8082)"
 echo "3. Oder verwende das upload-sbom.sh Script für automatischen Upload"
 echo ""
 
+

@@ -25,3 +25,4 @@ VOLUME ["/workspace/sbom-output"]
 # Standard-Command
 CMD ["/usr/local/bin/generate-sbom.sh"]
 
+
