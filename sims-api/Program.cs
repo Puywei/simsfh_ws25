@@ -125,7 +125,10 @@ public class Program
             });
         builder.Services.AddHttpClient("EventLogger", client =>
         {
+            var baseAddress = builder.Configuration["EventLogger:BaseAddress"];
+            
             client.BaseAddress = new Uri("http://sims-nosql-api:8080/");
+            client.BaseAddress = new Uri(baseAddress);
         });
         builder.Services.AddScoped<IEventLogger, EventLogger>();
 
