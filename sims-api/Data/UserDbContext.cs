@@ -9,7 +9,7 @@ namespace sims.Data
         {
         }
 
-        // Creates tables
+        // Creates tablesk
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<BlacklistedToken> BlacklistedTokens { get; set; }
