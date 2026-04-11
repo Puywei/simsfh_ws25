@@ -17,6 +17,9 @@ services:
             interval: 5s
             timeout: 5s
             retries: 10
+        secrets:
+            - db_password
+            - Jwt__Key
 
     user-api:
         build: .
@@ -26,7 +29,7 @@ services:
         environment:
         - ASPNETCORE_ENVIRONMENT=Development
         - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=userapi;Username=postgres;Password=postgres
-        - Jwt__Key=noneofyourgoddamnbusinessthishastobesogoddamnverylongjesuschristandmariaandjoseph
+       # - Jwt__Key=noneofyourgoddamnbusinessthishastobesogoddamnverylongjesuschristandmariaandjoseph
         - Jwt__Issuer=sims-api
         depends_on:
             postgres:
@@ -41,3 +44,9 @@ networks:
     
 volumes:
     postgres-data:
+        
+secrets:
+    db_password:
+        file: secrets/db_password.txt
+    Jwt__Key:
+        file: secrets/jwt_key.txt

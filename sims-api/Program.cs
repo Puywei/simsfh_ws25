@@ -22,6 +22,7 @@ public class Program
 
       
         builder.Services.AddControllers();
+        builder.Configuration.AddKeyPerFile("/run/secrets", optional: true);
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(c =>
         {
