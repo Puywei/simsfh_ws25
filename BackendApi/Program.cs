@@ -19,7 +19,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 
-var isTesting = Environment.GetEnvironmentVariable("TESTING") == "true";
+var isTesting = Environment.GetEnvironmentVariable("TESTING") == "false";
 
 builder.Services.AddDbContext<MsSqlDbContext>(options =>
 {
