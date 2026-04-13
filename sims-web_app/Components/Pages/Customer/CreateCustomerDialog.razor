@@ -6,6 +6,14 @@
 @inject ISnackbar Snackbar
 @inject BackendApiHandler BackendApiHandler
 
+
+
+@*// VULNERABILITY: [Missing input validation]
+// DESCRIPTION: [Missing input validation allows untrusted data to enter the system unchecked. Attackers can send malicious data directly to the backend.]
+// MITIGATION: [All user input must be validated and sanitized on the server side before it is processed or stored. 
+Enforce strict rules for each field, such as expected format, length limits, and allowed characters. The backend must validate the same fields too.]
+//Example: [MaxLength="100" (reduces risk from too long input),
+Validation="@(new Func<string, string>(ValidatePhoneNumber))]*@
 <MudDialog>
     <DialogContent>
         <MudTextField @bind-Value="_customer.CompanyName" Label="Firma" Required="true" />

@@ -40,6 +40,8 @@
 
     private async void Save()
     {
+
+
         bool isCreated = await AuthApiHandler.CreateUser(_user);
         MudDialog.Close(DialogResult.Ok(_user));
 
