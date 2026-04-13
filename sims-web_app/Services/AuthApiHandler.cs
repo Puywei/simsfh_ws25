@@ -1,4 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Components;
@@ -63,10 +64,28 @@ public class AuthApiHandler
         RestRequest request = new RestRequest(subUrl, method);
         return (request, client);
     }
-
-    private async Task<string> GetAccessToken()
+    
+    /** VULNERABILITY: [ Insecure String Handling]
+        DESCRIPTION: [  Insecure string handling refers to the improper processing of strings, 
+                        where inputs are not properly validated or bounded, leading to security vulnerabilities. 
+                        This can allow attackers to exploit issues such as buffer overflows or 
+                        injection attacks to manipulate systems or steal data.]
+        MITIGATION: [   Use Secure String to avoid heap exposure ]
+                        Code Example:                        
+    private async Task<SecureString> GetAccessToken()
     {
-        ProtectedBrowserStorageResult<string> jsonToken = await _protectedLocalStorage.GetAsync<string>("token");
+        ProtectedBrowserStorageResult<SecureString> jsonToken = await _protectedLocalStorage.GetAsync<SecureString>("token");
+
+        if (jsonToken.Value == null)
+            return new SecureString();
+
+        return jsonToken.Value;
+    }
+    **/
+    
+    private async Task<String> GetAccessToken()
+    {
+        ProtectedBrowserStorageResult<String> jsonToken = await _protectedLocalStorage.GetAsync<String>("token");
 
         if (jsonToken.Value == null)
             return "";
