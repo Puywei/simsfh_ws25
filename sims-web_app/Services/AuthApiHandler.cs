@@ -70,9 +70,8 @@ public class AuthApiHandler
                         where inputs are not properly validated or bounded, leading to security vulnerabilities. 
                         This can allow attackers to exploit issues such as buffer overflows or 
                         injection attacks to manipulate systems or steal data.]
-        MITIGATION: [   Use Secure String to avoid heap exposure
-                        Code Example:
-####################                        
+        MITIGATION: [   Use Secure String to avoid heap exposure ]
+                        Code Example:                        
     private async Task<SecureString> GetAccessToken()
     {
         ProtectedBrowserStorageResult<SecureString> jsonToken = await _protectedLocalStorage.GetAsync<SecureString>("token");
@@ -82,9 +81,8 @@ public class AuthApiHandler
 
         return jsonToken.Value;
     }
-####################
-    ]
     **/
+    
     private async Task<String> GetAccessToken()
     {
         ProtectedBrowserStorageResult<String> jsonToken = await _protectedLocalStorage.GetAsync<String>("token");
