@@ -4,10 +4,15 @@ services:
         restart: unless-stopped
         ports:
         - "5432:5432"
+        secrets:
+            - db_password
+        #Previously had hardcoded the postgres password in here. Now postgres forces a password and uses the one in Docker secrets.
         environment:
             POSTGRES_DB: userapi
             POSTGRES_USER: postgres
-            POSTGRES_PASSWORD: postgres
+            POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+            POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+            POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
         volumes:
         - postgres-data:/var/lib/postgresql/data
         networks:
@@ -17,19 +22,19 @@ services:
             interval: 5s
             timeout: 5s
             retries: 10
-        secrets:
-            - db_password
-            - Jwt__Key
-
+    
+            
     user-api:
         build: .
         restart: unless-stopped
+        secrets:
+            - Jwt__Key
+            - db_password
         ports:
         - "5000:8080"
         environment:
         - ASPNETCORE_ENVIRONMENT=Development
-        - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=userapi;Username=postgres;Password=postgres
-       # - Jwt__Key=noneofyourgoddamnbusinessthishastobesogoddamnverylongjesuschristandmariaandjoseph
+        #- ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=userapi;Username=postgres;Password=postgres
         - Jwt__Issuer=sims-api
         depends_on:
             postgres:
@@ -47,6 +52,6 @@ volumes:
         
 secrets:
     db_password:
-        file: secrets/db_password.txt
+        file: secrets/postgres_password.txt
     Jwt__Key:
         file: secrets/jwt_key.txt

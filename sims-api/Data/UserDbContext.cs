@@ -78,7 +78,14 @@ namespace sims.Data
         {
             Database.Migrate();
 
-            // Seed Default (Example) users
+            //Seed Default users
+            //Seeding Default (and testing) users like this may be fine for the Development phase - but later on in production
+            //obviously a huge no-go. For mitigation: Firstly, one can keep this Seeding method if checking beforehand
+            //and running only in a Development environment. (Like if(app.Environment.IsDevelopment())). The password can then also be
+            //moved into Docker secrets to avoid them in the code. For the production-environment simply inserting a
+            //"setup"-function where the user sets these passwords is the most common and go-to approach.
+            
+            
             if (!Users.Any())
             {
                 Users.AddRange(
