@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using sims_nosql_api.Database;
@@ -49,6 +50,16 @@ namespace sims_nosql_api
 
             app.MapControllers();
             app.Run();
+
+            // Rate Limiting 
+            builder.Services.AddRateLimiter(options =>
+            {
+                options.AddFixedWindowLimiter("logLimiter", limiterOptions =>
+                {
+                    limiterOptions.PermitLimit = 100;
+                    limiterOptions.Window = TimeSpan.FromMinutes(1);
+                });
+            });
         }
     }
 }

@@ -4,7 +4,7 @@ namespace sims_nosql_api.Services
 {
     public class LogEntry
     {
-        // neu: logId wird automatisch durch Redis INCR vergeben - nicht mehr vom Client a
+        // neu: logId wird automatisch durch Redis INCR vergeben - nicht mehr vom Client 
         public int? LogId { get; set; }
 
         // timestamp muss gültig & vorhanden sein
