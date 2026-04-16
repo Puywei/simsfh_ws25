@@ -10,7 +10,27 @@ namespace sims.Helpers
     {
         public static string GenerateToken(User user, IConfiguration config)
         {
-            var key = Encoding.UTF8.GetBytes(config["Jwt:Key"]);
+            //Old usage of Jwt Key from "plain" Docker compose
+            // var key = Encoding.UTF8.GetBytes(config["Jwt:Key"]);
+            byte[] keyBytes;
+            const string dockerSecretPath = "/run/secrets/Jwt__Key";
+            if (File.Exists(dockerSecretPath))
+            {
+                keyBytes = File.ReadAllBytes(dockerSecretPath);
+            }
+            else
+            {
+               
+                var keyString = config["Jwt:Key"];
+                if (string.IsNullOrWhiteSpace(keyString))
+                    throw new Exception("JWT key not configured.");
+
+                keyBytes = System.Text.Encoding.UTF8.GetBytes(keyString);
+            }
+            //Vulnerability : "Secret Handling"
+            //Here the inserted secret of the docker compose was previously inserted. now it gets inserted from the Docker secret. (see dockerSecretPath)
+           // var key = Encoding.UTF8.GetBytes(config["Jwt:Key"]);
+           var signingKey = new SymmetricSecurityKey(keyBytes);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[]
@@ -23,7 +43,7 @@ namespace sims.Helpers
                 Issuer = config["Jwt:Issuer"],
                 Audience = config["Jwt:Issuer"],
                 SigningCredentials = new SigningCredentials(
-                    new SymmetricSecurityKey(key),
+                    signingKey, 
                     SecurityAlgorithms.HmacSha256Signature)
             };
 

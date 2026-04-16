@@ -22,6 +22,7 @@ public class Program
 
       
         builder.Services.AddControllers();
+        builder.Configuration.AddKeyPerFile("/run/secrets", optional: true);
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(c =>
         {
@@ -53,13 +54,39 @@ public class Program
             });
         });
 
+        var dbPassword = builder.Configuration["db_password"];
+
+        var builderPg = new Npgsql.NpgsqlConnectionStringBuilder
+        {
+            Host = "postgres",
+            Port = 5432,
+            Database = "userapi",
+            Username = "postgres",
+            Password = dbPassword
+        };
     
         builder.Services.AddDbContext<UserDbContext>(options =>
-            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+            options.UseNpgsql(builderPg.ConnectionString));
         
         
     
-        var jwtKey = builder.Configuration["Jwt:Key"];
+        //var jwtKey = builder.Configuration["Jwt:Key"];
+        byte[] keyBytes;
+        const string dockerSecretPath = "/run/secrets/Jwt__Key";
+
+        if (File.Exists(dockerSecretPath))
+        {
+            keyBytes = File.ReadAllBytes(dockerSecretPath);
+        }
+        else
+        {
+            var keyString = builder.Configuration["Jwt:Key"];
+            if (string.IsNullOrWhiteSpace(keyString))
+                throw new Exception("JWT key not configured.");
+
+            keyBytes = Encoding.UTF8.GetBytes(keyString);
+        }
+
         var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 
         builder.Services.AddAuthentication(options =>
@@ -79,7 +106,8 @@ public class Program
                     ClockSkew = TimeSpan.Zero,
                     ValidIssuer = jwtIssuer,
                     ValidAudience = jwtIssuer,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+                    IssuerSigningKey = new SymmetricSecurityKey(keyBytes)
+
                 };
                 options.Events = new JwtBearerEvents
                 {
